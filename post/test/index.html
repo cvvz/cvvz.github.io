@@ -82,7 +82,8 @@
 		</article>
 		<div class="post-nav thin">
 		</div>
-		<div id="gitalk-container"></div>     <script type="text/javascript">
+		<div id="gitalk-container"></div>     
+		<script type="text/javascript">
 			import 'gitalk/dist/gitalk.css'
 			import Gitalk from 'gitalk'
 			var gitalk = new Gitalk({
@@ -93,9 +94,8 @@
 				admin: ['cvvz'],
 				id: location.pathname,      
 				distractionFreeMode: true 
-			})
-  
-  			gitalk.render('gitalk-container')
+			});
+  			gitalk.render('gitalk-container');
 		</script>
 	</main>
 
