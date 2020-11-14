@@ -6,21 +6,307 @@
 		<generator>Hugo -- gohugo.io</generator>
 		<language>zh-hans</language>
 		<copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-		<lastBuildDate>Thu, 29 Oct 2020 17:29:22 +0800</lastBuildDate>
+		<lastBuildDate>Tue, 03 Sep 2019 18:44:12 +0800</lastBuildDate>
 		<atom:link href="https://cvvz.github.io/post/index.xml" rel="self" type="application/rss+xml" />
 		
 		<item>
-			<title>Test</title>
-			<link>https://cvvz.github.io/post/test/</link>
-			<pubDate>Thu, 29 Oct 2020 17:29:22 +0800</pubDate>
+			<title>基于ARM7分析函数调用栈</title>
+			<link>https://cvvz.github.io/post/call-stack/</link>
+			<pubDate>Tue, 03 Sep 2019 18:44:12 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/test/</guid>
-			<description>这是一片测试文章adsfdasf是大大发多少阿道夫阿迪舒服阿斯顿发阿迪舒服阿道夫阿道夫阿道夫阿迪说法第三方阿斯顿发阿斯顿发阿斯顿发阿斯顿发阿</description>
-			<content type="html"><![CDATA[<p>这是一片测试文章adsfdasf是大大发多少阿道夫阿迪舒服阿斯顿发阿迪舒服阿道夫阿道夫阿道夫阿迪说法第三方阿斯顿发阿斯顿发阿斯顿发阿斯顿发阿斯顿发</p>
-<h2 id="阿迪发生的发阿迪说法">阿迪发生的发阿迪说法</h2>
-<h1 id="阿道夫奥迪">阿道夫奥迪</h1>
-<h4 id="阿迪说法都是发大水发大厦发生的发生的发阿斯顿发水淀粉阿斯顿阿斯顿发阿斯顿发多少奥迪发多少安德森阿斯顿阿斯顿阿斯顿阿斯顿法安德森">阿迪说法都是发大水发大厦发生的发生的发阿斯顿发水淀粉阿斯顿阿斯顿发阿斯顿发多少奥迪发多少安德森阿斯顿阿斯顿阿斯顿阿斯顿法安德森</h4>
-<p>阿斯顿发多少发的s</p>
+			<guid>https://cvvz.github.io/post/call-stack/</guid>
+			<description>寄存器 分析函数调用栈要用到的几个特殊用途寄存器： ARM X86 用途 r11(fp) rbp/ebp 栈帧指针 r13(sp) rsp/esp 栈顶指针 r14(lr) N/A 返回地址 r15(pc) rip 指令指针 栈帧内容 如下图（《程序员的自我修养》</description>
+			<content type="html"><![CDATA[<h2 id="寄存器">寄存器</h2>
+<p>分析函数调用栈要用到的几个特殊用途寄存器：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">ARM</th>
+<th style="text-align:center">X86</th>
+<th style="text-align:center">用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><!-- raw HTML omitted -->r11(fp)<!-- raw HTML omitted --></td>
+<td style="text-align:center">rbp/ebp</td>
+<td style="text-align:center">栈帧指针</td>
+</tr>
+<tr>
+<td style="text-align:center">r13(sp)</td>
+<td style="text-align:center">rsp/esp</td>
+<td style="text-align:center">栈顶指针</td>
+</tr>
+<tr>
+<td style="text-align:center">r14(lr)</td>
+<td style="text-align:center">N/A</td>
+<td style="text-align:center">返回地址</td>
+</tr>
+<tr>
+<td style="text-align:center">r15(pc)</td>
+<td style="text-align:center">rip</td>
+<td style="text-align:center">指令指针</td>
+</tr>
+</tbody>
+</table>
+<h2 id="栈帧内容">栈帧内容</h2>
+<p>如下图（《程序员的自我修养》图10-4）所示：</p>
+<figure>
+    <img src="/%e6%a0%88.jpg" width="500px"/> 
+</figure>
+
+<p>图中栈帧指针指向的内存中保存的是上一个栈的栈帧指针，这是X86的情形。在分析ARM的函数栈时发现，ARM的栈帧指针指向的是函数返回地址。</p>
+<h2 id="入栈">入栈</h2>
+<p>调用函数时，首先压栈的是参数，且从右向左依次压栈；接着压入返回地址；接着被调函数执行“标准开头”：</p>
+<pre><code class="language-x86asm" data-lang="x86asm">push rbp
+mov rbp rsp
+</code></pre><p>首先rbp入栈；rbp入栈后，rsp自动加8（64位），rsp此时指向的栈顶即存放rbp的栈帧；接着令%rbp=%rsp，即使得rbp指向存放着上一个栈的rbp的内存。</p>
+<p>而ARM（32位）的“标准开头”长这样：</p>
+<pre><code class="language-armasm" data-lang="armasm">push {fp, lr}
+add fp, sp, #4
+</code></pre><p>也是先将返回地址(lr)入栈，然后栈帧指针(fp)入栈，但是接着是令%fp=%sp+4，即使fp指向存放返回地址的内存。</p>
+<p>不论栈帧指针指向的是上一个栈帧指针，还是返回地址，都能通过函数的栈帧指针偏移找到其调用函数的地址，根据栈帧指针的链式关系，可以回溯出整个函数的调用关系。</p>
+<p>GCC的编译选项<code>--fomit-frame-pointer</code>可以取消使用帧指针。一般帧指针可以方便的定位函数的局部变量、参数、返回地址，取消帧指针后则使用栈指针顶进行定位。这么做的好处是可以多出一个寄存器供使用，程序运行速度更快，但是没有帧指针之后，无法方便的使用GDB进行调试。</p>
+<h3 id="出栈">出栈</h3>
+<p>出栈与入栈动作刚好相反，对于X86，“标准结尾”如下：</p>
+<pre><code class="language-x86asm" data-lang="x86asm">leaveq 
+retq 
+</code></pre><p>leaveq实际上是两条指令：</p>
+<pre><code class="language-x86asm" data-lang="x86asm">movq %rbp, %rsp
+popq %rbp
+</code></pre><p>先将rbp地址赋给rsp，栈顶此时指向的内存存放的是上一个栈的rbp，然后弹出栈顶的数据到rbp中，即rbp指向上一个栈的栈底，出栈动作导致rsp自增，于是rsp此时指向的内存中存放函数返回地址；</p>
+<p>retq则将栈顶地址pop到rip，即rip此时指向函数退出后的下一条指令，rsp则指向上一个栈的栈顶。这三个动作做完后，rsp、rbp、rip恢复到调用函数以前的现场。</p>
+<p>ARM的行为和X86基本一致，“标准结尾”如下：</p>
+<pre><code class="language-armasm" data-lang="armasm">sub sp, fp, #4
+pop {fp, pc}
+</code></pre><h1 id="基于arm7分析一个简单的函数调用栈">基于ARM7分析一个简单的函数调用栈</h1>
+<p>示例代码：</p>
+<div class="highlight"><pre class="chroma"><code class="language-C" data-lang="C"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">void</span> <span class="nf">test2</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">ii</span><span class="p">;</span>
+	<span class="n">ii</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">char</span> <span class="nf">test</span><span class="p">(</span><span class="kt">char</span> <span class="n">c</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&#34;%c&#34;</span><span class="p">,</span><span class="n">c</span><span class="p">);</span>
+	<span class="n">test2</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+	<span class="k">return</span> <span class="n">c</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+	<span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="sc">&#39;a&#39;</span><span class="p">;</span>
+	<span class="kt">char</span> <span class="n">ret</span><span class="p">;</span>
+	<span class="n">ret</span> <span class="o">=</span> <span class="n">test</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div><h2 id="函数调用过程入栈">函数调用过程（入栈）</h2>
+<p>将断点打在main函数调用test之前：</p>
+<pre><code class="language-armasm" data-lang="armasm">(gdb) b *0x000104bc
+Breakpoint 2 at 0x104bc: file main.c, line 21.
+(gdb) disassemble /m main
+Dump of assembler code for function main:
+18	{
+   0x000104a0 &lt;+0&gt;:	push	{r11, lr}
+   0x000104a4 &lt;+4&gt;:	add	r11, sp, #4
+   0x000104a8 &lt;+8&gt;:	sub	sp, sp, #8
+
+19		char c = 'a';
+   0x000104ac &lt;+12&gt;:	mov	r3, #97	; 0x61
+   0x000104b0 &lt;+16&gt;:	strb	r3, [r11, #-5]
+
+20		char ret;
+21		ret = test(c);
+   0x000104b4 &lt;+20&gt;:	ldrb	r3, [r11, #-5]
+   0x000104b8 &lt;+24&gt;:	mov	r0, r3
+=&gt; 0x000104bc &lt;+28&gt;:	bl	0x10468 &lt;test&gt;
+   0x000104c0 &lt;+32&gt;:	mov	r3, r0
+   0x000104c4 &lt;+36&gt;:	strb	r3, [r11, #-6]
+
+22		return 0;
+   0x000104c8 &lt;+40&gt;:	mov	r3, #0
+
+23	}
+   0x000104cc &lt;+44&gt;:	mov	r0, r3
+   0x000104d0 &lt;+48&gt;:	sub	sp, r11, #4
+   0x000104d4 &lt;+52&gt;:	pop	{r11, pc}
+
+End of assembler dump.
+</code></pre><p>此时栈帧指针和栈顶指针的值：</p>
+<pre><code class="language-armasm" data-lang="armasm">(gdb) i r r11 sp
+r11            0x7efffaec	2130705132
+sp             0x7efffae0	0x7efffae0
+(gdb) x /xw 0x7efffaec
+0x7efffaec:	0x76e8f678
+(gdb) info symbol 0x76e8f678
+__libc_start_main + 276 in section .text of /lib/arm-linux-gnueabihf/libc.so.6
+</code></pre><p>可以看到，栈帧指向的返回地址是__libc_start_main + 276，即main函数是由__libc_start_main调用的，由前面分析得知，栈指针-4地址处存放的是上一个函数的栈指针，查看可以发现其值为0：</p>
+<pre><code class="language-armasm" data-lang="armasm">(gdb) x /xw 0x7efffaec-4
+0x7efffae8:	0x00000000
+</code></pre><p>因此__libc_start_main是所有函数的起点。</p>
+<p>接着执行调用test指令：</p>
+<pre><code class="language-armasm" data-lang="armasm">(gdb) si
+test (c=0 '\000') at main.c:10
+10	{
+(gdb) disassemble 
+Dump of assembler code for function test:
+=&gt; 0x00010468 &lt;+0&gt;:	push	{r11, lr}
+   0x0001046c &lt;+4&gt;:	add	r11, sp, #4
+   0x00010470 &lt;+8&gt;:	sub	sp, sp, #16
+   0x00010474 &lt;+12&gt;:	mov	r3, r0
+   0x00010478 &lt;+16&gt;:	strb	r3, [r11, #-13]
+   0x0001047c &lt;+20&gt;:	ldrb	r3, [r11, #-13]
+   0x00010480 &lt;+24&gt;:	mov	r0, r3
+   0x00010484 &lt;+28&gt;:	bl	0x10300 &lt;putchar@plt&gt;
+   0x00010488 &lt;+32&gt;:	ldr	r0, [r11, #-8]
+   0x0001048c &lt;+36&gt;:	bl	0x10440 &lt;test2&gt;
+   0x00010490 &lt;+40&gt;:	ldrb	r3, [r11, #-13]
+   0x00010494 &lt;+44&gt;:	mov	r0, r3
+   0x00010498 &lt;+48&gt;:	sub	sp, r11, #4
+   0x0001049c &lt;+52&gt;:	pop	{r11, pc}
+End of assembler dump.
+(gdb) i r $lr
+lr             0x104c0	66752
+(gdb) info symbol $lr
+main + 32 in section .text of /root/main
+</code></pre><p>可以看到此时lr寄存器中保存的指令即调用test后的下一条指令。继续向下执行：</p>
+<pre><code class="language-armasm" data-lang="armasm">(gdb) ni
+0x0001046c	10	{
+(gdb) i r r11 sp
+r11            0x7efffaec	2130705132
+sp             0x7efffad8	0x7efffad8
+</code></pre><p>观察到将r11和lr入栈后，sp减少了8字节，不难猜测，高4字节存放了lr的值（返回地址），低4字节存放了sp的值（上一个栈的栈帧指针）：</p>
+<pre><code class="language-armasm" data-lang="armasm">(gdb) x /xw 0x7efffad8
+0x7efffad8:	0x7efffaec
+(gdb) x /xw 0x7efffadc
+0x7efffadc:	0x000104c0
+(gdb) i r $lr $r11
+lr             0x104c0	66752
+r11            0x7efffaec	2130705132
+</code></pre><p>继续执行：</p>
+<pre><code class="language-armasm" data-lang="armasm">(gdb) ni
+0x00010470	10	{
+(gdb) i r $r11
+r11            0x7efffadc	2130705116
+</code></pre><p>此时r11指向的是函数返回地址，而不是像x86一样指向上一个栈帧指针。</p>
+<h2 id="函数返回过程出栈">函数返回过程（出栈）</h2>
+<p>观察test的汇编指令：</p>
+<pre><code class="language-armasm" data-lang="armasm">(gdb) disassemble /m test
+Dump of assembler code for function test:
+10	{
+   0x00010468 &lt;+0&gt;:	push	{r11, lr}
+   0x0001046c &lt;+4&gt;:	add	r11, sp, #4
+   0x00010470 &lt;+8&gt;:	sub	sp, sp, #16
+   0x00010474 &lt;+12&gt;:	mov	r3, r0
+   0x00010478 &lt;+16&gt;:	strb	r3, [r11, #-13]
+
+11		int i;
+12		printf(&quot;%c&quot;,c);
+   0x0001047c &lt;+20&gt;:	ldrb	r3, [r11, #-13]
+   0x00010480 &lt;+24&gt;:	mov	r0, r3
+   0x00010484 &lt;+28&gt;:	bl	0x10300 &lt;putchar@plt&gt;
+
+13		test2(i);
+   0x00010488 &lt;+32&gt;:	ldr	r0, [r11, #-8]
+   0x0001048c &lt;+36&gt;:	bl	0x10440 &lt;test2&gt;
+
+14		return c;
+   0x00010490 &lt;+40&gt;:	ldrb	r3, [r11, #-13]
+
+15	}
+   0x00010494 &lt;+44&gt;:	mov	r0, r3
+=&gt; 0x00010498 &lt;+48&gt;:	sub	sp, r11, #4
+   0x0001049c &lt;+52&gt;:	pop	{r11, pc}
+
+End of assembler dump.
+</code></pre><p>可以发现在第三步<code>sub	sp, sp, #16</code>通过移动栈顶指针为函数分配16字节的栈空间后，整个函数执行过程中栈帧指针r11和栈顶指针sp的位置就固定不变了。函数运行完毕进入出栈流程时，首先通过<code>sub	sp, r11, #4</code>将栈顶指针指向上一个栈帧指针，接着<code>pop	{r11, pc}</code>依次出栈，将上一个栈帧指针赋值给r11，再将返回地址赋值给pc，两次pop后，栈顶指针往栈底方向退两次，最终使得栈顶指针和栈底指针都还原成main调用test前的样子：</p>
+<pre><code class="language-armasm" data-lang="armasm">(gdb) disassemble 
+Dump of assembler code for function main:
+   0x000104a0 &lt;+0&gt;:	push	{r11, lr}
+   0x000104a4 &lt;+4&gt;:	add	r11, sp, #4
+   0x000104a8 &lt;+8&gt;:	sub	sp, sp, #8
+   0x000104ac &lt;+12&gt;:	mov	r3, #97	; 0x61
+   0x000104b0 &lt;+16&gt;:	strb	r3, [r11, #-5]
+   0x000104b4 &lt;+20&gt;:	ldrb	r3, [r11, #-5]
+   0x000104b8 &lt;+24&gt;:	mov	r0, r3
+   0x000104bc &lt;+28&gt;:	bl	0x10468 &lt;test&gt;
+=&gt; 0x000104c0 &lt;+32&gt;:	mov	r3, r0
+   0x000104c4 &lt;+36&gt;:	strb	r3, [r11, #-6]
+   0x000104c8 &lt;+40&gt;:	mov	r3, #0
+   0x000104cc &lt;+44&gt;:	mov	r0, r3
+   0x000104d0 &lt;+48&gt;:	sub	sp, r11, #4
+   0x000104d4 &lt;+52&gt;:	pop	{r11, pc}
+End of assembler dump.
+(gdb) i r r11 sp pc
+r11            0x7efffaec	2130705132
+sp             0x7efffae0	0x7efffae0
+pc             0x104c0	0x104c0 &lt;main+32&gt;
+</code></pre>]]></content>
+		</item>
+		
+		<item>
+			<title>安全知识总结</title>
+			<link>https://cvvz.github.io/post/about-computer-security/</link>
+			<pubDate>Thu, 22 Aug 2019 12:38:04 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/post/about-computer-security/</guid>
+			<description>加解密算法 对称加密： 用同一个秘钥进行加密和解密，代表算法有AES/DES/RC2/RC5等； 非对称加密： 一次产生公钥和私钥两个秘钥，任意一个</description>
+			<content type="html"><![CDATA[<h2 id="加解密算法">加解密算法</h2>
+<p><strong>对称加密：</strong> 用同一个秘钥进行加密和解密，代表算法有<code>AES/DES/RC2/RC5</code>等；</p>
+<p><strong>非对称加密：</strong> 一次产生公钥和私钥两个秘钥，任意一个都能进行加密，解密则需要用另外一个。具体的用法是：公钥用来“加密”（相应的私钥用来解密），私钥用来“签名”（相应的公钥用来校验）。代表算法有<code>RSA/DSA/ECC/DH</code>等。</p>
+<p><strong>摘要：</strong> 摘要是对数据计算Hash值，Hash值不可逆，是一种单向加密。<code>shadow</code>文件中保存的用户密码就是密码明文的Hash值。代表算法有<code>MD5/SHA256</code>等。</p>
+<h2 id="ssl协议">SSL协议</h2>
+<p>SSL协议工作在传输层和应用层之间。在TCP协议的三次握手之后，进行SSL协议的握手。</p>
+<p>SSL握手过程：</p>
+<ul>
+<li>客户端发送随机数x和自己支持的加密算法</li>
+<li>服务端发送随机数y、公钥和选择的加密算法</li>
+<li>客户端发送通过公钥加密的随机数z的密文</li>
+<li>客户端、服务端用xyz算出对称加密的密钥</li>
+<li>双方进行对称加密通信。</li>
+</ul>
+<h2 id="ssh协议">SSH协议</h2>
+<h3 id="密码登录">密码登录</h3>
+<ul>
+<li>主机将自己的公钥（主机密钥HostKey）发到客户端（HostKey路径在sshd的配置文件中配置）</li>
+<li>客户端计算公钥指纹（摘要），询问用户是否信任该kostkey，信任则将key值记录在known_hosts中，下次登录相同服务器时若hostkey相同不必再次确认；否则提示hostkey不一致</li>
+<li>用户输入密码，客户端使用公钥加密密码明文并发送到服务端，服务端使用私钥解密并进行密码校验。</li>
+</ul>
+<p>由于存在发送服务器公钥的过程，因此存在中间人攻击的安全隐患。</p>
+<h3 id="公钥登录">公钥登录</h3>
+<p>SSH公钥登录解决了SSH协议中的中间人攻击的问题。</p>
+<ul>
+<li>用户事先生成一对公/私钥，将公钥提前导入到服务器，</li>
+<li>登录时，服务器首先发送一个随机数到客户端，</li>
+<li>客户端使用私钥加密随机数返回服务端，</li>
+<li>服务端使用公钥校验通过则允许登录。</li>
+</ul>
+<h2 id="中间人攻击">中间人攻击</h2>
+<p>SSL协议以及SSH密码登录方式，都存在着中间人攻击的威胁，主要安全隐患在于握手过程中服务端发送的公钥可能被中间人截取，客户端不能确定服务端发送的公钥是否可信。</p>
+<h2 id="证书">证书</h2>
+<p>证书解了服务端公钥不可信的问题。</p>
+<p>证书中记录了服务器的公钥信息，服务器不直接发送公钥，而是发送从CA中心申请到的证书。CA中心把公钥及其他证书信息一起进行摘要计算，再对其进行签名，最终的证书中存放的是公钥、证书信息、数字签名。</p>
+<p>因为有了CA中心的数字签名，只要用相应的CA中心的公钥对签名进行校验（即比较解密后的摘要值和本地计算的摘要值是否相同）通过，就能安全使用公钥进行加密。</p>
+<p>CA中心的公钥一般预置在操作系统中的根CA证书中。既然CA中心的公钥是用来对签名进行校验的，那么相应的，这个根CA证书就是用来对服务器发来的证书进行校验的。</p>
+<h2 id="证书链">证书链</h2>
+<p>一般我们不会直接拿根CA证书对应的私钥去做证书的签发，因为频繁使用根证书对应的私钥会增加其泄露的可能性。</p>
+<p>安全的做法是：CA中心给二级CA中心签发一个证书（即二级CA证书，二级CA中心严格保存其对应的私钥），二级CA中心再给三级CA中心签发证书&hellip;依次类推。</p>
+<p>因此，服务提供者去N级CA中心签发证书时，生成的不再是证书，而是<code>证书链</code>，证书链中依次记录着服务器证书、N级CA证书、N-1级CA证书&hellip;二级CA证书。证书校验时，用根CA证书校验二级CA证书、二级CA证书校验三级CA证书&hellip;最后N级校验服务器证书，只有全部校验通过，服务器证书才算被客户端校验通过。</p>
+<h2 id="浏览器通过https协议访问网站的过程">浏览器通过HTTPS协议访问网站的过程</h2>
+<ol>
+<li>通过本地的DNS配置文件找到DNS服务器地址。</li>
+<li>DNS服务器将网址解析为ip地址返回。</li>
+<li>本机通过链路层的arp协议找到局域网的路由器。（二层）</li>
+<li>路由器通过ip地址路由寻址找到ip地址对应的主机。（三层）</li>
+<li>主机通过TCP协议找到本机的端口号（进程listen）。（四层）</li>
+<li>TCP三次握手。</li>
+<li><strong>使用证书</strong>进行SSL握手（主机将自己的证书链发到浏览器，浏览器使用操作系统预置CA证书进行校验，校验不通过会提示链接不安全的风险）。（SSL层）</li>
+<li>服务器进程和浏览器进程在应用层使用HTTP协议交换数据。（七层）</li>
+</ol>
 ]]></content>
 		</item>
 		

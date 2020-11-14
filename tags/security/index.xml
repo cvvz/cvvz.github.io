@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>security on Vic&#39;s Blog</title>
+    <link>https://cvvz.github.io/tags/security/</link>
+    <description>Recent content in security on Vic&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-hans</language>
+    <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
+    <lastBuildDate>Thu, 22 Aug 2019 12:38:04 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/security/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>安全知识总结</title>
+      <link>https://cvvz.github.io/post/about-computer-security/</link>
+      <pubDate>Thu, 22 Aug 2019 12:38:04 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/about-computer-security/</guid>
+      <description>加解密算法 对称加密： 用同一个秘钥进行加密和解密，代表算法有AES/DES/RC2/RC5等； 非对称加密： 一次产生公钥和私钥两个秘钥，任意一个</description>
+    </item>
+    
+  </channel>
+</rss>
