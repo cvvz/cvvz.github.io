@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>工具 on Vic&#39;s Blog</title>
+    <link>https://cvvz.github.io/tags/%E5%B7%A5%E5%85%B7/</link>
+    <description>Recent content in 工具 on Vic&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-hans</language>
+    <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
+    <lastBuildDate>Sun, 02 Jun 2019 23:41:24 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/%E5%B7%A5%E5%85%B7/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Git使用心得</title>
+      <link>https://cvvz.github.io/post/usage-of-git/</link>
+      <pubDate>Sun, 02 Jun 2019 23:41:24 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/usage-of-git/</guid>
+      <description>整理一下最近学习的git知识，以及平时常用的git功能。 .git 使用git init或clone一个远端仓，会在本地建立一个.git目录。这个目录是</description>
+    </item>
+    
+  </channel>
+</rss>

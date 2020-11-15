@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="google-site-verification" content="Wp3QtEkIlF0ZvtKx90lPmoXyH39d-pmBhiTyTbba9L4" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta itemprop="name" content="进程间通信">
+<meta itemprop="description" content="进程间通信的六种方式： 管道 共享内存 消息队列 信号量 信号 socket 管道 管道机制和UNIX系统的文件系统密切关联，使用管道和使用文件系统非常类似。实际上使">
+<meta itemprop="datePublished" content="2018-11-02T22:34:20+08:00" />
+<meta itemprop="dateModified" content="2018-11-02T22:34:20+08:00" />
+<meta itemprop="wordCount" content="1355">
+
+
+
+<meta itemprop="keywords" content="计算机基础," />
+<meta property="og:title" content="进程间通信" />
+<meta property="og:description" content="进程间通信的六种方式： 管道 共享内存 消息队列 信号量 信号 socket 管道 管道机制和UNIX系统的文件系统密切关联，使用管道和使用文件系统非常类似。实际上使" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://cvvz.github.io/post/ipc/" />
+<meta property="article:published_time" content="2018-11-02T22:34:20+08:00" />
+<meta property="article:modified_time" content="2018-11-02T22:34:20+08:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="进程间通信"/>
+<meta name="twitter:description" content="进程间通信的六种方式： 管道 共享内存 消息队列 信号量 信号 socket 管道 管道机制和UNIX系统的文件系统密切关联，使用管道和使用文件系统非常类似。实际上使"/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>进程间通信</title>
+	<link rel="stylesheet" href="https://cvvz.github.io/css/style.min.052d306dd1c49415658027c566de932b0e3c2d1278df9f6b44487a95c9b6c1ee.css">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp faster">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://cvvz.github.io">Vic&#39;s Blog</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					<a href="https://cvvz.github.io/post/">文章</a>
+					<a href="https://cvvz.github.io/about/">关于</a>
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<span class="hdr-social hide-in-mobile"><a href="https://github.com/cvvz" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="mailto:ftdchenwz@gmail.com" target="_blank" rel="noopener me" title="Email"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a></span><button id="menu-btn" class="hdr-btn" title="菜单"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://cvvz.github.io/post/">文章</a></li>
+			<li><a href="https://cvvz.github.io/about/">关于</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<h1>进程间通信</h1>
+			</header>
+			<div class="content">
+				<p>进程间通信的六种方式：</p>
+<ul>
+<li>管道</li>
+<li>共享内存</li>
+<li>消息队列</li>
+<li>信号量</li>
+<li>信号</li>
+<li>socket</li>
+</ul>
+<h1 id="管道">管道<a href="#管道" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h1>
+<p>管道机制和UNIX系统的文件系统密切关联，使用管道和使用文件系统非常类似。实际上使用<strong>管道可以看成是创建了一个不会残留的临时文件，一个进程写文件，另一个进程读文件，从而实现了进程间通信</strong>。</p>
+<p>管道分为 <strong>匿名管道</strong> 和 <strong>FIFO</strong>。</p>
+<h2 id="匿名管道">匿名管道<a href="#匿名管道" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>使用 <code>pipe</code> 函数创建匿名管道。它返回两个文件描述符，<code>fd[0]</code>是管道的读端，<code>fd[1]</code>是写端。</p>
+<p>如果进程只调用<code>pipe</code>，那么只能自写自读，基本没什么用。</p>
+<p>因此，<strong>使用<code>pipe</code>创建管道后，必然要使用 <code>fork</code> 创建子进程，这样就可以做到父子进程使用不同的fd进行读写通信</strong>。</p>
+<h3 id="popen">popen<a href="#popen" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>库函数 <code>popen</code> 就是使用匿名管道实现的。函数原型：</p>
+<div class="highlight"><pre class="chroma"><code class="language-C" data-lang="C"><span class="n">FILE</span> <span class="o">*</span> <span class="n">popen</span><span class="err">（</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">cmdstring</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">type</span><span class="err">）</span><span class="p">;</span>
+</code></pre></div><p><code>popen</code>创建了一个管道，然后执行fork，在子进程中使用<code>exec</code>执行cmdstring；返回的文件指针根据参数type指向管道的读或写端。</p>
+<p>type可取&quot;w&quot;和&quot;r&quot;：</p>
+<ul>
+<li>
+<p>取&quot;w&quot;时，返回的文件指针指向管道的写端fd[1]，子进程通过<code>dup2</code>将<code>stdin</code>复制到fd[0]，而cmdstring执行依赖<code>stdin</code>，就等于依赖父进程通过文件指针写入管道了；</p>
+</li>
+<li>
+<p>取&quot;r&quot;时，文件指针指向管道的读端fd[0]，子进程通过<code>dup2</code>将<code>stdout</code>复制到fd[1]，而cmdstring执行默认输出到<code>stdout</code>，那么父进程就可以通过该文件指针读出cmdstring命令的输出。</p>
+</li>
+</ul>
+<p>通过 <code>pclose</code> 函数关闭打开的文件指针，并使用<code>waitpid</code>关闭子进程;因此<code>popen</code>后如果不执行<code>pclose</code>将造成内存泄漏和僵尸进程。</p>
+<h2 id="fifo">FIFO<a href="#fifo" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p><code>FIFO</code>可以用来在不相关的进程间通信。</p>
+<p><code>FIFO</code>是一种文件类型，所以创建<code>FIFO</code>就是创建文件。通过 <code>mkfifo</code> 函数创建 <code>FIFO</code> 时，要指定一个具体的文件路径。</p>
+<p>创建了<code>FIFO</code>之后，就可以通过标准文件操作（<code>open</code>、<code>read</code>、<code>write</code>、<code>close</code>）来使用它。毕竟在Linux中，一切皆文件。</p>
+<h1 id="xsi-ipc">XSI IPC<a href="#xsi-ipc" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h1>
+<p><strong>消息队列、信号量、共享内存被统称为<code>XSI IPC</code></strong>，他们之间有很多共通之处：</p>
+<ol>
+<li>独立于文件系统，有自己的一套操作管理函数和内核数据结构；不能像管理文件一样管理这些资源。</li>
+<li>这些资源归属于操作系统，而不属于某个进程，如果进程退出前忘记回收资源，资源不会自己释放掉，可能影响系统内其他进程。</li>
+<li>进程通过<code>xxxget</code>函数并指定参数key的方式获得一个id，通过id来使用和管理指定的资源；id是进程内管理资源的标识符，不具有全局性，key值才是全局标识符；两个进程指定同一个key值就能获取同一个资源，从而关联起来。</li>
+</ol>
+<h2 id="信号量">信号量<a href="#信号量" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>信号量(semaphore)作为IPC的角色是专门用来控制多个进程访问共享资源的，实际就是一个计数器。</p>
+<p>通过<code>semget</code>、<code>semctl</code>、<code>semop</code>管理信号量。</p>
+<h2 id="共享内存和mmap">共享内存和mmap<a href="#共享内存和mmap" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<h3 id="mmap">mmap<a href="#mmap" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p><code>mmap</code>把磁盘上某个具体文件映射到进程的内存映射区中，以实现对文件更快的读写。</p>
+<p>通过将同一文件映射到不同的进程中内存空间，就可以实现进程间共享内存通信。</p>
+<h3 id="共享内存">共享内存<a href="#共享内存" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>共享内存可以看成是把内核中的一块内存映射到进程的内存映射区。这样，两个进程共享同一块内存就可以实现通信了，由于是直接对内存读写，这种IPC方式也是最快的。</p>
+<p>通过<code>shmget</code>、<code>shmctl</code>、<code>shmat</code>、<code>shmdt</code>管理共享内存。</p>
+
+			</div>
+			<hr class="post-end">
+			<footer class="post-info">
+				<p>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a></span>
+				</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1355 字</p>
+			</footer>
+		</article>
+		<div class="post-nav thin">
+			<a class="next-post" href="https://cvvz.github.io/post/usage-of-git/">
+				<span class="post-nav-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>&nbsp;新</span><br><span>Git使用心得</span>
+			</a>
+		</div>
+		<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+		<div id="gitalk-container" class="thin"></div>     
+		<script type="text/javascript">
+			var gitalk = new Gitalk({
+				clientID: '0f8bdcbe6b4973f9b206',
+				clientSecret: '4939e64d59c93fc5eb7eaf74469a746e4535700d',
+				repo: 'cvvz.github.io',
+				owner: 'cvvz',
+				admin: ['cvvz'],
+				id: location.pathname,      
+				distractionFreeMode: true 
+			});
+  			gitalk.render('gitalk-container');
+		</script>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2020 <a href="https://cvvz.github.io">陈维志</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://cvvz.github.io/post/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+	<script src="https://cvvz.github.io/js/main.min.784417f5847151f848c339cf0acb13a06cbb648b1483435a28ed4556c4ead69b.js"></script>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-M8Q3DKDEVL', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

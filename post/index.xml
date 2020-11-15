@@ -10,7 +10,7 @@
 		<atom:link href="https://cvvz.github.io/post/index.xml" rel="self" type="application/rss+xml" />
 		
 		<item>
-			<title>基于ARM7分析函数调用栈</title>
+			<title>用树莓派分析函数调用栈</title>
 			<link>https://cvvz.github.io/post/call-stack/</link>
 			<pubDate>Tue, 03 Sep 2019 18:44:12 +0800</pubDate>
 			
@@ -58,15 +58,14 @@
     <img src="/%e6%a0%88.jpg" width="500px"/> 
 </figure>
 
-<p>图中，栈帧指针（ebp）指向的内存中保存的是上一个栈的栈帧指针（old ebp），这是X86的情形。</p>
-<p>在分析ARM的函数栈时发现，ARM的栈帧指针（fp）指向的是函数返回地址。</p>
+<p>图中，栈帧指针（ebp）指向的内存空间中保存的是上一个栈的栈帧指针（old ebp）。这是X86的情形，在树莓派中分析函数调用栈时发现，ARM的栈帧指针（fp）指向的是函数返回地址。</p>
 <p>这只是不同架构CPU的底层实现的不同，并没有优劣之分。</p>
 <h3 id="入栈过程">入栈过程</h3>
 <p>一个函数的调用过程可以分为如下几步：</p>
 <ul>
 <li>首先压栈的是参数，且<strong>从右向左</strong>依次压栈；</li>
 <li>接着压入返回地址；</li>
-<li>接着被调函数执行“标准开头”：</li>
+<li>接着被调函数执行“标准开头”（x86）：</li>
 </ul>
 <pre><code class="language-x86asm" data-lang="x86asm">push rbp
 mov rbp rsp
@@ -84,13 +83,13 @@ add fp, sp, #4
 <li>栈帧指针(fp)入栈</li>
 <li>接着令<code>%fp=%sp+4</code>，也就是<strong>使fp（栈帧指针）指向存放返回地址的内存</strong>。</li>
 </ul>
-<p>不论栈帧指针指向的是上一个栈帧指针，还是返回地址，都能**通过函数的栈帧指针偏移找到调用函数的地址，因此根据栈帧指针的链式关系，可以回溯出整个函数的调用关系。**这对于一些复杂问题的定位是非常有帮助的。</p>
+<p>不论栈帧指针指向的是上一个栈帧指针，还是返回地址，都能<strong>通过函数的栈帧指针偏移找到调用函数的地址，因此根据栈帧指针的链式关系，可以回溯出整个函数的调用关系链</strong>。这对于一些复杂问题的定位是非常有帮助的。</p>
 <blockquote>
 <p>GCC的编译选项<code>--fomit-frame-pointer</code>可以使程序不使用栈帧指针，而使用栈指针顶定位函数的局部变量、参数、返回地址等。这么做的好处是可以多出一个寄存器（栈帧指针）供使用，程序运行速度更快，但是就没发很方便的使用GDB进行调试了。</p>
 </blockquote>
 <h3 id="出栈过程">出栈过程</h3>
 <p>出栈与入栈动作刚好相反。</p>
-<p>先看X86，“标准结尾”如下：</p>
+<p>x86的“标准结尾”如下：</p>
 <pre><code class="language-x86asm" data-lang="x86asm">leaveq
 retq
 </code></pre><p>实际上<code>leaveq</code>内部分为两条指令：</p>
@@ -103,10 +102,10 @@ popq %rbp
 <li>第三步通过<code>retq</code>指令将栈顶地址pop到rip，即rip此时指向函数退出后的下一条指令，rsp则指向上一个栈的栈顶。</li>
 </ul>
 <p>这三步做完后，rsp、rbp、rip就恢复到调用函数以前的现场。</p>
-<p>ARM的行为和X86一致，“标准结尾”长这样：</p>
+<p>ARM的行为和x86一致，它的“标准结尾”长这样：</p>
 <pre><code class="language-armasm" data-lang="armasm">sub sp, fp, #4
 pop {fp, pc}
-</code></pre><h2 id="基于树莓派3分析一个简单的函数调用栈">基于树莓派3分析一个简单的函数调用栈</h2>
+</code></pre><h2 id="基于树莓派3分析函数调用栈">基于树莓派3分析函数调用栈</h2>
 <p>我在树莓派3中运行了如下所示的C语言代码，并用GDB进行了调试：</p>
 <blockquote>
 <p>树莓派3使用的是<strong>32位、arm架构CPU</strong>，因此下面的调试过程涉及到的寄存器以及地址信息和64位x86 CPU不同</p>
@@ -175,10 +174,10 @@ sp             0x7efffae0 0x7efffae0
 (gdb) info symbol 0x76e8f678
 __libc_start_main + 276 in section .text of /lib/arm-linux-gnueabihf/libc.so.6
 </code></pre><p>可以看到，栈帧指针指向的返回地址是<code>__libc_start_main + 276</code>，即<strong>main函数是由__libc_start_main调用的</strong>。</p>
-<p>由前面分析得知，栈指针-4地址处存放的是上一个函数的栈指针，查看可以发现其值为0：</p>
+<p>由前面分析得知，栈帧指针-4地址处存放的是上一个函数的栈帧指针，于是我们继续向上追溯<code>__libc_start_main</code>的调用者地址，可以发现其值为0：</p>
 <pre><code class="language-armasm" data-lang="armasm">(gdb) x /xw 0x7efffaec-4
 0x7efffae8: 0x00000000
-</code></pre><p><strong>因此<code>__libc_start_main</code>是所有进程真正的起点。</strong></p>
+</code></pre><p><strong>因此可以认为<code>__libc_start_main</code>是所有进程真正的起点。</strong></p>
 <p>接着执行调用test函数的命令，使用<code>si</code>单步运行，并查看汇编指令：</p>
 <pre><code class="language-armasm" data-lang="armasm">(gdb) si
 test (c=0 '\000') at main.c:10
@@ -225,7 +224,7 @@ r11            0x7efffaec 2130705132
 r11            0x7efffadc 2130705116
 </code></pre><p>此时r11指向的是函数返回地址，而不是像x86一样指向上一个栈帧指针，和前面所说的一致。</p>
 <h2 id="分析函数返回出栈过程">分析函数返回（出栈）过程</h2>
-<p>观察test函数的汇编指令：</p>
+<p>test函数的汇编指令如下所示：</p>
 <pre><code class="language-armasm" data-lang="armasm">(gdb) disassemble /m test
 Dump of assembler code for function test:
 10 {
@@ -344,6 +343,191 @@ pc             0x104c0	0x104c0 &lt;main+32&gt;
 <li><strong>使用证书</strong>进行SSL握手（主机将自己的证书链发到浏览器，浏览器使用操作系统预置CA证书进行校验，校验不通过会提示链接不安全的风险）。（SSL层）</li>
 <li>服务器进程和浏览器进程在应用层使用HTTP协议交换数据。（七层）</li>
 </ol>
+]]></content>
+		</item>
+		
+		<item>
+			<title>进程和线程</title>
+			<link>https://cvvz.github.io/post/process-and-thread/</link>
+			<pubDate>Sun, 23 Jun 2019 20:34:56 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/post/process-and-thread/</guid>
+			<description>从“程序”开始 对于UNIX操作系统，程序是存放在磁盘上的ELF文件（可以通过file命令查看文件类型） 对于windows操作系统，程序是存放</description>
+			<content type="html"><![CDATA[<h2 id="从程序开始">从“程序”开始</h2>
+<ul>
+<li>对于UNIX操作系统，程序是存放在磁盘上的<strong>ELF文件</strong>（可以通过<code>file</code>命令查看文件类型）</li>
+<li>对于windows操作系统，程序是存放在磁盘上的<strong>PE文件</strong>，其中最常见的是<code>.exe</code>文件。</li>
+</ul>
+<p>编译器将高级语言编写成的程序编译成机器码，操作系统将ELF文件读入内存后，ELF文件中的<strong>代码段</strong>也就是CPU可以执行的机器码（可以通过<code>readelf</code>命令查看ELF文件的代码段内容），CPU从内存中读取机器码并执行。</p>
+<h2 id="为进程分配资源">为进程分配资源</h2>
+<p>进程产生的标志是：内核为每一个进程都分配了一个<code>task_struct</code>结构体，在<code>task_struct</code>中记录了这个进程所拥有的资源，如全局变量、虚拟内存等，所以说<strong>进程是资源分配的最小单位</strong>。</p>
+<h2 id="调度线程">调度线程</h2>
+<p><strong>线程是CPU调度的最小单位</strong>，也就是说<strong>内核进行调度的对象实际上是线程，而进程是负责为线程提供共享资源的</strong>。</p>
+<p>一个进程中的多个线程共享这个进程的资源，但是<strong>它们虽然共享同一片虚拟内存，自身却拥有这片虚拟内存中的不同的栈空间</strong>；</p>
+<h2 id="通信方式">通信方式</h2>
+<p>由于同一进程中的线程共享资源，所以通信非常方便，直接读写同一块用户态内存即可，但是这必然就涉及到互斥和原子性问题。</p>
+<p>而进程要实现通信则需要借助内核和文件，所有的IPC，都是把内核和文件充当交换信息的桥梁。</p>
+<h2 id="上下文切换">上下文切换</h2>
+<blockquote>
+<p>同一进程中的线程上下文切换，简称<strong>线程上下文切换</strong>。</p>
+<p>不同进程中的线程上下文切换，简称<strong>进程上下文切换</strong>。</p>
+</blockquote>
+<p>不管是线程上下文切换，还是进程上下文切换，都会涉及CPU寄存器和程序计数器的保存和更新。<strong>因此都涉及CPU上下文切换</strong>。</p>
+<p>由于线程共享进程中的虚拟内存空间，所以线程上下文切换时，<strong>不需要更新虚拟内存到物理内存的内存映射表</strong>。而进程上下文切换时，则要更新虚拟内存到物理内存的内存映射表。</p>
+<p>当内核找不到虚拟内存到物理内存的映射关系时，便会产生<code>缺页中断</code>。所以<strong>进程上下文切换后，程序执行更容易产生缺页中断</strong>。</p>
+<h2 id="怎么理解linux中的线程是以进程的方式实现的">怎么理解Linux中的线程是以进程的方式实现的</h2>
+<ul>
+<li>对于支持线程的操作系统而言，如果一个进程中有N个线程，则存在一个进程描述符，依次轮流指向N个线程。这个进程描述符指明共享资源，包括内存空间和打开的文件。而每一个线程描述它们自己独享的资源。也就是说<strong>内核中描述线程的结构体和描述进程的结构体不同</strong>。</li>
+<li>而在Linux中，则有N个<code>task_struct</code>数据结构，只是这些数据结构的某些资源项是共享的，某些是独占的。</li>
+</ul>
+]]></content>
+		</item>
+		
+		<item>
+			<title>解剖进程虚拟内存空间</title>
+			<link>https://cvvz.github.io/post/anatomy-of-a-program-in-memory/</link>
+			<pubDate>Fri, 07 Jun 2019 23:14:03 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/post/anatomy-of-a-program-in-memory/</guid>
+			<description>对于32位 x86 Linux操作系统，典型的进程地址空间如下图所示： 每一个进程运行在各自独立的虚拟内存空间中，从0x00000000到0xFFFF</description>
+			<content type="html"><![CDATA[<p>对于<strong>32位 x86 Linux操作系统</strong>，典型的进程地址空间如下图所示：</p>
+<figure>
+    <img src="/linuxFlexibleAddressSpaceLayout.png" width="750px"/> 
+</figure>
+
+<p>每一个进程运行在各自独立的虚拟内存空间中，从0x00000000到0xFFFFFFFF，共4GB。</p>
+<p>进程地址空间从低到高依次是：</p>
+<ul>
+<li><strong>Text Segment：</strong> 机器指令，只读，一个程序的多个进程共享一个正文段。</li>
+</ul>
+<blockquote>
+<p>如果进程带有调试信息，可以通过<code>addr2line</code> + 正文段地址获得对应的源代码位置。</p>
+</blockquote>
+<ul>
+<li>
+<p><strong>Data Segment：</strong> 具有初值的全局/静态变量。</p>
+</li>
+<li>
+<p><strong>BSS Segment：</strong> 未赋初值的全局/静态变量。</p>
+</li>
+<li>
+<p><strong>Heap：</strong> 堆。堆从低地址向高地址生长。堆区内存在分配过程中可能产生内存碎片：</p>
+</li>
+</ul>
+<p><img src="/fragmentedHeap.png" alt="内存碎片" title="内存碎片"></p>
+<blockquote>
+<p>申请堆内存的接口是阻塞接口，即可能因为暂时分配不到够大的堆空间导致进程让出CPU。</p>
+</blockquote>
+<ul>
+<li>
+<p><strong>Memory Mapping Segment：</strong> 内存映射区。动态库、mmap、共享内存使用的都是内存映射区。</p>
+</li>
+<li>
+<p><strong>Stack：</strong> 栈。栈从高地址向低地址生长。进程栈空间的总大小可通过
+<code>ulimit -s</code>查看，默认为8MB。栈中不仅存放着局部变量，<strong>每次函数调用时，参数、返回地址、寄存器值等都会进行压栈。</strong></p>
+</li>
+<li>
+<p><strong>Kernel space：</strong> 进程地址空间的最高1GB是内核空间。<strong>内核空间被所有进程共享</strong>，但是用户态进程只有通过系统调用陷入内核态才能执行内核态代码。</p>
+</li>
+</ul>
+<blockquote>
+<p>参考文章：<a href="https://manybutfinite.com/post/anatomy-of-a-program-in-memory/">https://manybutfinite.com/post/anatomy-of-a-program-in-memory/</a></p>
+</blockquote>
+]]></content>
+		</item>
+		
+		<item>
+			<title>Git使用心得</title>
+			<link>https://cvvz.github.io/post/usage-of-git/</link>
+			<pubDate>Sun, 02 Jun 2019 23:41:24 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/post/usage-of-git/</guid>
+			<description>整理一下最近学习的git知识，以及平时常用的git功能。 .git 使用git init或clone一个远端仓，会在本地建立一个.git目录。这个目录是</description>
+			<content type="html"><![CDATA[<blockquote>
+<p>整理一下最近学习的git知识，以及平时常用的git功能。</p>
+</blockquote>
+<h2 id="git">.git</h2>
+<p>使用git init或clone一个远端仓，会在本地建立一个.git目录。<strong>这个目录是git仓的全部，把.git拷贝到其他目录下，就能在该目录下建立一个一模一样的git仓</strong>。</p>
+<h2 id="缓存区staged">缓存区（staged）</h2>
+<ul>
+<li>对working derictoy中的文件做的改动，他们的状态是unstaged</li>
+<li>使用 <code>git add</code>/<code>git rm</code>/<code>git mv</code> 将其送入缓存区（staged）</li>
+<li>使用 <code>git commit</code> 提交缓存区中记录的改动。</li>
+<li><code>git diff {filename}</code> 可以查看unstaged和staged中文件的不同</li>
+<li><code>git diff --staged {filename}</code> 可以查看staged中的文件和原文件的不同</li>
+<li>注意staged和<code>stash</code>的区别</li>
+</ul>
+<h2 id="上游分支">上游分支</h2>
+<p><code>git clone</code>可以通过参数 <code>-b</code> 来指定clone远端仓库到本地后拉取哪条分支，不指定则默认拉取<code>master</code>；远端仓库中必须存在同名分支，作为本地分支的上游分支。</p>
+<p>通过<code>git branch -vv</code> 或 <code>git status</code> 命令可以查看本地分支相比上游分支领先/落后多少个commit。</p>
+<p><code>git checkout -b {local_branch} {remote_branch}</code>用来创建并切换分支，并指定该分支的上游分支。</p>
+<h2 id="revert和reset">revert和reset</h2>
+<p><code>git reset</code>把HEAD指针指向到某一个commit id，这次commit之后的所有commit都会被删除。</p>
+<p><code>git revert</code>用来撤销某一次commit带来的变化，不会影响其他commit。revert本身也需要commit。</p>
+<p>非fast-forward形式合并两条分支时，git会自动生成一个合并提交。如果想回退某条分支的merge操作，可以revert这次合并提交的commit，git会让你选择留下这次合并提交的哪一个父分支，另一个父分支所作的改动会被回退。</p>
+<h2 id="如何修改一次历史commit">如何修改一次历史commit</h2>
+<p>执行<code>git rebase -i {commitid}^</code>（commitid是想要修改的那次提交），git会以commitid的前一次提交作为base，采用交互式的方式，重新提交后面的每一次commit，将想要修改的那一次的提交命令设置为edit即可。</p>
+]]></content>
+		</item>
+		
+		<item>
+			<title>进程间通信</title>
+			<link>https://cvvz.github.io/post/ipc/</link>
+			<pubDate>Fri, 02 Nov 2018 22:34:20 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/post/ipc/</guid>
+			<description>进程间通信的六种方式： 管道 共享内存 消息队列 信号量 信号 socket 管道 管道机制和UNIX系统的文件系统密切关联，使用管道和使用文件系统非常类似。实际上使</description>
+			<content type="html"><![CDATA[<p>进程间通信的六种方式：</p>
+<ul>
+<li>管道</li>
+<li>共享内存</li>
+<li>消息队列</li>
+<li>信号量</li>
+<li>信号</li>
+<li>socket</li>
+</ul>
+<h1 id="管道">管道</h1>
+<p>管道机制和UNIX系统的文件系统密切关联，使用管道和使用文件系统非常类似。实际上使用<strong>管道可以看成是创建了一个不会残留的临时文件，一个进程写文件，另一个进程读文件，从而实现了进程间通信</strong>。</p>
+<p>管道分为 <strong>匿名管道</strong> 和 <strong>FIFO</strong>。</p>
+<h2 id="匿名管道">匿名管道</h2>
+<p>使用 <code>pipe</code> 函数创建匿名管道。它返回两个文件描述符，<code>fd[0]</code>是管道的读端，<code>fd[1]</code>是写端。</p>
+<p>如果进程只调用<code>pipe</code>，那么只能自写自读，基本没什么用。</p>
+<p>因此，<strong>使用<code>pipe</code>创建管道后，必然要使用 <code>fork</code> 创建子进程，这样就可以做到父子进程使用不同的fd进行读写通信</strong>。</p>
+<h3 id="popen">popen</h3>
+<p>库函数 <code>popen</code> 就是使用匿名管道实现的。函数原型：</p>
+<div class="highlight"><pre class="chroma"><code class="language-C" data-lang="C"><span class="n">FILE</span> <span class="o">*</span> <span class="n">popen</span><span class="err">（</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">cmdstring</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">type</span><span class="err">）</span><span class="p">;</span>
+</code></pre></div><p><code>popen</code>创建了一个管道，然后执行fork，在子进程中使用<code>exec</code>执行cmdstring；返回的文件指针根据参数type指向管道的读或写端。</p>
+<p>type可取&quot;w&quot;和&quot;r&quot;：</p>
+<ul>
+<li>
+<p>取&quot;w&quot;时，返回的文件指针指向管道的写端fd[1]，子进程通过<code>dup2</code>将<code>stdin</code>复制到fd[0]，而cmdstring执行依赖<code>stdin</code>，就等于依赖父进程通过文件指针写入管道了；</p>
+</li>
+<li>
+<p>取&quot;r&quot;时，文件指针指向管道的读端fd[0]，子进程通过<code>dup2</code>将<code>stdout</code>复制到fd[1]，而cmdstring执行默认输出到<code>stdout</code>，那么父进程就可以通过该文件指针读出cmdstring命令的输出。</p>
+</li>
+</ul>
+<p>通过 <code>pclose</code> 函数关闭打开的文件指针，并使用<code>waitpid</code>关闭子进程;因此<code>popen</code>后如果不执行<code>pclose</code>将造成内存泄漏和僵尸进程。</p>
+<h2 id="fifo">FIFO</h2>
+<p><code>FIFO</code>可以用来在不相关的进程间通信。</p>
+<p><code>FIFO</code>是一种文件类型，所以创建<code>FIFO</code>就是创建文件。通过 <code>mkfifo</code> 函数创建 <code>FIFO</code> 时，要指定一个具体的文件路径。</p>
+<p>创建了<code>FIFO</code>之后，就可以通过标准文件操作（<code>open</code>、<code>read</code>、<code>write</code>、<code>close</code>）来使用它。毕竟在Linux中，一切皆文件。</p>
+<h1 id="xsi-ipc">XSI IPC</h1>
+<p><strong>消息队列、信号量、共享内存被统称为<code>XSI IPC</code></strong>，他们之间有很多共通之处：</p>
+<ol>
+<li>独立于文件系统，有自己的一套操作管理函数和内核数据结构；不能像管理文件一样管理这些资源。</li>
+<li>这些资源归属于操作系统，而不属于某个进程，如果进程退出前忘记回收资源，资源不会自己释放掉，可能影响系统内其他进程。</li>
+<li>进程通过<code>xxxget</code>函数并指定参数key的方式获得一个id，通过id来使用和管理指定的资源；id是进程内管理资源的标识符，不具有全局性，key值才是全局标识符；两个进程指定同一个key值就能获取同一个资源，从而关联起来。</li>
+</ol>
+<h2 id="信号量">信号量</h2>
+<p>信号量(semaphore)作为IPC的角色是专门用来控制多个进程访问共享资源的，实际就是一个计数器。</p>
+<p>通过<code>semget</code>、<code>semctl</code>、<code>semop</code>管理信号量。</p>
+<h2 id="共享内存和mmap">共享内存和mmap</h2>
+<h3 id="mmap">mmap</h3>
+<p><code>mmap</code>把磁盘上某个具体文件映射到进程的内存映射区中，以实现对文件更快的读写。</p>
+<p>通过将同一文件映射到不同的进程中内存空间，就可以实现进程间共享内存通信。</p>
+<h3 id="共享内存">共享内存</h3>
+<p>共享内存可以看成是把内核中的一块内存映射到进程的内存映射区。这样，两个进程共享同一块内存就可以实现通信了，由于是直接对内存读写，这种IPC方式也是最快的。</p>
+<p>通过<code>shmget</code>、<code>shmctl</code>、<code>shmat</code>、<code>shmdt</code>管理共享内存。</p>
 ]]></content>
 		</item>
 		

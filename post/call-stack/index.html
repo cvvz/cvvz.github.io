@@ -6,23 +6,23 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="google-site-verification" content="Wp3QtEkIlF0ZvtKx90lPmoXyH39d-pmBhiTyTbba9L4" />
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-<meta itemprop="name" content="基于ARM7分析函数调用栈">
+<meta itemprop="name" content="用树莓派分析函数调用栈">
 <meta itemprop="description" content="理解本篇文章需要具备一些GDB、汇编、寄存器的基础知识。可以在阅读的过程中碰到不理解的地方再针对性的学习。 寄存器 分析函数调用栈涉及到的几个特">
 <meta itemprop="datePublished" content="2019-09-03T18:44:12+08:00" />
 <meta itemprop="dateModified" content="2019-09-03T18:44:12+08:00" />
-<meta itemprop="wordCount" content="2364">
+<meta itemprop="wordCount" content="2406">
 
 
 
-<meta itemprop="keywords" content="Linux,GDB,assembly," />
-<meta property="og:title" content="基于ARM7分析函数调用栈" />
+<meta itemprop="keywords" content="计算机基础," />
+<meta property="og:title" content="用树莓派分析函数调用栈" />
 <meta property="og:description" content="理解本篇文章需要具备一些GDB、汇编、寄存器的基础知识。可以在阅读的过程中碰到不理解的地方再针对性的学习。 寄存器 分析函数调用栈涉及到的几个特" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/call-stack/" />
 <meta property="article:published_time" content="2019-09-03T18:44:12+08:00" />
 <meta property="article:modified_time" content="2019-09-03T18:44:12+08:00" />
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="基于ARM7分析函数调用栈"/>
+<meta name="twitter:title" content="用树莓派分析函数调用栈"/>
 <meta name="twitter:description" content="理解本篇文章需要具备一些GDB、汇编、寄存器的基础知识。可以在阅读的过程中碰到不理解的地方再针对性的学习。 寄存器 分析函数调用栈涉及到的几个特"/>
 
 	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -32,7 +32,7 @@
 	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
 	<link rel="shortcut icon" href="/favicon.ico">
 
-	<title>基于ARM7分析函数调用栈</title>
+	<title>用树莓派分析函数调用栈</title>
 	<link rel="stylesheet" href="https://cvvz.github.io/css/style.min.052d306dd1c49415658027c566de932b0e3c2d1278df9f6b44487a95c9b6c1ee.css">
 	
 </head>
@@ -66,7 +66,7 @@
 	<main class="site-main section-inner animated fadeIn faster">
 		<article class="thin">
 			<header class="post-header">
-				<h1>基于ARM7分析函数调用栈</h1>
+				<h1>用树莓派分析函数调用栈</h1>
 			</header>
 			<div class="content">
 				<blockquote>
@@ -111,15 +111,14 @@
     <img src="/%e6%a0%88.jpg" width="500px"/> 
 </figure>
 
-<p>图中，栈帧指针（ebp）指向的内存中保存的是上一个栈的栈帧指针（old ebp），这是X86的情形。</p>
-<p>在分析ARM的函数栈时发现，ARM的栈帧指针（fp）指向的是函数返回地址。</p>
+<p>图中，栈帧指针（ebp）指向的内存空间中保存的是上一个栈的栈帧指针（old ebp）。这是X86的情形，在树莓派中分析函数调用栈时发现，ARM的栈帧指针（fp）指向的是函数返回地址。</p>
 <p>这只是不同架构CPU的底层实现的不同，并没有优劣之分。</p>
 <h3 id="入栈过程">入栈过程<a href="#入栈过程" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p>一个函数的调用过程可以分为如下几步：</p>
 <ul>
 <li>首先压栈的是参数，且<strong>从右向左</strong>依次压栈；</li>
 <li>接着压入返回地址；</li>
-<li>接着被调函数执行“标准开头”：</li>
+<li>接着被调函数执行“标准开头”（x86）：</li>
 </ul>
 <pre><code class="language-x86asm" data-lang="x86asm">push rbp
 mov rbp rsp
@@ -137,13 +136,13 @@ add fp, sp, #4
 <li>栈帧指针(fp)入栈</li>
 <li>接着令<code>%fp=%sp+4</code>，也就是<strong>使fp（栈帧指针）指向存放返回地址的内存</strong>。</li>
 </ul>
-<p>不论栈帧指针指向的是上一个栈帧指针，还是返回地址，都能**通过函数的栈帧指针偏移找到调用函数的地址，因此根据栈帧指针的链式关系，可以回溯出整个函数的调用关系。**这对于一些复杂问题的定位是非常有帮助的。</p>
+<p>不论栈帧指针指向的是上一个栈帧指针，还是返回地址，都能<strong>通过函数的栈帧指针偏移找到调用函数的地址，因此根据栈帧指针的链式关系，可以回溯出整个函数的调用关系链</strong>。这对于一些复杂问题的定位是非常有帮助的。</p>
 <blockquote>
 <p>GCC的编译选项<code>--fomit-frame-pointer</code>可以使程序不使用栈帧指针，而使用栈指针顶定位函数的局部变量、参数、返回地址等。这么做的好处是可以多出一个寄存器（栈帧指针）供使用，程序运行速度更快，但是就没发很方便的使用GDB进行调试了。</p>
 </blockquote>
 <h3 id="出栈过程">出栈过程<a href="#出栈过程" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p>出栈与入栈动作刚好相反。</p>
-<p>先看X86，“标准结尾”如下：</p>
+<p>x86的“标准结尾”如下：</p>
 <pre><code class="language-x86asm" data-lang="x86asm">leaveq
 retq
 </code></pre><p>实际上<code>leaveq</code>内部分为两条指令：</p>
@@ -156,10 +155,10 @@ popq %rbp
 <li>第三步通过<code>retq</code>指令将栈顶地址pop到rip，即rip此时指向函数退出后的下一条指令，rsp则指向上一个栈的栈顶。</li>
 </ul>
 <p>这三步做完后，rsp、rbp、rip就恢复到调用函数以前的现场。</p>
-<p>ARM的行为和X86一致，“标准结尾”长这样：</p>
+<p>ARM的行为和x86一致，它的“标准结尾”长这样：</p>
 <pre><code class="language-armasm" data-lang="armasm">sub sp, fp, #4
 pop {fp, pc}
-</code></pre><h2 id="基于树莓派3分析一个简单的函数调用栈">基于树莓派3分析一个简单的函数调用栈<a href="#基于树莓派3分析一个简单的函数调用栈" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+</code></pre><h2 id="基于树莓派3分析函数调用栈">基于树莓派3分析函数调用栈<a href="#基于树莓派3分析函数调用栈" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>我在树莓派3中运行了如下所示的C语言代码，并用GDB进行了调试：</p>
 <blockquote>
 <p>树莓派3使用的是<strong>32位、arm架构CPU</strong>，因此下面的调试过程涉及到的寄存器以及地址信息和64位x86 CPU不同</p>
@@ -228,10 +227,10 @@ sp             0x7efffae0 0x7efffae0
 (gdb) info symbol 0x76e8f678
 __libc_start_main + 276 in section .text of /lib/arm-linux-gnueabihf/libc.so.6
 </code></pre><p>可以看到，栈帧指针指向的返回地址是<code>__libc_start_main + 276</code>，即<strong>main函数是由__libc_start_main调用的</strong>。</p>
-<p>由前面分析得知，栈指针-4地址处存放的是上一个函数的栈指针，查看可以发现其值为0：</p>
+<p>由前面分析得知，栈帧指针-4地址处存放的是上一个函数的栈帧指针，于是我们继续向上追溯<code>__libc_start_main</code>的调用者地址，可以发现其值为0：</p>
 <pre><code class="language-armasm" data-lang="armasm">(gdb) x /xw 0x7efffaec-4
 0x7efffae8: 0x00000000
-</code></pre><p><strong>因此<code>__libc_start_main</code>是所有进程真正的起点。</strong></p>
+</code></pre><p><strong>因此可以认为<code>__libc_start_main</code>是所有进程真正的起点。</strong></p>
 <p>接着执行调用test函数的命令，使用<code>si</code>单步运行，并查看汇编指令：</p>
 <pre><code class="language-armasm" data-lang="armasm">(gdb) si
 test (c=0 '\000') at main.c:10
@@ -278,7 +277,7 @@ r11            0x7efffaec 2130705132
 r11            0x7efffadc 2130705116
 </code></pre><p>此时r11指向的是函数返回地址，而不是像x86一样指向上一个栈帧指针，和前面所说的一致。</p>
 <h2 id="分析函数返回出栈过程">分析函数返回（出栈）过程<a href="#分析函数返回出栈过程" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
-<p>观察test函数的汇编指令：</p>
+<p>test函数的汇编指令如下所示：</p>
 <pre><code class="language-armasm" data-lang="armasm">(gdb) disassemble /m test
 Dump of assembler code for function test:
 10 {
@@ -340,9 +339,9 @@ pc             0x104c0	0x104c0 &lt;main+32&gt;
 			<hr class="post-end">
 			<footer class="post-info">
 				<p>
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/linux">Linux</a></span><span class="tag"><a href="https://cvvz.github.io/tags/gdb">GDB</a></span><span class="tag"><a href="https://cvvz.github.io/tags/assembly">assembly</a></span>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2364 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2406 字</p>
 			</footer>
 		</article>
 		<div class="post-nav thin">
