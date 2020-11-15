@@ -23,7 +23,7 @@
       <pubDate>Tue, 03 Sep 2019 18:44:12 +0800</pubDate>
       
       <guid>https://cvvz.github.io/post/call-stack/</guid>
-      <description>寄存器 分析函数调用栈要用到的几个特殊用途寄存器： ARM X86 用途 r11(fp) rbp/ebp 栈帧指针 r13(sp) rsp/esp 栈顶指针 r14(lr) N/A 返回地址 r15(pc) rip 指令指针 栈帧内容 如下图（《程序员的自我修养》</description>
+      <description>理解本篇文章需要具备一些GDB、汇编、寄存器的基础知识。可以在阅读的过程中碰到不理解的地方再针对性的学习。 寄存器 分析函数调用栈涉及到的几个特</description>
     </item>
     
     <item>

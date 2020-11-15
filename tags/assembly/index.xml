@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Linux on Vic&#39;s Blog</title>
-    <link>https://cvvz.github.io/tags/linux/</link>
-    <description>Recent content in Linux on Vic&#39;s Blog</description>
+    <title>assembly on Vic&#39;s Blog</title>
+    <link>https://cvvz.github.io/tags/assembly/</link>
+    <description>Recent content in assembly on Vic&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Tue, 03 Sep 2019 18:44:12 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 03 Sep 2019 18:44:12 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/assembly/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>基于ARM7分析函数调用栈</title>
       <link>https://cvvz.github.io/post/call-stack/</link>
