@@ -45,6 +45,15 @@
     </item>
     
     <item>
+      <title>gdb中的多线程和信号处理</title>
+      <link>https://cvvz.github.io/post/gdb-muti-process-and-signal-handle/</link>
+      <pubDate>Mon, 10 Jun 2019 11:44:52 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/gdb-muti-process-and-signal-handle/</guid>
+      <description>多线程调试 使用GDB调试多线程时，控制程序的执行模式主要分两种：all-stop 模式和 non-stop 模式。 All-Stop 任何一个线程在断点处hang住时，所有其他线</description>
+    </item>
+    
+    <item>
       <title>解剖进程虚拟内存空间</title>
       <link>https://cvvz.github.io/post/anatomy-of-a-program-in-memory/</link>
       <pubDate>Fri, 07 Jun 2019 23:14:03 +0800</pubDate>

@@ -384,6 +384,65 @@ pc             0x104c0	0x104c0 &lt;main+32&gt;
 		</item>
 		
 		<item>
+			<title>gdb中的多线程和信号处理</title>
+			<link>https://cvvz.github.io/post/gdb-muti-process-and-signal-handle/</link>
+			<pubDate>Mon, 10 Jun 2019 11:44:52 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/post/gdb-muti-process-and-signal-handle/</guid>
+			<description>多线程调试 使用GDB调试多线程时，控制程序的执行模式主要分两种：all-stop 模式和 non-stop 模式。 All-Stop 任何一个线程在断点处hang住时，所有其他线</description>
+			<content type="html"><![CDATA[<h2 id="多线程调试">多线程调试</h2>
+<p>使用GDB调试多线程时，控制程序的执行模式主要分两种：all-stop 模式和 non-stop 模式。</p>
+<h3 id="all-stop">All-Stop</h3>
+<blockquote>
+<p>任何一个线程在断点处hang住时，所有其他线程也会hang住。默认为all-stop模式。</p>
+</blockquote>
+<ol>
+<li>
+<p>在all-stop模式中，当一个线程到达断点或产生信号，GDB将自动选择该线程作为当前线程并停住（提示<code>Switching to Thread n</code>），并且其他线程也都会停止运行；</p>
+</li>
+<li>
+<p>当执行<code>continue</code>、<code>until</code>、<code>finish</code>、<code>next</code>、<code>step</code>等使线程继续运行，所有线程会同时继续运行，直到某一个线程再次被stop，然后该线程成为当前线程。</p>
+</li>
+<li>
+<p>这里还存在这样一种情况：当你单步跟踪某个线程时，这个线程一定是执行了某条完整语句后在下一条语句前停住，<strong>但是这段时间里其他线程可能执行了半条、一条或多条语句</strong>。</p>
+</li>
+<li>
+<p>在all-stop模式下，可以通过设定<code>scheduler-locking</code>（调度器锁定）来控制CPU调度器的行为从而控制多线程的并发运行行为。</p>
+<ul>
+<li><code>set scheduler-locking off</code>：默认调度器锁定为关，也就是CPU也可以进行自由调度，那么所有线程是“同进同止”的，一起stop，一起继续运行，竞争CPU资源；</li>
+<li><code>set scheduler-locking on</code>：开启调度器锁定，不允许CPU自由调度，CPU只能执行当前线程中的指令，其他线程一直处于stop状态；</li>
+</ul>
+</li>
+</ol>
+<h3 id="non-stop">Non-Stop</h3>
+<blockquote>
+<p>任何一个线程被stop甚至单步调试时，其他线程可以自由运行。</p>
+</blockquote>
+<ol>
+<li>通过<code>set non-stop on</code>手动开启non-stop模式。一般non-stop模式搭配异步执行命令使用。</li>
+<li>GDB的可执行命令分为两种：同步执行和异步执行。
+<ul>
+<li>同步执行：即执行一条命令后，要等待有线程被stop了才会在弹出命令提示符。这是默认执行模式。</li>
+<li>异步执行：立刻返回弹出命令提示符。打开命令异步执行模式开关的命令是<code>set target-async on</code>。</li>
+</ul>
+<blockquote>
+<p>在命令后跟<code>&amp;</code>表示该命令以异步的方式执行，如<code>attach&amp;</code>、<code>continue&amp;</code>等。</p>
+</blockquote>
+</li>
+<li>non-stop模式下可使用<code>interrupt</code>停止当前运行中的线程，<code>interrupt -a</code>停下所有线程。</li>
+</ol>
+<h2 id="信号处理">信号处理</h2>
+<p>GDB能够检测到程序中产生的信号，并进行针对性的处理。通过<code>info handle</code>查看对所有信号的处理方式：</p>
+<ul>
+<li>Stop：检测到信号是否停住程序的运行；</li>
+<li>Print：是否打印收到该信号的信息；</li>
+<li>Pass to program：是否把该信号传给进程处理（或者说是否屏蔽该信号，无法屏蔽<code>SIGKILL</code>和<code>SIGSTOP</code>信号）</li>
+</ul>
+<p>通过<code>handle SIG</code>来指定某个信号的处理方式。</p>
+]]></content>
+		</item>
+		
+		<item>
 			<title>解剖进程虚拟内存空间</title>
 			<link>https://cvvz.github.io/post/anatomy-of-a-program-in-memory/</link>
 			<pubDate>Fri, 07 Jun 2019 23:14:03 +0800</pubDate>
