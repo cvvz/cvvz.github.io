@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>kubernetes on Vic&#39;s Blog</title>
+    <link>https://cvvz.github.io/tags/kubernetes/</link>
+    <description>Recent content in kubernetes on Vic&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-hans</language>
+    <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
+    <lastBuildDate>Fri, 20 Nov 2020 00:24:35 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>白话kubernetes监控体系</title>
+      <link>https://cvvz.github.io/post/k8s-monitor/</link>
+      <pubDate>Fri, 20 Nov 2020 00:24:35 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/k8s-monitor/</guid>
+      <description>监控和指标 理解监控 我们可以把监控系统划分为：采集指标、存储、展示和告警四个部分。 存储使用时序数据库TSDB、前端展示使用grafana、告警</description>
+    </item>
+    
+    <item>
+      <title>kubernetes e2e测试</title>
+      <link>https://cvvz.github.io/post/k8s-e2e/</link>
+      <pubDate>Thu, 19 Nov 2020 00:24:35 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/k8s-e2e/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

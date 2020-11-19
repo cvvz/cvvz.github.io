@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="google-site-verification" content="Wp3QtEkIlF0ZvtKx90lPmoXyH39d-pmBhiTyTbba9L4" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta itemprop="name" content="白话kubernetes监控体系">
+<meta itemprop="description" content="监控和指标 理解监控 我们可以把监控系统划分为：采集指标、存储、展示和告警四个部分。 存储使用时序数据库TSDB、前端展示使用grafana、告警">
+<meta itemprop="datePublished" content="2020-11-20T00:24:35+08:00" />
+<meta itemprop="dateModified" content="2020-11-20T00:24:35+08:00" />
+<meta itemprop="wordCount" content="1796">
+
+
+
+<meta itemprop="keywords" content="kubernetes," />
+<meta property="og:title" content="白话kubernetes监控体系" />
+<meta property="og:description" content="监控和指标 理解监控 我们可以把监控系统划分为：采集指标、存储、展示和告警四个部分。 存储使用时序数据库TSDB、前端展示使用grafana、告警" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://cvvz.github.io/post/k8s-monitor/" />
+<meta property="article:published_time" content="2020-11-20T00:24:35+08:00" />
+<meta property="article:modified_time" content="2020-11-20T00:24:35+08:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="白话kubernetes监控体系"/>
+<meta name="twitter:description" content="监控和指标 理解监控 我们可以把监控系统划分为：采集指标、存储、展示和告警四个部分。 存储使用时序数据库TSDB、前端展示使用grafana、告警"/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>白话kubernetes监控体系</title>
+	<link rel="stylesheet" href="https://cvvz.github.io/css/style.min.052d306dd1c49415658027c566de932b0e3c2d1278df9f6b44487a95c9b6c1ee.css">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp faster">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://cvvz.github.io">Vic&#39;s Blog</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					<a href="https://cvvz.github.io/post/">文章</a>
+					<a href="https://cvvz.github.io/about/">关于</a>
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<span class="hdr-social hide-in-mobile"><a href="https://github.com/cvvz" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="mailto:ftdchenwz@gmail.com" target="_blank" rel="noopener me" title="Email"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a></span><button id="menu-btn" class="hdr-btn" title="菜单"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://cvvz.github.io/post/">文章</a></li>
+			<li><a href="https://cvvz.github.io/about/">关于</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<h1>白话kubernetes监控体系</h1>
+			</header>
+			<div class="content">
+				<h2 id="监控和指标">监控和指标<a href="#监控和指标" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<h3 id="理解监控">理解监控<a href="#理解监控" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>我们可以把监控系统划分为：采集指标、存储、展示和告警四个部分。</p>
+<p>存储使用时序数据库TSDB、前端展示使用grafana、告警系统也有多种开源实现。我重点介绍一下和指标采集相关的内容。</p>
+<h3 id="理解指标">理解指标<a href="#理解指标" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<blockquote>
+<p><strong>我们所采集的指标 (metrics)，追根溯源，要么来自于操作系统，要么来自于应用进程自身</strong>。</p>
+</blockquote>
+<p>在kubernetes中，有三种指标需要被关注，分别来自于：</p>
+<ul>
+<li>kubernetes基础组件。也就是组成kubernetes的应用进程，如api-server、controller-manager、scheduler、kubelet等。</li>
+<li>node节点。也就是组成kubernetes的机器。</li>
+<li>Pod/容器。也就是业务进程的<strong>运行环境</strong>。</li>
+</ul>
+<p>基础设施和kubernetes运维人员主要关注前两项指标，保证kubernetes集群的稳定运行。</p>
+<p>而业务方开发/运维主要关注<a href="https://github.com/google/cadvisor/blob/master/docs/storage/prometheus.md#prometheus-container-metrics">Pod/容器指标</a>，这和以往关注<a href="https://book.open-falcon.org/zh_0_2/faq/linux-metrics.html">操作系统性能指标</a>大不一样。<strong>在云原生时代，业务进程的运行环境从物理机/虚拟机转变为了Pod/容器。可见，Pod/容器就是云原生时代的<code>不可变基础设施</code></strong>。</p>
+<h3 id="采集容器指标的过程">采集容器指标的过程<a href="#采集容器指标的过程" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<ol>
+<li>kubelet内置的cAdvisor负责采集容器指标</li>
+<li>kubelet对外暴露出API</li>
+<li>Promeheus、Metrics-Server（取代了Heapster）通过这些API采集容器指标</li>
+</ol>
+<h2 id="prometheus">Prometheus<a href="#prometheus" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>Prometheus是Kubernetes监控体系的核心。它的<a href="https://prometheus.io/docs/introduction/overview/#architecture">架构</a>如下图所示：</p>
+<figure>
+    <img src="/prometheus.png" width="700px"/> 
+</figure>
+
+<p>从左到右就分别是采集指标、存储、展示和告警这四大模块。我还是只介绍采集指标相关的内容。</p>
+<h3 id="prometheus是如何采集指标的">Prometheus是如何采集指标的<a href="#prometheus是如何采集指标的" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<ol>
+<li>直接采集。Prometheus提供了各语言的<a href="https://prometheus.io/docs/instrumenting/clientlibs/#client-libraries">lib库</a>，使应用能够对外暴露HTTP端口供prometheus拉取指标值。</li>
+<li>间接采集。对于无法通过直接引入lib库或改代码的方式接入Prometheus的应用程序和操作系统，则需要借助<a href="https://prometheus.io/docs/instrumenting/exporters/#third-party-exporters">exporter</a>，代替被监控对象来对 Prometheus 暴露出可以被抓取的 Metrics 信息。</li>
+</ol>
+<h3 id="prometheus是如何采集kubernetes的指标的">Prometheus是如何采集Kubernetes的指标的<a href="#prometheus是如何采集kubernetes的指标的" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<ul>
+<li>kubernetes基础组件：Prometheus是Kubernetes监控体系的核心，所以这些基础组件当然直接使用lib库采集自己的指标并暴露出API。</li>
+<li>node节点：操作系统的性能指标肯定只能借助<a href="https://github.com/prometheus/node_exporter#node-exporter">node exporter</a>来采集了。
+<blockquote>
+<p><strong>如果node exporter运行在容器里，那么为了让容器里的进程获取到主机上的网络、PID、IPC指标，就需要设置<code>hostNetwork: true</code>、<code>hostPID: true</code>、<code>hostIPC: true</code>，来与主机共用网络、PID、IPC这三个namespace</strong>。</p>
+</blockquote>
+</li>
+<li>Pod/容器。如前所述，Prometheus可以通过kubelet(cAdvisor)暴露出来的API采集指标。</li>
+</ul>
+<h2 id="kubernetes-hpa">kubernetes HPA<a href="#kubernetes-hpa" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>为了automate everything，采集到了性能指标之后，肯定不能只是发送告警，让运维介入，系统应该具备根据指标自动弹性伸缩的能力。<strong>Kubernetes自身具备了水平弹性伸缩的能力，下面介绍和Kubernetes的垂直弹性伸缩(HPA)能力相关的两个内容</strong>。</p>
+<h3 id="metrics-server">Metrics-Server<a href="#metrics-server" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>Metrics-server（heapster的替代品）<strong>从kubelet中</strong>获取Pod的监控指标，并通过<a href="https://kubernetes.io/zh/docs/concepts/extend-kubernetes/api-extension/apiserver-aggregation/">apiserver聚合层</a>的方式暴露API，API路径为：<code>/apis/metrics.k8s.io/</code>，也就是说，当你访问这个api路径时，apiserver会帮你转发到Metrics-server里去处理，而不是自己处理。<strong>这样，Kubernetes中的HPA组件就可以通过访问这个API获得指标来进行垂直扩缩容决策了</strong>。</p>
+<blockquote>
+<p><code>kubectl top</code>命令也是通过这个API获得监控指标的。</p>
+</blockquote>
+<h3 id="custom-metrics">Custom Metrics<a href="#custom-metrics" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p><strong>但是应用程序往往更依赖进程本身的监控指标（如http请求数、消息队列的大小）而不是运行环境的监控指标做决策</strong>。所以只有Metrics-Server暴露出来的API肯定是不够的，因此，Kubernetes提供了另一个API供应用程序暴露自定义监控指标，路径为<code>/apis/custom.metrics.k8s.io/</code>。</p>
+<p>Custom Metrics的玩法应该是这样的：</p>
+<ol>
+<li>应用程序，或者它的exporter暴露出API供Prometheus采集</li>
+<li>造一个自定义Metrics-Server，从Prometheus中获取监控数据</li>
+<li>HPA组件通过访问<code>/apis/custom.metrics.k8s.io/</code>进行决策。</li>
+</ol>
+
+			</div>
+			<hr class="post-end">
+			<footer class="post-info">
+				<p>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/kubernetes">kubernetes</a></span>
+				</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1796 字</p>
+			</footer>
+		</article>
+		<div class="post-nav thin">
+			<a class="prev-post" href="https://cvvz.github.io/post/k8s-e2e/">
+				<span class="post-nav-label">旧&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>kubernetes e2e测试</span>
+			</a>
+		</div>
+		<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+		<div id="gitalk-container" class="thin"></div>     
+		<script type="text/javascript">
+			var gitalk = new Gitalk({
+				clientID: '0f8bdcbe6b4973f9b206',
+				clientSecret: '4939e64d59c93fc5eb7eaf74469a746e4535700d',
+				repo: 'cvvz.github.io',
+				owner: 'cvvz',
+				admin: ['cvvz'],
+				id: location.pathname,      
+				distractionFreeMode: true 
+			});
+  			gitalk.render('gitalk-container');
+		</script>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2020 <a href="https://cvvz.github.io">陈维志</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://cvvz.github.io/post/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+	<script src="https://cvvz.github.io/js/main.min.784417f5847151f848c339cf0acb13a06cbb648b1483435a28ed4556c4ead69b.js"></script>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-M8Q3DKDEVL', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>
