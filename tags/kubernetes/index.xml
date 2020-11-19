@@ -17,14 +17,5 @@
       <description>监控和指标 理解监控 我们可以把监控系统划分为：采集指标、存储、展示和告警四个部分。 存储使用时序数据库TSDB、前端展示使用grafana、告警</description>
     </item>
     
-    <item>
-      <title>kubernetes e2e测试</title>
-      <link>https://cvvz.github.io/post/k8s-e2e/</link>
-      <pubDate>Thu, 19 Nov 2020 00:24:35 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/k8s-e2e/</guid>
-      <description></description>
-    </item>
-    
   </channel>
 </rss>
