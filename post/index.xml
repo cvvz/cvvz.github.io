@@ -39,7 +39,7 @@
 <li>Promeheus、Metrics-Server（取代了Heapster）通过这些API采集容器指标</li>
 </ol>
 <h2 id="prometheus">Prometheus</h2>
-<p>Prometheus是Kubernetes监控体系的核心。它的<a href="https://prometheus.io/docs/introduction/overview/#architecture">架构</a>如下图所示：</p>
+<p>Prometheus是Kubernetes监控体系的核心。它的<a href="https://prometheus.io/docs/introduction/overview/#architecture">架构</a>如官网的这幅示意图所示：</p>
 <figure>
     <img src="/prometheus.png" width="700px"/> 
 </figure>
