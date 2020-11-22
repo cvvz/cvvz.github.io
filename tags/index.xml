@@ -9,20 +9,20 @@
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
     <lastBuildDate>Sun, 22 Nov 2020 23:16:44 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>kubectl</title>
+      <link>https://cvvz.github.io/tags/kubectl/</link>
+      <pubDate>Sun, 22 Nov 2020 23:16:44 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/tags/kubectl/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>kubernetes</title>
       <link>https://cvvz.github.io/tags/kubernetes/</link>
       <pubDate>Sun, 22 Nov 2020 23:16:44 +0800</pubDate>
       
       <guid>https://cvvz.github.io/tags/kubernetes/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>工具</title>
-      <link>https://cvvz.github.io/tags/%E5%B7%A5%E5%85%B7/</link>
-      <pubDate>Sun, 22 Nov 2020 23:16:44 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/tags/%E5%B7%A5%E5%85%B7/</guid>
       <description></description>
     </item>
     
@@ -41,6 +41,24 @@
       <pubDate>Thu, 22 Aug 2019 12:38:04 +0800</pubDate>
       
       <guid>https://cvvz.github.io/tags/%E5%AE%89%E5%85%A8/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gdb</title>
+      <link>https://cvvz.github.io/tags/gdb/</link>
+      <pubDate>Mon, 10 Jun 2019 11:44:52 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/tags/gdb/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>git</title>
+      <link>https://cvvz.github.io/tags/git/</link>
+      <pubDate>Sun, 02 Jun 2019 23:41:24 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/tags/git/</guid>
       <description></description>
     </item>
     
