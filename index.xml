@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Fri, 20 Nov 2020 00:24:35 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 22 Nov 2020 23:16:44 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>kubectl patch</title>
+      <link>https://cvvz.github.io/post/k8s-kubectl-patch/</link>
+      <pubDate>Sun, 22 Nov 2020 23:16:44 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/k8s-kubectl-patch/</guid>
+      <description>kubectl patch 用来修改 Kubernetes API 对象的字段。可以通过 --type 参数指定三种不同类型的 patch 方式： strategic：strategic merge patch merge： json merge patch json： json</description>
+    </item>
+    
     <item>
       <title>白话kubernetes监控体系</title>
       <link>https://cvvz.github.io/post/k8s-monitor/</link>
