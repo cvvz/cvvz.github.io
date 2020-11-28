@@ -122,10 +122,15 @@
 <h3 id="custom-metrics">Custom Metrics</h3>
 <p><strong>但是应用程序往往更依赖进程本身的监控指标（如http请求数、消息队列的大小）而不是运行环境的监控指标做决策</strong>。所以只有Metrics-Server暴露出来的API肯定是不够的，因此，Kubernetes提供了另一个API供应用程序暴露自定义监控指标，路径为<code>/apis/custom.metrics.k8s.io/</code>。</p>
 <p>Custom Metrics的玩法应该是这样的：</p>
+<p><figure>
+    <img src="/hpa.drawio.svg" width="600px"/> 
+</figure>
+
+如上图所示</p>
 <ol>
-<li>应用程序，或者它的exporter暴露出API供Prometheus采集</li>
-<li>造一个自定义Metrics-Server，从Prometheus中获取监控数据</li>
-<li>HPA组件通过访问<code>/apis/custom.metrics.k8s.io/</code>进行决策。</li>
+<li>应用Pod，或者它的exporter暴露出API供Prometheus采集</li>
+<li>编写Custom Metrics Server，从Prometheus中获取监控数据</li>
+<li>HPA组件通过访问<code>/apis/custom.metrics.k8s.io/</code>进行扩缩容决策。</li>
 </ol>
 ]]></content>
 		</item>
