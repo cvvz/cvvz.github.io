@@ -9,8 +9,8 @@
 <meta itemprop="name" content="以aggregated API server的方式部署admission webhook">
 <meta itemprop="description" content="openshift 的 generic-admission-server库 是用来编写admission webhook的lib库，它声称使用该库可以避免为每一个w">
 <meta itemprop="datePublished" content="2020-12-01T07:19:06+08:00" />
-<meta itemprop="dateModified" content="2020-12-01T07:19:06+08:00" />
-<meta itemprop="wordCount" content="1827">
+<meta itemprop="dateModified" content="2020-12-01T23:20:48+08:00" />
+<meta itemprop="wordCount" content="1879">
 
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/why-aggregated-api-server-webhook/" />
 <meta property="article:published_time" content="2020-12-01T07:19:06+08:00" />
-<meta property="article:modified_time" content="2020-12-01T07:19:06+08:00" />
+<meta property="article:modified_time" content="2020-12-01T23:20:48+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="以aggregated API server的方式部署admission webhook"/>
 <meta name="twitter:description" content="openshift 的 generic-admission-server库 是用来编写admission webhook的lib库，它声称使用该库可以避免为每一个w"/>
@@ -117,13 +117,39 @@
 <p>部署admission webhook的步骤是：</p>
 <ol>
 <li>
-<p>在(Validating/Mutating)WebhookConfiguration中，配置admission webhook为api server自己：</p>
-</li>
+<p>在(Validating/Mutating)WebhookConfiguration中，配置admission webhook为kubernetes服务：</p>
+<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">webhooks</span><span class="p">:</span><span class="w">
+</span><span class="w"></span>- <span class="nt">clientConfig</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">service</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kubernetes</span><span class="w">
+</span><span class="w">      </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">default</span><span class="w">
+</span><span class="w">      </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">/apis/{group}/{version}/{resource}</span><span class="w">
+</span><span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">443</span><span class="w">
+</span></code></pre></div></li>
 <li>
 <p>在ApiService中，配置group、version，以及admission webhook的service：</p>
+<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span>{<span class="l">group}</span><span class="w">
+</span><span class="w">  </span><span class="nt">service</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span>{<span class="l">webhook-service}</span><span class="w">
+</span><span class="w">    </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span>{<span class="l">namespace}</span><span class="w">
+</span><span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">443</span><span class="w">
+</span><span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span>{<span class="l">version}</span><span class="w">
+</span></code></pre></div></li>
+</ol>
+<p>这种方式部署的admission webhook的整个工作流程如下图所示：
+<figure>
+    <img src="/webhook.drawio.svg" width="400px"/> 
+</figure>
+</p>
+<ol>
+<li>
+<p>API Server过滤指定的请求，并将其发给自己</p>
+</li>
+<li>
+<p>由aggregator转发到aggregated API server</p>
 </li>
 </ol>
-<p>这种方式部署的admission webhook的整个工作流程如下图所示：</p>
 <p>这样就省去了为api server配置和维护kubeconfig文件的步骤。<strong>但是服务端（admission webhook）的证书仍然需要自己生成和维护，并且设置API Service中的 <code>spec.caBundle</code> 字段，来指定 api server 使用的 CA 证书</strong>。设置 <code>spec.insecureSkipTLSVerify</code> 为 true 则不使用TLS加密通信。</p>
 <blockquote>
 <p>生产环境中，可以使用 <a href="https://github.com/jetstack/cert-manager">cert-manager</a> 来自动生成和管理 TLS 证书，而不是直接存在 secret 资源对象中。</p>
@@ -135,7 +161,8 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/kubernetes">kubernetes</a></span><span class="tag"><a href="https://cvvz.github.io/tags/%E5%AE%89%E5%85%A8">安全</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1827 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1879 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/7445daf390c7dd17576ef972831745c8a15928d1" target="_blank" rel="noopener">7445daf</a> @ 2020-12-01</p>
 			</footer>
 		</article>
 		<div class="post-nav thin">
