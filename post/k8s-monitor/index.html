@@ -9,8 +9,8 @@
 <meta itemprop="name" content="浅谈kubernetes监控体系">
 <meta itemprop="description" content="监控和指标 理解监控 我们可以把监控系统划分为：采集指标、存储、展示和告警四个部分。 存储使用时序数据库TSDB、前端展示使用grafana、告警">
 <meta itemprop="datePublished" content="2020-11-20T00:24:35+08:00" />
-<meta itemprop="dateModified" content="2020-11-28T18:42:35+08:00" />
-<meta itemprop="wordCount" content="1806">
+<meta itemprop="dateModified" content="2020-12-01T10:53:38+08:00" />
+<meta itemprop="wordCount" content="1742">
 
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/k8s-monitor/" />
 <meta property="article:published_time" content="2020-11-20T00:24:35+08:00" />
-<meta property="article:modified_time" content="2020-11-28T18:42:35+08:00" />
+<meta property="article:modified_time" content="2020-12-01T10:53:38+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="浅谈kubernetes监控体系"/>
 <meta name="twitter:description" content="监控和指标 理解监控 我们可以把监控系统划分为：采集指标、存储、展示和告警四个部分。 存储使用时序数据库TSDB、前端展示使用grafana、告警"/>
@@ -114,7 +114,7 @@
 <li>Pod/容器。如前所述，Prometheus可以通过kubelet(cAdvisor)暴露出来的API采集指标。</li>
 </ul>
 <h2 id="kubernetes-hpa">kubernetes HPA<a href="#kubernetes-hpa" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
-<p>为了automate everything，采集到了性能指标之后，肯定不能只是发送告警，让运维介入，系统应该具备根据指标自动弹性伸缩的能力。<strong>Kubernetes自身具备了水平弹性伸缩的能力，下面介绍和Kubernetes的垂直弹性伸缩(HPA)能力相关的两个内容</strong>。</p>
+<p>采集到了性能指标之后，发送发送告警，让运维介入，这只是最初级的运维方式。更高级的方式是让系统自身具备根据指标进行水平弹性伸缩 (HPA) 的能力。</p>
 <h3 id="metrics-server">Metrics-Server<a href="#metrics-server" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p>Metrics-server（heapster的替代品）<strong>从kubelet中</strong>获取Pod的监控指标，并通过<a href="https://kubernetes.io/zh/docs/concepts/extend-kubernetes/api-extension/apiserver-aggregation/">apiserver聚合层</a>的方式暴露API，API路径为：<code>/apis/metrics.k8s.io/</code>，也就是说，当你访问这个api路径时，apiserver会帮你转发到Metrics-server里去处理，而不是自己处理。<strong>这样，Kubernetes中的HPA组件就可以通过访问这个API获得指标来进行垂直扩缩容决策了</strong>。</p>
 <blockquote>
@@ -140,8 +140,8 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/kubernetes">kubernetes</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1806 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/48fdc42d3d4f42bf112e5187fdae96542f20f42e" target="_blank" rel="noopener">48fdc42</a> @ 2020-11-28</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1742 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/4c8abe246d810997650123b5cd492e0a75c01a1d" target="_blank" rel="noopener">4c8abe2</a> @ 2020-12-01</p>
 			</footer>
 		</article>
 		<div class="post-nav thin">

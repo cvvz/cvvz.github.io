@@ -9,12 +9,39 @@
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
     <lastBuildDate>Tue, 03 Sep 2019 18:44:12 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>基于ARM7分析函数调用栈</title>
+      <title>用树莓派分析函数调用栈</title>
       <link>https://cvvz.github.io/post/call-stack/</link>
       <pubDate>Tue, 03 Sep 2019 18:44:12 +0800</pubDate>
       
       <guid>https://cvvz.github.io/post/call-stack/</guid>
       <description>理解本篇文章需要具备一些GDB、汇编、寄存器的基础知识。可以在阅读的过程中碰到不理解的地方再针对性的学习。 寄存器 分析函数调用栈涉及到的几个特</description>
+    </item>
+    
+    <item>
+      <title>进程和线程</title>
+      <link>https://cvvz.github.io/post/process-and-thread/</link>
+      <pubDate>Sun, 23 Jun 2019 20:34:56 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/process-and-thread/</guid>
+      <description>从“程序”开始 对于UNIX操作系统，程序是存放在磁盘上的ELF文件（可以通过file命令查看文件类型） 对于windows操作系统，程序是存放</description>
+    </item>
+    
+    <item>
+      <title>解剖进程虚拟内存空间</title>
+      <link>https://cvvz.github.io/post/anatomy-of-a-program-in-memory/</link>
+      <pubDate>Fri, 07 Jun 2019 23:14:03 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/anatomy-of-a-program-in-memory/</guid>
+      <description>对于32位 x86 Linux操作系统，典型的进程地址空间如下图所示： 每一个进程运行在各自独立的虚拟内存空间中，从0x00000000到0xFFFF</description>
+    </item>
+    
+    <item>
+      <title>进程间通信</title>
+      <link>https://cvvz.github.io/post/ipc/</link>
+      <pubDate>Fri, 02 Nov 2018 22:34:20 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/ipc/</guid>
+      <description>进程间通信的六种方式： 管道 共享内存 消息队列 信号量 信号 socket 管道 管道机制和UNIX系统的文件系统密切关联，使用管道和使用文件系统非常类似。实际上使</description>
     </item>
     
   </channel>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="google-site-verification" content="Wp3QtEkIlF0ZvtKx90lPmoXyH39d-pmBhiTyTbba9L4" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta itemprop="name" content="以aggregated API server的方式部署admission webhook">
+<meta itemprop="description" content="openshift 的 generic-admission-server库 是用来编写admission webhook的lib库，它声称使用该库可以避免为每一个w">
+<meta itemprop="datePublished" content="2020-12-01T07:19:06+08:00" />
+<meta itemprop="dateModified" content="2020-12-01T07:19:06+08:00" />
+<meta itemprop="wordCount" content="1827">
+
+
+
+<meta itemprop="keywords" content="kubernetes,安全," />
+<meta property="og:title" content="以aggregated API server的方式部署admission webhook" />
+<meta property="og:description" content="openshift 的 generic-admission-server库 是用来编写admission webhook的lib库，它声称使用该库可以避免为每一个w" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://cvvz.github.io/post/why-aggregated-api-server-webhook/" />
+<meta property="article:published_time" content="2020-12-01T07:19:06+08:00" />
+<meta property="article:modified_time" content="2020-12-01T07:19:06+08:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="以aggregated API server的方式部署admission webhook"/>
+<meta name="twitter:description" content="openshift 的 generic-admission-server库 是用来编写admission webhook的lib库，它声称使用该库可以避免为每一个w"/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>以aggregated API server的方式部署admission webhook</title>
+	<link rel="stylesheet" href="https://cvvz.github.io/css/style.min.052d306dd1c49415658027c566de932b0e3c2d1278df9f6b44487a95c9b6c1ee.css">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp faster">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://cvvz.github.io">Vic&#39;s Blog</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					<a href="https://cvvz.github.io/post/">文章</a>
+					<a href="https://cvvz.github.io/about/">关于</a>
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<span class="hdr-social hide-in-mobile"><a href="https://github.com/cvvz" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="mailto:ftdchenwz@gmail.com" target="_blank" rel="noopener me" title="Email"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a></span><button id="menu-btn" class="hdr-btn" title="菜单"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://cvvz.github.io/post/">文章</a></li>
+			<li><a href="https://cvvz.github.io/about/">关于</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<h1>以aggregated API server的方式部署admission webhook</h1>
+			</header>
+			<div class="content">
+				<blockquote>
+<p>openshift 的 <a href="https://github.com/openshift/generic-admission-server#generic-admission-server">generic-admission-server库</a> 是用来编写admission webhook的lib库，它声称<strong>使用该库可以避免为每一个webhook创建和维护客户端证书和密钥所带来的复杂性，开发者只需要维护服务端密钥和证书即可</strong>。我们来看下它是如何实现的。</p>
+</blockquote>
+<p>首先需要知道的是，由于webhook可以从api server接收API对象并对其进行修改，功能十分强大，因此在生产环境中，webhook和api server之间需要进行双向安全认证。即，客户端（api server）和服务端（webhook）双方都需要提供证书，对方则使用CA证书对证书进行校验。</p>
+<blockquote>
+<p>在一次加密通信中，证书、私钥、CA证书是怎么工作的可以参考我之前写的<a href="https://cvvz.github.io/post/about-computer-security/">这篇文章</a>。</p>
+<p>以下讨论的关注点在于如何简化<strong>客户端证书</strong>的部署，<strong>即api server向webhook提供的证书这一部分</strong>。webhook向api server提供的服务端证书仍然是需要手工部署的。</p>
+</blockquote>
+<h2 id="admission-webhook认证api-server的过程">admission webhook认证api server的过程<a href="#admission-webhook认证api-server的过程" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>在启动 api server时，通过<code>--admission-control-config-file</code> 这个参数指定了客户端证书、私钥的配置文件，这个文件的格式如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiserver.config.k8s.io/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">AdmissionConfiguration</span><span class="w">
+</span><span class="w"></span><span class="nt">plugins</span><span class="p">:</span><span class="w">
+</span><span class="w"></span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">ValidatingAdmissionWebhook</span><span class="w">
+</span><span class="w">  </span><span class="nt">configuration</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiserver.config.k8s.io/v1</span><span class="w">
+</span><span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">WebhookAdmissionConfiguration</span><span class="w">
+</span><span class="w">    </span><span class="nt">kubeConfigFile</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;&lt;path-to-kubeconfig-file&gt;&#34;</span><span class="w">
+</span><span class="w"></span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">MutatingAdmissionWebhook</span><span class="w">
+</span><span class="w">  </span><span class="nt">configuration</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiserver.config.k8s.io/v1</span><span class="w">
+</span><span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">WebhookAdmissionConfiguration</span><span class="w">
+</span><span class="w">    </span><span class="nt">kubeConfigFile</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;&lt;path-to-kubeconfig-file&gt;&#34;</span><span class="w">
+</span></code></pre></div><p>其中，<code>kubeConfigFile</code> 参数指定了 <code>kubeconfig</code> 文件的存放位置。<code>kubeconfig</code> 文件和用 kubectl 连接 api server 时用到的那个 <code>kubeconfig</code> 格式一样。只不过这里，客户端是api server，而不是kubectl。</p>
+<p>可以看到，通过这种方式部署的webhook，需要手工管理客户端凭证（kubeConfig文件），且每个webhook都需要生成一个客户端凭证。而在webhook中，还需要使用生成证书所用的CA证书来校验api server。非常麻烦。</p>
+<h2 id="aggregated-api-server认证api-server的过程">aggregated API server认证api server的过程<a href="#aggregated-api-server认证api-server的过程" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>aggregated API server 作为api server的另一种服务端，它所实现的校验客户端（api server）的机制相比 admission webhook就更加成熟和容易维护了。</p>
+<p>在启动 api server 时，我们只需要指定如下几个参数：</p>
+<ul>
+<li><code>--proxy-client-key-file</code>：客户端私钥</li>
+<li><code>--proxy-client-cert-file</code>：客户端证书</li>
+<li><code>--requestheader-client-ca-file</code>：CA证书</li>
+</ul>
+<p>aggregated API server 认证 api server 的过程就是自动进行的：</p>
+<ol>
+<li>
+<p>首先，api server会提前为我们在 kube-system 命名空间中创建一个名为 <code>extension-apiserver-authentication</code>的 configmap。这个configmap中存储的正是CA证书。</p>
+</li>
+<li>
+<p>api server 和 aggregated API server 通信时，会发送前面指定的客户端证书，并用私钥进行解密。<strong>而 aggregated API server 用来校验证书的CA证书，就是从第一步生成的configmap中获取的。</strong></p>
+</li>
+</ol>
+<p>可以看到，这种维护客户端凭证的方式，不需要我们手工维护配置文件和CA证书，我们只需要在启动API server时配置一次，后续API server和aggregated API server会自动获取各自需要的文件。</p>
+<h2 id="以aggregated-api-server的方式部署admission-webhook">以aggregated API server的方式部署admission webhook<a href="#以aggregated-api-server的方式部署admission-webhook" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>理解了上述两种认证过程，就不难理解为什么以aggregated API server的方式部署webhook可以简化客户端证书的使用了。</p>
+<p>部署admission webhook的步骤是：</p>
+<ol>
+<li>
+<p>在(Validating/Mutating)WebhookConfiguration中，配置admission webhook为api server自己：</p>
+</li>
+<li>
+<p>在ApiService中，配置group、version，以及admission webhook的service：</p>
+</li>
+</ol>
+<p>这种方式部署的admission webhook的整个工作流程如下图所示：</p>
+<p>这样就省去了为api server配置和维护kubeconfig文件的步骤。<strong>但是服务端（admission webhook）的证书仍然需要自己生成和维护，并且设置API Service中的 <code>spec.caBundle</code> 字段，来指定 api server 使用的 CA 证书</strong>。设置 <code>spec.insecureSkipTLSVerify</code> 为 true 则不使用TLS加密通信。</p>
+<blockquote>
+<p>生产环境中，可以使用 <a href="https://github.com/jetstack/cert-manager">cert-manager</a> 来自动生成和管理 TLS 证书，而不是直接存在 secret 资源对象中。</p>
+</blockquote>
+
+			</div>
+			<hr class="post-end">
+			<footer class="post-info">
+				<p>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/kubernetes">kubernetes</a></span><span class="tag"><a href="https://cvvz.github.io/tags/%E5%AE%89%E5%85%A8">安全</a></span>
+				</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1827 字</p>
+			</footer>
+		</article>
+		<div class="post-nav thin">
+			<a class="prev-post" href="https://cvvz.github.io/post/k8s-kubectl-patch/">
+				<span class="post-nav-label">旧&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>kubectl patch</span>
+			</a>
+		</div>
+		<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+		<div id="gitalk-container" class="thin"></div>     
+		<script type="text/javascript">
+			var gitalk = new Gitalk({
+				clientID: '0f8bdcbe6b4973f9b206',
+				clientSecret: '4939e64d59c93fc5eb7eaf74469a746e4535700d',
+				repo: 'cvvz.github.io',
+				owner: 'cvvz',
+				admin: ['cvvz'],
+				id: location.pathname,      
+				distractionFreeMode: true 
+			});
+  			gitalk.render('gitalk-container');
+		</script>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2020 <a href="https://cvvz.github.io">陈维志</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://cvvz.github.io/post/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+	<script src="https://cvvz.github.io/js/main.min.784417f5847151f848c339cf0acb13a06cbb648b1483435a28ed4556c4ead69b.js"></script>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-M8Q3DKDEVL', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

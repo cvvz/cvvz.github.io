@@ -7,7 +7,25 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Sun, 22 Nov 2020 23:16:44 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 01 Dec 2020 07:19:06 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>kubernetes</title>
+      <link>https://cvvz.github.io/tags/kubernetes/</link>
+      <pubDate>Tue, 01 Dec 2020 07:19:06 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/tags/kubernetes/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>安全</title>
+      <link>https://cvvz.github.io/tags/%E5%AE%89%E5%85%A8/</link>
+      <pubDate>Tue, 01 Dec 2020 07:19:06 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/tags/%E5%AE%89%E5%85%A8/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>kubectl</title>
       <link>https://cvvz.github.io/tags/kubectl/</link>
@@ -18,29 +36,11 @@
     </item>
     
     <item>
-      <title>kubernetes</title>
-      <link>https://cvvz.github.io/tags/kubernetes/</link>
-      <pubDate>Sun, 22 Nov 2020 23:16:44 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/tags/kubernetes/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>计算机基础</title>
-      <link>https://cvvz.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/</link>
+      <title>Linux</title>
+      <link>https://cvvz.github.io/tags/linux/</link>
       <pubDate>Tue, 03 Sep 2019 18:44:12 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>安全</title>
-      <link>https://cvvz.github.io/tags/%E5%AE%89%E5%85%A8/</link>
-      <pubDate>Thu, 22 Aug 2019 12:38:04 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/tags/%E5%AE%89%E5%85%A8/</guid>
+      <guid>https://cvvz.github.io/tags/linux/</guid>
       <description></description>
     </item>
     
