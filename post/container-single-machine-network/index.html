@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="google-site-verification" content="Wp3QtEkIlF0ZvtKx90lPmoXyH39d-pmBhiTyTbba9L4" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta itemprop="name" content="浅谈单机容器网络">
+<meta itemprop="description" content="容器网络环境隔离怎么理解？ 容器的网络环境是隔离的，这个隔离就体现在不共用内核网络协议栈，那么必然也就不会共用网络协议栈要用到的数据结构和设备">
+<meta itemprop="datePublished" content="2020-12-03T00:16:18+08:00" />
+<meta itemprop="dateModified" content="2020-12-03T01:38:44+08:00" />
+<meta itemprop="wordCount" content="990">
+
+
+
+<meta itemprop="keywords" content="容器,Linux," />
+<meta property="og:title" content="浅谈单机容器网络" />
+<meta property="og:description" content="容器网络环境隔离怎么理解？ 容器的网络环境是隔离的，这个隔离就体现在不共用内核网络协议栈，那么必然也就不会共用网络协议栈要用到的数据结构和设备" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://cvvz.github.io/post/container-single-machine-network/" />
+<meta property="article:published_time" content="2020-12-03T00:16:18+08:00" />
+<meta property="article:modified_time" content="2020-12-03T01:38:44+08:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="浅谈单机容器网络"/>
+<meta name="twitter:description" content="容器网络环境隔离怎么理解？ 容器的网络环境是隔离的，这个隔离就体现在不共用内核网络协议栈，那么必然也就不会共用网络协议栈要用到的数据结构和设备"/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>浅谈单机容器网络</title>
+	<link rel="stylesheet" href="https://cvvz.github.io/css/style.min.052d306dd1c49415658027c566de932b0e3c2d1278df9f6b44487a95c9b6c1ee.css">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp faster">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://cvvz.github.io">Vic&#39;s Blog</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					<a href="https://cvvz.github.io/post/">文章</a>
+					<a href="https://cvvz.github.io/about/">关于</a>
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<span class="hdr-social hide-in-mobile"><a href="https://github.com/cvvz" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="mailto:ftdchenwz@gmail.com" target="_blank" rel="noopener me" title="Email"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a></span><button id="menu-btn" class="hdr-btn" title="菜单"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://cvvz.github.io/post/">文章</a></li>
+			<li><a href="https://cvvz.github.io/about/">关于</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<h1>浅谈单机容器网络</h1>
+			</header>
+			<div class="content">
+				<h2 id="容器网络环境隔离怎么理解">容器网络环境隔离怎么理解？<a href="#容器网络环境隔离怎么理解" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>容器的网络环境是隔离的，这个隔离就体现在不共用内核网络协议栈，那么必然也就<strong>不会共用网络协议栈要用到的数据结构和设备</strong>了：</p>
+<ul>
+<li>网络层：路由表、iptables规则</li>
+<li>数据链路层：网卡设备、arp缓存表</li>
+</ul>
+<p>如果在容器中执行<code>iptables</code>、<code>ifconfig</code>、<code>arp</code>和<code>route</code>命令看到的肯定是不同的iptables规则、网络设备、arp缓存表和路由表。</p>
+<h2 id="网桥和veth-pair">网桥和veth pair<a href="#网桥和veth-pair" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>同一个宿主机的容器之间通信是通过二层网络进行通信的。物理机如果想通过二层网络通信，那么必须要有两样东西，一个是网线，一个是交换机。</p>
+<p>在Linux系统中，扮演虚拟交换机角色的，叫做网桥；扮演网线角色的，叫做veth pair。</p>
+<p>以Docker为例，在bridge模式下：</p>
+<ul>
+<li>Docker Daemon第一次启动时会创建<code>docker0</code>网桥；</li>
+<li>在创建容器时，会创建一个veth pair，即veth设备对。</li>
+</ul>
+<p>而veth pair有两个端点：</p>
+<ul>
+<li>一端在宿主机中，可以看成是宿主机的一块虚拟网卡，但被关联到docker0网桥上；</li>
+<li>另一端，则借助net namespace技术，变成了容器中的eth0网卡。</li>
+</ul>
+<blockquote>
+<p>veth pair之所以可以被看成“网线”，是因为它的特殊之处在于，只要有一端收到了数据包，同样的数据包也会在另一端出现。不受namespace的约束。</p>
+</blockquote>
+<h2 id="同宿主机中的容器通信过程">同宿主机中的容器通信过程<a href="#同宿主机中的容器通信过程" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>同一台宿主机中的两个容器（容器A -&gt; 容器B）建立通信的过程如下：</p>
+<ol>
+<li>
+<p>容器A中的内核网络协议栈对网络层进行处理时，去查路由表，发现路由表中容器B的网络地址对应的是一条“直连规则”，即不需要发送给网关，直接通过目的MAC地址发送即可。</p>
+</li>
+<li>
+<p>它于是查询本地的arp缓存表，如果没有找到目的MAC地址，则发一条arp广播，通过容器的eth0网卡发送出去。</p>
+</li>
+<li>
+<p>veth pair的另一端收到这个arp消息，把它转发给docker0网桥。</p>
+<blockquote>
+<p>这个另一端是宿主机的一块虚拟网卡，本来是应该可以调用网络协议栈来处理收到的数据包的，但是它被和docker0网桥绑定了，所以它的功能被降级为交换机的一个端口，只能无脑把数据包发给网桥去处理。</p>
+</blockquote>
+</li>
+<li>
+<p>docker0网桥扮演二层交换机的角色，把arp请求广播出去，收到容器B返回的MAC地址后，再通过原链路把MAC地址返回给容器A。</p>
+</li>
+<li>
+<p>容器A使用目的MAC地址和源MAC地址封装链路层头部，将消息通过eth0网卡发送出去。</p>
+</li>
+<li>
+<p>docker0网桥收到数据包，直接根据目的MAC地址将其转发给容器B。</p>
+</li>
+</ol>
+
+			</div>
+			<hr class="post-end">
+			<footer class="post-info">
+				<p>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/%E5%AE%B9%E5%99%A8">容器</a></span><span class="tag"><a href="https://cvvz.github.io/tags/linux">Linux</a></span>
+				</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>990 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/da8994c00fe0a67648c56f72214aa8f0ba772ca2" target="_blank" rel="noopener">da8994c</a> @ 2020-12-03</p>
+			</footer>
+		</article>
+		<div class="post-nav thin">
+			<a class="prev-post" href="https://cvvz.github.io/post/why-aggregated-api-server-webhook/">
+				<span class="post-nav-label">旧&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>以aggregated API server的方式部署admission webhook</span>
+			</a>
+		</div>
+		<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+		<div id="gitalk-container" class="thin"></div>     
+		<script type="text/javascript">
+			var gitalk = new Gitalk({
+				clientID: '0f8bdcbe6b4973f9b206',
+				clientSecret: '4939e64d59c93fc5eb7eaf74469a746e4535700d',
+				repo: 'cvvz.github.io',
+				owner: 'cvvz',
+				admin: ['cvvz'],
+				id: location.pathname,      
+				distractionFreeMode: true 
+			});
+  			gitalk.render('gitalk-container');
+		</script>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2020 <a href="https://cvvz.github.io">陈维志</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://cvvz.github.io/post/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+	<script src="https://cvvz.github.io/js/main.min.784417f5847151f848c339cf0acb13a06cbb648b1483435a28ed4556c4ead69b.js"></script>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-M8Q3DKDEVL', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

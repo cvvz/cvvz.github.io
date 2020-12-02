@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Tue, 03 Sep 2019 18:44:12 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 03 Dec 2020 00:16:18 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>浅谈单机容器网络</title>
+      <link>https://cvvz.github.io/post/container-single-machine-network/</link>
+      <pubDate>Thu, 03 Dec 2020 00:16:18 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/container-single-machine-network/</guid>
+      <description>容器网络环境隔离怎么理解？ 容器的网络环境是隔离的，这个隔离就体现在不共用内核网络协议栈，那么必然也就不会共用网络协议栈要用到的数据结构和设备</description>
+    </item>
+    
     <item>
       <title>用树莓派分析函数调用栈</title>
       <link>https://cvvz.github.io/post/call-stack/</link>
