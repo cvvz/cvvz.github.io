@@ -15,9 +15,9 @@
 			<pubDate>Thu, 03 Dec 2020 00:16:18 +0800</pubDate>
 			
 			<guid>https://cvvz.github.io/post/container-single-machine-network/</guid>
-			<description>容器网络环境隔离怎么理解？ 容器的网络环境是隔离的，这个隔离就体现在不共用内核网络协议栈，那么必然也就不会共用网络协议栈要用到的数据结构和设备</description>
+			<description>容器网络环境隔离怎么理解？ 容器的网络环境是隔离的，这个隔离就体现在不共用内核网络协议栈，那么必然也就不会共用网络协议栈要用到的数据和设备了：</description>
 			<content type="html"><![CDATA[<h2 id="容器网络环境隔离怎么理解">容器网络环境隔离怎么理解？</h2>
-<p>容器的网络环境是隔离的，这个隔离就体现在不共用内核网络协议栈，那么必然也就<strong>不会共用网络协议栈要用到的数据结构和设备</strong>了：</p>
+<p>容器的网络环境是隔离的，这个隔离就体现在不共用内核网络协议栈，那么必然也就<strong>不会共用网络协议栈要用到的数据和设备</strong>了：</p>
 <ul>
 <li>网络层：路由表、iptables规则</li>
 <li>数据链路层：网卡设备、arp缓存表</li>
@@ -64,6 +64,8 @@
 <p>docker0网桥收到数据包，直接根据目的MAC地址将其转发给容器B。</p>
 </li>
 </ol>
+<h2 id="pod中的容器网络">Pod中的容器网络</h2>
+<p>创建一个Pod前，首先要创建infra容器，这个infra容器就通过veth设备连接到网桥，接着创建其他容器，其他容器<strong>加入</strong>infra容器的net namespace，这样，就能做到和infra容器之间以localhost的方式通信，<strong>因为同一个namespace中的进程，共享内核数据和网络设备</strong>。</p>
 ]]></content>
 		</item>
 		
