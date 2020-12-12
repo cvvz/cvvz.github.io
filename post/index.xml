@@ -6,8 +6,92 @@
 		<generator>Hugo -- gohugo.io</generator>
 		<language>zh-hans</language>
 		<copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-		<lastBuildDate>Thu, 03 Dec 2020 00:16:18 +0800</lastBuildDate>
+		<lastBuildDate>Sat, 12 Dec 2020 12:32:33 +0800</lastBuildDate>
 		<atom:link href="https://cvvz.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+		
+		<item>
+			<title>Kubernetes Volume实现原理</title>
+			<link>https://cvvz.github.io/post/k8s-volume/</link>
+			<pubDate>Sat, 12 Dec 2020 12:32:33 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/post/k8s-volume/</guid>
+			<description>容器运行时挂载卷的过程 如果CRI是通过dockershim实现的话，kubelet通过CRI接口去拉起一个容器，就好比是通过docker-d</description>
+			<content type="html"><![CDATA[<h2 id="容器运行时挂载卷的过程">容器运行时挂载卷的过程</h2>
+<p>如果CRI是通过dockershim实现的话，kubelet通过CRI接口去拉起一个容器，就好比是通过docker-daemon执行<code>docker run</code>命令。</p>
+<p>而如果想要在容器中挂载宿主机目录的话，就要带上<code>-v</code>参数，以下面这条命令为例：</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">docker run -v /home:/test ...
+</code></pre></div><p>它的具体的实现过程如下：</p>
+<ol>
+<li>
+<p>创建容器进程并开启Mount namespace</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="n">pid</span> <span class="o">=</span> <span class="n">clone</span><span class="p">(</span><span class="n">main_function</span><span class="p">,</span> <span class="n">stack_size</span><span class="p">,</span> <span class="n">CLONE_NEWNS</span> <span class="o">|</span> <span class="n">SIGCHLD</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span> 
+</code></pre></div></li>
+<li>
+<p>将宿主机目录挂载到容器进程的目录中来</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="n">mount</span><span class="p">(</span><span class="s">&#34;/home&#34;</span><span class="p">,</span> <span class="s">&#34;/test&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="n">MS_BIND</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">)</span>
+</code></pre></div><blockquote>
+<p>此时虽然开启了mount namespace，只代表主机和容器之间mount点隔离开了，容器仍然可以看到主机的文件系统目录。</p>
+</blockquote>
+</li>
+<li>
+<p>调用 <code>pivot_root</code> 或 <code>chroot</code>，改变容器进程的根目录。至此，容器再也看不到宿主机的文件系统目录了。</p>
+</li>
+</ol>
+<h2 id="kubelet挂载卷的过程">kubelet挂载卷的过程</h2>
+<p>当一个Pod被调度到一个节点上之后，kubelet首先为这个Pod创建一个Volume目录：</p>
+<p><strong>/var/lib/kubelet/pods/&lt;Pod的ID&gt;/volumes/kubernetes.io~&lt;Volume类型&gt;/&lt;Volume名字&gt;</strong>。</p>
+<p>在kubernetes中，卷<code>volumes</code>是Pod的一个属性，而不是容器的。kubelet先以Pod为单位，在宿主机这个Volume目录中准备好Pod需要的卷。接着启动容器，容器启动时，根据<code>volumeMounts</code>的定义将主机的这个目录下的部分卷资源挂载进来。挂载的过程如前所述，相当于为每个容器执行了命令：</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">docker run -v /var/lib/kubelet/pods/&lt;Pod的ID&gt;/volumes/kubernetes.io~&lt;Volume类型&gt;/&lt;Volume名字&gt;:/&lt;容器内的目标目录&gt; 我的镜像 ...
+</code></pre></div><p>而kubelet是怎么把卷挂载到主机的volumes目录下的呢？这取决于Volume的类型。</p>
+<h3 id="远程块存储">远程块存储</h3>
+<ol>
+<li>
+<p>Attach：将远程磁盘挂载到本地，成为一个主机上的一个块设备，通过<code>lsblk</code>命令可以查看到。</p>
+<blockquote>
+<p>Attach 这一步，由<code>kube-controller-manager</code>中的<code>Volume Controller</code>负责</p>
+</blockquote>
+</li>
+<li>
+<p>Mount：本地有了新的块设备后，先将其格式化为某种文件系统格式后，就可以进行mount操作了。</p>
+<blockquote>
+<p>Mount 这一步，由kubelet中的<code>VolumeManagerReconciler</code>这个控制循环负责，它是一个独立于kubelet主循环的goroutine。</p>
+</blockquote>
+</li>
+</ol>
+<h3 id="nfs">NFS</h3>
+<p>NFS本身已经是一个远程的文件系统了，所以可以直接进行mount，相当于执行：</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">mount -t nfs &lt;NFS服务器地址&gt;:/ /var/lib/kubelet/pods/&lt;Pod的ID&gt;/volumes/kubernetes.io~&lt;Volume类型&gt;/&lt;Volume名字&gt; 
+</code></pre></div><h3 id="hostpath">hostPath</h3>
+<p>hostPath类型的挂载方式，和宿主机上的Volume目录没啥关系，就是容器直接挂载指定的宿主机目录。</p>
+<h3 id="emptydirdownwardapiconfigmapsecret">emptyDir、downwardAPI、configMap、secret</h3>
+<p>这几种挂载方式，数据都会随着Pod的消亡而被删除。原因是kubelet在创建Pod的Volume资源时，其实是在主机的Volume目录下创建了一些子目录供容器进行挂载。Pod被删除时，kubelet也会把这个Volume目录删掉，从而这个Volume目录中的子目录也都被删除，这几种类型的数据就被删掉了。</p>
+<blockquote>
+<p>远程块存储、NFS存储等持久化的存储，和hostPath、emptyDir、downwardAPI、configMap、secret不一样，<strong>不是在Pod或任何一种workload中的volume字段中直接定义的</strong>，而是在PV中定义的。</p>
+</blockquote>
+<h2 id="pvcpv和storageclass">PVC、PV和StorageClass</h2>
+<p>在Pod中，如果想使用持久化的存储，如上面提到的远程块存储、NFS存储，或是本地块存储（非hostPath），则在volumes字段中，定义<code>persistentVolumeClaim</code>，即PVC。</p>
+<p>PVC和PV进行绑定的过程，由<code>Volume Controller</code>中的<code>PersistentVolumeController</code>这个控制循环负责。所谓“绑定”，也就是填写PVC中的<code>spec.volumeName</code>字段而已。<code>PersistentVolumeController</code>只会将StorageClass相同的PVC和PV绑定起来。</p>
+<p>StorageClass主要用来动态分配存储(Dynamic Provisioning)。StorageClass中的<code>provisioner</code>字段用于指定使用哪种<a href="https://kubernetes.io/docs/concepts/storage/storage-classes/#provisioner">存储插件</a>进行动态分配，当然，前提是你要在kubernetes中装好对应的存储插件。<code>parameters</code>字段就是生成出来的PV的参数。</p>
+<blockquote>
+<p><code>PersistentVolumeController</code>只是在找不到对应的PV资源和PVC进行绑定时，借助StorageClass生成了一个PV这个API对象。具体这个PV是怎么成为主机volume目录下的一个子目录的，则是靠前面所述的Attach + Mount两阶段处理后的结果。当然如果是NFS或本地持久化卷，就不需要<code>Volume Controller</code>进行Attach操作了。</p>
+</blockquote>
+<h2 id="本地持久化卷">本地持久化卷</h2>
+<p>对于本地持久化卷，通过在PV模版中</p>
+<ul>
+<li>定义<code>spec.nodeAffinity</code>来指定持久化卷位于哪个宿主机上</li>
+<li>定义<code>spec.local.path</code>来指定宿主机的持久化卷的路径。</li>
+</ul>
+<p>此外，由于<code>PersistentVolumeController</code>只会将StorageClass相同的PVC和PV绑定起来，所以还需要创建一个StorageClass，并且使PVC和PV中的<code>StorageClassName</code>相同。</p>
+<p>在 StorageClass 里，进行了如下定义：<code>volumeBindingMode: WaitForFirstConsumer</code>，这个字段的作用是<strong>延迟绑定PV和PVC</strong>。定义了这个字段，PVC和PV的绑定就不会在<code>PersistentVolumeController</code>中进行，而是由<strong>调度器</strong>在调度Pod的时候，根据Pod中声明的PVC，来决定和哪个PV进行绑定。</p>
+<p>本地持久化卷是没办法进行 Dynamic Provisioning的，所以StorageClass字段中的<code>provisioner</code>定义的是<code>kubernetes.io/no-provisioner</code>。但是它的Static Provisioning也并不需要纯手工操作。运维人员可以使用<a href="https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner">local-static-provisioner</a>对PV进行自动管理。它的原理是通过DaemonSet检测节点的<code>/mnt/disks</code>目录，这个目录下如果存在挂载点，则根据这个路径自动生成对应的PV。所以，运维人员只需要在node节点上，在<code>/mnt/disks</code>目录下准备好挂载点即可。</p>
+<blockquote>
+<p>Q：hostPath可以是挂载在宿主机上的一块磁盘，而不是宿主机的主目录，这种情况使用hostPath作为持久化存储不会导致宿主机宕机。那是不是可以使用hostPath代替PVC/PV作为本地持久化卷？</p>
+<p>A：不可以。这种玩法失去了<code>PersistentVolumeController</code>对PVC和PV进行自动绑定、解绑的灵活性。也失去了通过<code>local-static-provisioner</code>对PV进行自动管理的灵活性。最关键的是失去了<strong>延迟绑定</strong>的特性，调度器进行调度的时候，无法参考节点存储的使用情况。</p>
+<p>Q：删除一个被Pod使用中的PVC/PV时，kubectl会卡住，为什么？</p>
+<p>A：PVC和PV中定义了<code>kubernetes.io/pvc-protection</code>、<code>kubernetes.io/pv-protection</code>这个finalizer字段，删除时，资源不会被apiserver立即删除，要等到<code>volume controller</code>进行<strong>pre-delete</strong>操作后，将finalizer字段删掉，才会被实际删除。而<code>volume controller</code>的<strong>pre-delete</strong>操作实际上就是检查PVC/PV有没有被Pod使用。</p>
+</blockquote>
+]]></content>
+		</item>
 		
 		<item>
 			<title>浅谈单机容器网络</title>

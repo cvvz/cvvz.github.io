@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Thu, 03 Dec 2020 00:16:18 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 12 Dec 2020 12:32:33 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Kubernetes Volume实现原理</title>
+      <link>https://cvvz.github.io/post/k8s-volume/</link>
+      <pubDate>Sat, 12 Dec 2020 12:32:33 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/k8s-volume/</guid>
+      <description>容器运行时挂载卷的过程 如果CRI是通过dockershim实现的话，kubelet通过CRI接口去拉起一个容器，就好比是通过docker-d</description>
+    </item>
+    
     <item>
       <title>浅谈单机容器网络</title>
       <link>https://cvvz.github.io/post/container-single-machine-network/</link>
