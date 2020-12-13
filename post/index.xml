@@ -38,7 +38,7 @@
 </li>
 </ol>
 <h2 id="kubelet挂载卷的过程">kubelet挂载卷的过程</h2>
-<p>当一个Pod被调度到一个节点上之后，kubelet首先为这个Pod创建一个Volume目录：</p>
+<p>当一个Pod被调度到一个节点上之后，kubelet首先为这个Pod在宿主机上创建一个Volume目录：</p>
 <p><strong>/var/lib/kubelet/pods/&lt;Pod的ID&gt;/volumes/kubernetes.io~&lt;Volume类型&gt;/&lt;Volume名字&gt;</strong>。</p>
 <p>在kubernetes中，卷<code>volumes</code>是Pod的一个属性，而不是容器的。kubelet先以Pod为单位，在宿主机这个Volume目录中准备好Pod需要的卷。接着启动容器，容器启动时，根据<code>volumeMounts</code>的定义将主机的这个目录下的部分卷资源挂载进来。挂载的过程如前所述，相当于为每个容器执行了命令：</p>
 <div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">docker run -v /var/lib/kubelet/pods/&lt;Pod的ID&gt;/volumes/kubernetes.io~&lt;Volume类型&gt;/&lt;Volume名字&gt;:/&lt;容器内的目标目录&gt; 我的镜像 ...
@@ -245,6 +245,7 @@
 <blockquote>
 <p>生产环境中，可以使用 <a href="https://github.com/jetstack/cert-manager">cert-manager</a> 来自动生成和管理 TLS 证书，而不是直接存在 secret 资源对象中。</p>
 </blockquote>
+<p>以aggregated API Server的方式部署webhook带来的另一个好处是，aggregated API Server是使用<a href="https://github.com/kubernetes/apiserver">kubernetes apiserver</a>这个lib库构建的，因此复用了kube-apiserver的认证和鉴权机制。</p>
 ]]></content>
 		</item>
 		
