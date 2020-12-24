@@ -6,8 +6,120 @@
 		<generator>Hugo -- gohugo.io</generator>
 		<language>zh-hans</language>
 		<copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-		<lastBuildDate>Sun, 13 Dec 2020 19:26:15 +0800</lastBuildDate>
+		<lastBuildDate>Thu, 24 Dec 2020 10:33:00 +0800</lastBuildDate>
 		<atom:link href="https://cvvz.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+		
+		<item>
+			<title>容器相关知识汇总</title>
+			<link>https://cvvz.github.io/post/container/</link>
+			<pubDate>Thu, 24 Dec 2020 10:33:00 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/post/container/</guid>
+			<description>容器镜像 容器镜像就是容器的rootfs。通过 Dockerfile 制作容器镜像时，就相当于增加 rootfs 层。通过容器镜像运行一个容器时，操作系统内核先将镜像中的每</description>
+			<content type="html"><![CDATA[<h2 id="容器镜像">容器镜像</h2>
+<p>容器镜像就是容器的rootfs。通过 Dockerfile 制作容器镜像时，就相当于增加 rootfs 层。通过容器镜像运行一个容器时，操作系统内核先将镜像中的每一层<strong>联合挂载</strong>在一个统一的目录下，然后再通过<code>chroot</code>把容器的根目录挂载到这个统一的目录下。</p>
+<p>通过 Dockerfile 生成容器镜像时，每个原语执行后，都会生成一个对应的镜像层。需要注意的是，即使原语本身并没有明显地修改文件的操作（比如，ENV 原语），它对应的层也会存在。只不过在外界看来，<strong>这个层是空的</strong>。</p>
+<p>Docker 中最常用的联合文件系统有三种：<code>AUFS</code>、<code>Devicemapper</code> 和 <code>OverlayFS</code>。</p>
+<blockquote>
+<p>overlay2 文件系统最多支持 128 个层数叠加，换句话说 Dockerfile 最多只能写 128 行。</p>
+</blockquote>
+<h2 id="namespace">namespace</h2>
+<p>通过查看宿主机上的 <code>/proc/${pid}/ns</code> 目录可以知道容器进程当前的namespace。同一个Pod下的容器，共享哪些namespace呢？看一眼就知道了：</p>
+<figure>
+    <img src="/namespace.png" width="650px"/> 
+</figure>
+
+<p>可以看出：</p>
+<ul>
+<li>不共享的namespace是：mnt（挂载点）、pid（进程号）和uts（主机名）</li>
+<li>共享的namespace是：ipc（进程间通信）、net（网络）和user（用户）。</li>
+</ul>
+<p>我用 <code> kubectl exec -it ${pod} -c ${container} -n ${ns} -- sh</code> 命令运行的sh进程，它的namespace和我指定的<code>${container}</code>容器一模一样。<code>kubectl exec</code> 本质上是通过<code>setns</code>系统调用加入了指定进程的namespace。</p>
+<figure>
+    <img src="/exec-namespace.png" width="650px"/> 
+</figure>
+
+<h2 id="cgroups">cgroups</h2>
+<h3 id="cpu-cgroup">cpu cgroup</h3>
+<ul>
+<li>
+<p>cpu.cfs_period_us：CFS（Completely Fair Scheduler）调度算法的一个调度周期</p>
+</li>
+<li>
+<p>cpu.cfs_quota_us：CFS 调度算法中，在一个调度周期里这个控制组被允许的运行时间</p>
+</li>
+<li>
+<p>cpu.shares：这个值决定了 CPU Cgroup 下控制组可用 CPU 的相对比例。<strong>不过只有当系统上 CPU 完全被占满的时候，这个比例才会在各个控制组间起作用</strong>。</p>
+<blockquote>
+<p><code>cpu.cfs_quota_us</code> / <code>cpu.cfs_period_us</code> 的值就限制了容器进程的最大cpu使用率。</p>
+<p>在操作系统里，<code>cpu.cfs_period_us</code> 的值一般是个固定值，所以在kubernetes中，当你设置了Pod的<code>limits.cpu</code>的值后，kubelet会去修改cgroup中的<code>cpu.cfs_quota_us</code>这个参数来调整容器cpu的使用上限。</p>
+<p>在kubernetes中，当设置了 Pod的<code>requests.cpu</code> 的值时，kubelet会去调整 <code>cpu.shares</code> 这个参数，来保证即使节点cpu使用率被打满了，容器仍然能分得一定量的cpu时间。（cpu.shares = 1024 表示 1 个 CPU）</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="cpu-cgroup-和-cpu-使用率">cpu cgroup 和 cpu 使用率</h3>
+<p>cpu时间的使用类型如下图所示：</p>
+<figure>
+    <img src="/cpu-usage.jpeg" width="650px"/> 
+</figure>
+
+<p>对于进程的 CPU 使用率，只包含两部分:</p>
+<ul>
+<li>一个是用户态， us 和 ni；</li>
+<li>还有一部分是内核态，也就是 sy。</li>
+</ul>
+<p>至于 wa、hi、si，这些 I/O 或者中断相关的 CPU 使用，CPU Cgroup 不会去做限制。因为本身这些也不属于某个进程的cpu时间。</p>
+<p>于是就要提到 cpu 使用率和 cpu 平均负载的区别了：</p>
+<ul>
+<li>cpu使用率是进程使用cpu的时间，包括用户态和内核态的时间之和。</li>
+<li>cpu平均负载≈CPU可运行队列中的进程数+<strong>CPU休眠队列中不可中断状态的进程数</strong>。</li>
+</ul>
+<p>当节点上处于D状态的进程数量变多的时候，cpu的平均负载会升高，此时大量进程排队竞争disk I/O资源，但cpu可运行队列中的进程数却很少，所以虽然使用率很低，但是仍然会拖慢进程速度。</p>
+<p>cpu cgroup能限制cpu的使用率，但是cpu cgroup并没有办法解决平均负载升高的问题。</p>
+<p>我们可以做的是，在生产环境中监控容器的宿主机节点里 D 状态的进程数量，然后对 D 状态进程数目异常的节点进行分析，比如磁盘硬件出现问题引起 D 状态进程数目增加，这时就需要更换硬盘。</p>
+<h3 id="cpuset-cgroup">cpuset cgroup</h3>
+<p>cpuset cgroup用于进程绑核，主要通过设置<code>cpuset.cpus</code>和<code>cpuset.mems</code>两个字段来实现。</p>
+<p>在kubernetes中，当 Pod 属于 Guaranteed QoS 类型，并且 requests 值与 limits 被设置为同一个相等的<strong>整数值</strong>就相当于声明Pod中的容器要进行绑核。</p>
+<h3 id="memory-cgroup">memory cgroup</h3>
+<ul>
+<li>memory.limit_in_bytes：一个控制组里所有进程可使用内存的最大值。一旦达到了这个值，可能会触发OOM。
+<blockquote>
+<p>在kubernetes中，当你指定了 Pod 的 <code>limits.memory=128Mi</code> 之后，相当于将 memory cgroup 中的 <code>memory.limit_in_bytes</code> 字段 设置为 128 * 1024 * 1024</p>
+</blockquote>
+</li>
+<li>memory.usage_in_bytes：当前控制组里所有进程实际使用的内存总和，<strong>包括rss和page cache两部分</strong>。</li>
+<li>memory.oom_control：决定了内存使用达到上限时，会不会触发OOM Killer。触发OOM时，会选择控制组里的某个进程杀掉。</li>
+<li>memory.stat：显示了各种内存类型的实际开销。<strong>其中&quot;cache&quot;代表page cache；&ldquo;rss&quot;代表进程真正申请到的物理内存大小。RSS 内存和 Page Cache 内存的和，等于<code>memory.usage_in_bytes</code> 的值</strong>。判断容器真实的内存使用量，我们不能用<code>memory.usage_in_bytes</code>，而需要用 <code>memory.stat</code> 里的 rss 值。</li>
+<li>memory.swappiness：定义Page Cache 内存和匿名内存释放的比例。</li>
+</ul>
+<blockquote>
+<p>Q：当执行 <code>kubectl exec</code> 时，创建的进程会加入到容器的cgroup控制组吗？</p>
+<p>A：会。以cpu cgroup为例，查看<code>/sys/fs/cgroup/cpu/kubepods.slice/kubepods-pod{$uid}.slice/docker-{$containerID}.scope/tasks</code>文件就能发现新创建的进程被加入到容器的cgroup控制组了。</p>
+<p>Q：执行 <code>kubectl top</code> 命令获取到的pod指标是从哪里来的？</p>
+<p>A：整个执行路径是：<code>kubectl -&gt; apiserver -&gt; aggregated-apiserver -&gt; metric-server -&gt; kubelet(cAdvisor) -&gt; cgroup</code>。最终来源就是cgroup。而Linux <code>top</code>命令的指标数据的来源是<code>/proc</code>文件系统。</p>
+</blockquote>
+<h2 id="kubeletdockercrioci">kubelet、Docker、CRI、OCI</h2>
+<p>docker 架构图如下图所示：</p>
+<figure>
+    <img src="/docker.png" width="800px"/> 
+</figure>
+
+<p>kubelet和docker的集成方案：</p>
+<figure>
+    <img src="/kubelet-docker.png" width="800px"/> 
+</figure>
+
+<p>从这两幅图就能看出来，当前在kubernetes中，创建一个容器的调用链为：</p>
+<p><code>kubelet -&gt; dockershim -&gt; docker daemon -&gt; containerd -&gt; containerd-shim -&gt; runc -&gt; container</code></p>
+<p>dockershim实现了<a href="https://github.com/kubernetes/kubernetes/blob/8327e433590f9e867b1e31a4dc32316685695729/pkg/kubelet/apis/cri/services.go">CRI</a>定义的gRPC接口，实现方式就是充当docker daemon的客户端，向docker daemon发送命令。实际上dockershim和docker daemon都可以被干掉，<a href="https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.20.md#deprecation">kubernetes在v1.20也的确这么做了</a>。docker从kubernetes中被移除后，我们可以直接使用<a href="https://github.com/containerd/containerd">containerd</a>或<a href="https://github.com/cri-o/cri-o">CRI-O</a>作为CRI。</p>
+<p><a href="https://github.com/opencontainers/runc">runC</a>则是一个<a href="https://github.com/opencontainers/runtime-spec">OCI</a>的参考实现，底层通过Linux系统调用为容器设置 namespaces 和 cgroups, 挂载 rootfs。当然kubernetes其实不关心OCI的底层是怎么实现的，只要能保证遵循OCI文档里的标准，就能自己实现一个OCI。<a href="https://github.com/kata-containers/kata-containers">Kata</a>就是遵循了OCI标准实现的安全容器。它的底层是用虚拟机实现的资源强隔离，而不是namespace。</p>
+<p>Kata中的VM可以和Pod做一个类比：</p>
+<ul>
+<li>kubelet调用CRI的<code>RunPodSandbox</code>接口时，如果是runC实现的OCI，则会去创建<code>infra</code>容器，并执行<code>/pause</code>将容器挂起；如果是Kata，则会去创建一个虚拟机。</li>
+<li>接着kubelet调用<code>CreateContainer</code>去创建容器，对于runC，就是创建容器进程并将他们的namespace加入<code>infra</code>容器中去；对于Kata，则是往VM中添加容器。</li>
+</ul>
+]]></content>
+		</item>
 		
 		<item>
 			<title>为什么删除Pod时webhook收到三次delete请求</title>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="google-site-verification" content="Wp3QtEkIlF0ZvtKx90lPmoXyH39d-pmBhiTyTbba9L4" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta itemprop="name" content="容器相关知识汇总">
+<meta itemprop="description" content="容器镜像 容器镜像就是容器的rootfs。通过 Dockerfile 制作容器镜像时，就相当于增加 rootfs 层。通过容器镜像运行一个容器时，操作系统内核先将镜像中的每">
+<meta itemprop="datePublished" content="2020-12-24T10:33:00+08:00" />
+<meta itemprop="dateModified" content="2020-12-24T18:40:08+08:00" />
+<meta itemprop="wordCount" content="2906">
+
+
+
+<meta itemprop="keywords" content="容器,kubernetes," />
+<meta property="og:title" content="容器相关知识汇总" />
+<meta property="og:description" content="容器镜像 容器镜像就是容器的rootfs。通过 Dockerfile 制作容器镜像时，就相当于增加 rootfs 层。通过容器镜像运行一个容器时，操作系统内核先将镜像中的每" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://cvvz.github.io/post/container/" />
+<meta property="article:published_time" content="2020-12-24T10:33:00+08:00" />
+<meta property="article:modified_time" content="2020-12-24T18:40:08+08:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="容器相关知识汇总"/>
+<meta name="twitter:description" content="容器镜像 容器镜像就是容器的rootfs。通过 Dockerfile 制作容器镜像时，就相当于增加 rootfs 层。通过容器镜像运行一个容器时，操作系统内核先将镜像中的每"/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>容器相关知识汇总</title>
+	<link rel="stylesheet" href="https://cvvz.github.io/css/style.min.052d306dd1c49415658027c566de932b0e3c2d1278df9f6b44487a95c9b6c1ee.css">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp faster">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://cvvz.github.io">Vic&#39;s Blog</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					<a href="https://cvvz.github.io/post/">文章</a>
+					<a href="https://cvvz.github.io/about/">关于</a>
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<button id="toc-btn" class="hdr-btn desktop-only-ib" title="目录"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-list"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3" y2="6"></line><line x1="3" y1="12" x2="3" y2="12"></line><line x1="3" y1="18" x2="3" y2="18"></line></svg></button><span class="hdr-social hide-in-mobile"><a href="https://github.com/cvvz" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="mailto:ftdchenwz@gmail.com" target="_blank" rel="noopener me" title="Email"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a></span><button id="menu-btn" class="hdr-btn" title="菜单"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://cvvz.github.io/post/">文章</a></li>
+			<li><a href="https://cvvz.github.io/about/">关于</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<h1>容器相关知识汇总</h1>
+			</header>
+			<div class="content">
+				<h2 id="容器镜像">容器镜像<a href="#容器镜像" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>容器镜像就是容器的rootfs。通过 Dockerfile 制作容器镜像时，就相当于增加 rootfs 层。通过容器镜像运行一个容器时，操作系统内核先将镜像中的每一层<strong>联合挂载</strong>在一个统一的目录下，然后再通过<code>chroot</code>把容器的根目录挂载到这个统一的目录下。</p>
+<p>通过 Dockerfile 生成容器镜像时，每个原语执行后，都会生成一个对应的镜像层。需要注意的是，即使原语本身并没有明显地修改文件的操作（比如，ENV 原语），它对应的层也会存在。只不过在外界看来，<strong>这个层是空的</strong>。</p>
+<p>Docker 中最常用的联合文件系统有三种：<code>AUFS</code>、<code>Devicemapper</code> 和 <code>OverlayFS</code>。</p>
+<blockquote>
+<p>overlay2 文件系统最多支持 128 个层数叠加，换句话说 Dockerfile 最多只能写 128 行。</p>
+</blockquote>
+<h2 id="namespace">namespace<a href="#namespace" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>通过查看宿主机上的 <code>/proc/${pid}/ns</code> 目录可以知道容器进程当前的namespace。同一个Pod下的容器，共享哪些namespace呢？看一眼就知道了：</p>
+<figure>
+    <img src="/namespace.png" width="650px"/> 
+</figure>
+
+<p>可以看出：</p>
+<ul>
+<li>不共享的namespace是：mnt（挂载点）、pid（进程号）和uts（主机名）</li>
+<li>共享的namespace是：ipc（进程间通信）、net（网络）和user（用户）。</li>
+</ul>
+<p>我用 <code> kubectl exec -it ${pod} -c ${container} -n ${ns} -- sh</code> 命令运行的sh进程，它的namespace和我指定的<code>${container}</code>容器一模一样。<code>kubectl exec</code> 本质上是通过<code>setns</code>系统调用加入了指定进程的namespace。</p>
+<figure>
+    <img src="/exec-namespace.png" width="650px"/> 
+</figure>
+
+<h2 id="cgroups">cgroups<a href="#cgroups" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<h3 id="cpu-cgroup">cpu cgroup<a href="#cpu-cgroup" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<ul>
+<li>
+<p>cpu.cfs_period_us：CFS（Completely Fair Scheduler）调度算法的一个调度周期</p>
+</li>
+<li>
+<p>cpu.cfs_quota_us：CFS 调度算法中，在一个调度周期里这个控制组被允许的运行时间</p>
+</li>
+<li>
+<p>cpu.shares：这个值决定了 CPU Cgroup 下控制组可用 CPU 的相对比例。<strong>不过只有当系统上 CPU 完全被占满的时候，这个比例才会在各个控制组间起作用</strong>。</p>
+<blockquote>
+<p><code>cpu.cfs_quota_us</code> / <code>cpu.cfs_period_us</code> 的值就限制了容器进程的最大cpu使用率。</p>
+<p>在操作系统里，<code>cpu.cfs_period_us</code> 的值一般是个固定值，所以在kubernetes中，当你设置了Pod的<code>limits.cpu</code>的值后，kubelet会去修改cgroup中的<code>cpu.cfs_quota_us</code>这个参数来调整容器cpu的使用上限。</p>
+<p>在kubernetes中，当设置了 Pod的<code>requests.cpu</code> 的值时，kubelet会去调整 <code>cpu.shares</code> 这个参数，来保证即使节点cpu使用率被打满了，容器仍然能分得一定量的cpu时间。（cpu.shares = 1024 表示 1 个 CPU）</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="cpu-cgroup-和-cpu-使用率">cpu cgroup 和 cpu 使用率<a href="#cpu-cgroup-和-cpu-使用率" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>cpu时间的使用类型如下图所示：</p>
+<figure>
+    <img src="/cpu-usage.jpeg" width="650px"/> 
+</figure>
+
+<p>对于进程的 CPU 使用率，只包含两部分:</p>
+<ul>
+<li>一个是用户态， us 和 ni；</li>
+<li>还有一部分是内核态，也就是 sy。</li>
+</ul>
+<p>至于 wa、hi、si，这些 I/O 或者中断相关的 CPU 使用，CPU Cgroup 不会去做限制。因为本身这些也不属于某个进程的cpu时间。</p>
+<p>于是就要提到 cpu 使用率和 cpu 平均负载的区别了：</p>
+<ul>
+<li>cpu使用率是进程使用cpu的时间，包括用户态和内核态的时间之和。</li>
+<li>cpu平均负载≈CPU可运行队列中的进程数+<strong>CPU休眠队列中不可中断状态的进程数</strong>。</li>
+</ul>
+<p>当节点上处于D状态的进程数量变多的时候，cpu的平均负载会升高，此时大量进程排队竞争disk I/O资源，但cpu可运行队列中的进程数却很少，所以虽然使用率很低，但是仍然会拖慢进程速度。</p>
+<p>cpu cgroup能限制cpu的使用率，但是cpu cgroup并没有办法解决平均负载升高的问题。</p>
+<p>我们可以做的是，在生产环境中监控容器的宿主机节点里 D 状态的进程数量，然后对 D 状态进程数目异常的节点进行分析，比如磁盘硬件出现问题引起 D 状态进程数目增加，这时就需要更换硬盘。</p>
+<h3 id="cpuset-cgroup">cpuset cgroup<a href="#cpuset-cgroup" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>cpuset cgroup用于进程绑核，主要通过设置<code>cpuset.cpus</code>和<code>cpuset.mems</code>两个字段来实现。</p>
+<p>在kubernetes中，当 Pod 属于 Guaranteed QoS 类型，并且 requests 值与 limits 被设置为同一个相等的<strong>整数值</strong>就相当于声明Pod中的容器要进行绑核。</p>
+<h3 id="memory-cgroup">memory cgroup<a href="#memory-cgroup" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<ul>
+<li>memory.limit_in_bytes：一个控制组里所有进程可使用内存的最大值。一旦达到了这个值，可能会触发OOM。
+<blockquote>
+<p>在kubernetes中，当你指定了 Pod 的 <code>limits.memory=128Mi</code> 之后，相当于将 memory cgroup 中的 <code>memory.limit_in_bytes</code> 字段 设置为 128 * 1024 * 1024</p>
+</blockquote>
+</li>
+<li>memory.usage_in_bytes：当前控制组里所有进程实际使用的内存总和，<strong>包括rss和page cache两部分</strong>。</li>
+<li>memory.oom_control：决定了内存使用达到上限时，会不会触发OOM Killer。触发OOM时，会选择控制组里的某个进程杀掉。</li>
+<li>memory.stat：显示了各种内存类型的实际开销。<strong>其中&quot;cache&quot;代表page cache；&ldquo;rss&quot;代表进程真正申请到的物理内存大小。RSS 内存和 Page Cache 内存的和，等于<code>memory.usage_in_bytes</code> 的值</strong>。判断容器真实的内存使用量，我们不能用<code>memory.usage_in_bytes</code>，而需要用 <code>memory.stat</code> 里的 rss 值。</li>
+<li>memory.swappiness：定义Page Cache 内存和匿名内存释放的比例。</li>
+</ul>
+<blockquote>
+<p>Q：当执行 <code>kubectl exec</code> 时，创建的进程会加入到容器的cgroup控制组吗？</p>
+<p>A：会。以cpu cgroup为例，查看<code>/sys/fs/cgroup/cpu/kubepods.slice/kubepods-pod{$uid}.slice/docker-{$containerID}.scope/tasks</code>文件就能发现新创建的进程被加入到容器的cgroup控制组了。</p>
+<p>Q：执行 <code>kubectl top</code> 命令获取到的pod指标是从哪里来的？</p>
+<p>A：整个执行路径是：<code>kubectl -&gt; apiserver -&gt; aggregated-apiserver -&gt; metric-server -&gt; kubelet(cAdvisor) -&gt; cgroup</code>。最终来源就是cgroup。而Linux <code>top</code>命令的指标数据的来源是<code>/proc</code>文件系统。</p>
+</blockquote>
+<h2 id="kubeletdockercrioci">kubelet、Docker、CRI、OCI<a href="#kubeletdockercrioci" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>docker 架构图如下图所示：</p>
+<figure>
+    <img src="/docker.png" width="800px"/> 
+</figure>
+
+<p>kubelet和docker的集成方案：</p>
+<figure>
+    <img src="/kubelet-docker.png" width="800px"/> 
+</figure>
+
+<p>从这两幅图就能看出来，当前在kubernetes中，创建一个容器的调用链为：</p>
+<p><code>kubelet -&gt; dockershim -&gt; docker daemon -&gt; containerd -&gt; containerd-shim -&gt; runc -&gt; container</code></p>
+<p>dockershim实现了<a href="https://github.com/kubernetes/kubernetes/blob/8327e433590f9e867b1e31a4dc32316685695729/pkg/kubelet/apis/cri/services.go">CRI</a>定义的gRPC接口，实现方式就是充当docker daemon的客户端，向docker daemon发送命令。实际上dockershim和docker daemon都可以被干掉，<a href="https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.20.md#deprecation">kubernetes在v1.20也的确这么做了</a>。docker从kubernetes中被移除后，我们可以直接使用<a href="https://github.com/containerd/containerd">containerd</a>或<a href="https://github.com/cri-o/cri-o">CRI-O</a>作为CRI。</p>
+<p><a href="https://github.com/opencontainers/runc">runC</a>则是一个<a href="https://github.com/opencontainers/runtime-spec">OCI</a>的参考实现，底层通过Linux系统调用为容器设置 namespaces 和 cgroups, 挂载 rootfs。当然kubernetes其实不关心OCI的底层是怎么实现的，只要能保证遵循OCI文档里的标准，就能自己实现一个OCI。<a href="https://github.com/kata-containers/kata-containers">Kata</a>就是遵循了OCI标准实现的安全容器。它的底层是用虚拟机实现的资源强隔离，而不是namespace。</p>
+<p>Kata中的VM可以和Pod做一个类比：</p>
+<ul>
+<li>kubelet调用CRI的<code>RunPodSandbox</code>接口时，如果是runC实现的OCI，则会去创建<code>infra</code>容器，并执行<code>/pause</code>将容器挂起；如果是Kata，则会去创建一个虚拟机。</li>
+<li>接着kubelet调用<code>CreateContainer</code>去创建容器，对于runC，就是创建容器进程并将他们的namespace加入<code>infra</code>容器中去；对于Kata，则是往VM中添加容器。</li>
+</ul>
+
+			</div>
+			<hr class="post-end">
+			<footer class="post-info">
+				<p>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/%E5%AE%B9%E5%99%A8">容器</a></span><span class="tag"><a href="https://cvvz.github.io/tags/kubernetes">kubernetes</a></span>
+				</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2906 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/0f7f7fe1d61f7fb360e8853baa976701fb2781c0" target="_blank" rel="noopener">0f7f7fe</a> @ 2020-12-24</p>
+			</footer>
+		</article>
+		<aside id="toc" class="show-toc">
+			<div class="toc-title">目录</div>
+			<nav id="TableOfContents">
+  <ul>
+    <li><a href="#容器镜像">容器镜像</a></li>
+    <li><a href="#namespace">namespace</a></li>
+    <li><a href="#cgroups">cgroups</a>
+      <ul>
+        <li><a href="#cpu-cgroup">cpu cgroup</a></li>
+        <li><a href="#cpu-cgroup-和-cpu-使用率">cpu cgroup 和 cpu 使用率</a></li>
+        <li><a href="#cpuset-cgroup">cpuset cgroup</a></li>
+        <li><a href="#memory-cgroup">memory cgroup</a></li>
+      </ul>
+    </li>
+    <li><a href="#kubeletdockercrioci">kubelet、Docker、CRI、OCI</a></li>
+  </ul>
+</nav>
+		</aside>
+		<div class="post-nav thin">
+			<a class="prev-post" href="https://cvvz.github.io/post/k8s-3-deletion-webhook/">
+				<span class="post-nav-label">旧&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>为什么删除Pod时webhook收到三次delete请求</span>
+			</a>
+		</div>
+		<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+		<div id="gitalk-container" class="thin"></div>     
+		<script type="text/javascript">
+			var gitalk = new Gitalk({
+				clientID: '0f8bdcbe6b4973f9b206',
+				clientSecret: '4939e64d59c93fc5eb7eaf74469a746e4535700d',
+				repo: 'cvvz.github.io',
+				owner: 'cvvz',
+				admin: ['cvvz'],
+				id: location.pathname,      
+				distractionFreeMode: true 
+			});
+  			gitalk.render('gitalk-container');
+		</script>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2020 <a href="https://cvvz.github.io">陈维志</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://cvvz.github.io/post/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+	<script src="https://cvvz.github.io/js/main.min.784417f5847151f848c339cf0acb13a06cbb648b1483435a28ed4556c4ead69b.js"></script>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-M8Q3DKDEVL', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

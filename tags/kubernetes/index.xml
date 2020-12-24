@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Sun, 13 Dec 2020 19:26:15 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 24 Dec 2020 10:33:00 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>容器相关知识汇总</title>
+      <link>https://cvvz.github.io/post/container/</link>
+      <pubDate>Thu, 24 Dec 2020 10:33:00 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/container/</guid>
+      <description>容器镜像 容器镜像就是容器的rootfs。通过 Dockerfile 制作容器镜像时，就相当于增加 rootfs 层。通过容器镜像运行一个容器时，操作系统内核先将镜像中的每</description>
+    </item>
+    
     <item>
       <title>为什么删除Pod时webhook收到三次delete请求</title>
       <link>https://cvvz.github.io/post/k8s-3-deletion-webhook/</link>
