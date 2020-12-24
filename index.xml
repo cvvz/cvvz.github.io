@@ -81,6 +81,15 @@
     </item>
     
     <item>
+      <title>Celery Worker僵尸进程问题定位记录</title>
+      <link>https://cvvz.github.io/post/celery-worker-zombie/</link>
+      <pubDate>Mon, 30 Mar 2020 10:36:36 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/celery-worker-zombie/</guid>
+      <description>最近在组内基于Flask + rabbitMQ + Celery搭建的web平台上开发需求时碰到了几个比较有趣的问题，在这里记录下来。 问题背景 web平台整体架构图</description>
+    </item>
+    
+    <item>
       <title>用树莓派分析函数调用栈</title>
       <link>https://cvvz.github.io/post/call-stack/</link>
       <pubDate>Tue, 03 Sep 2019 18:44:12 +0800</pubDate>

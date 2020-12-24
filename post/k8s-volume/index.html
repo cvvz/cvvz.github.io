@@ -33,7 +33,7 @@
 	<link rel="shortcut icon" href="/favicon.ico">
 
 	<title>Kubernetes Volume实现原理</title>
-	<link rel="stylesheet" href="https://cvvz.github.io/css/style.min.052d306dd1c49415658027c566de932b0e3c2d1278df9f6b44487a95c9b6c1ee.css">
+	<link rel="stylesheet" href="https://cvvz.github.io/css/style.min.7a1ec200e9f3394f73c6eda58011808507a3b24318de81e1e343f22a2470caef.css">
 	
 </head>
 
@@ -72,16 +72,16 @@
 				<h2 id="容器运行时挂载卷的过程">容器运行时挂载卷的过程<a href="#容器运行时挂载卷的过程" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>如果CRI是通过dockershim实现的话，kubelet通过CRI接口去拉起一个容器，就好比是通过docker-daemon执行<code>docker run</code>命令。</p>
 <p>而如果想要在容器中挂载宿主机目录的话，就要带上<code>-v</code>参数，以下面这条命令为例：</p>
-<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">docker run -v /home:/test ...
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>docker run -v /home:/test ...
 </code></pre></div><p>它的具体的实现过程如下：</p>
 <ol>
 <li>
 <p>创建容器进程并开启Mount namespace</p>
-<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="n">pid</span> <span class="o">=</span> <span class="n">clone</span><span class="p">(</span><span class="n">main_function</span><span class="p">,</span> <span class="n">stack_size</span><span class="p">,</span> <span class="n">CLONE_NEWNS</span> <span class="o">|</span> <span class="n">SIGCHLD</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span> 
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="ln">1</span><span class="kt">int</span> <span class="n">pid</span> <span class="o">=</span> <span class="n">clone</span><span class="p">(</span><span class="n">main_function</span><span class="p">,</span> <span class="n">stack_size</span><span class="p">,</span> <span class="n">CLONE_NEWNS</span> <span class="o">|</span> <span class="n">SIGCHLD</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span> 
 </code></pre></div></li>
 <li>
 <p>将宿主机目录挂载到容器进程的目录中来</p>
-<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="n">mount</span><span class="p">(</span><span class="s">&#34;/home&#34;</span><span class="p">,</span> <span class="s">&#34;/test&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="n">MS_BIND</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">)</span>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="ln">1</span><span class="n">mount</span><span class="p">(</span><span class="s">&#34;/home&#34;</span><span class="p">,</span> <span class="s">&#34;/test&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="n">MS_BIND</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">)</span>
 </code></pre></div><blockquote>
 <p>此时虽然开启了mount namespace，只代表主机和容器之间mount点隔离开了，容器仍然可以看到主机的文件系统目录。</p>
 </blockquote>
@@ -94,7 +94,7 @@
 <p>当一个Pod被调度到一个节点上之后，kubelet首先为这个Pod在宿主机上创建一个Volume目录：</p>
 <p><strong>/var/lib/kubelet/pods/&lt;Pod的ID&gt;/volumes/kubernetes.io~&lt;Volume类型&gt;/&lt;Volume名字&gt;</strong>。</p>
 <p>在kubernetes中，卷<code>volumes</code>是Pod的一个属性，而不是容器的。kubelet先以Pod为单位，在宿主机这个Volume目录中准备好Pod需要的卷。接着启动容器，容器启动时，根据<code>volumeMounts</code>的定义将主机的这个目录下的部分卷资源挂载进来。挂载的过程如前所述，相当于为每个容器执行了命令：</p>
-<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">docker run -v /var/lib/kubelet/pods/&lt;Pod的ID&gt;/volumes/kubernetes.io~&lt;Volume类型&gt;/&lt;Volume名字&gt;:/&lt;容器内的目标目录&gt; 我的镜像 ...
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>docker run -v /var/lib/kubelet/pods/&lt;Pod的ID&gt;/volumes/kubernetes.io~&lt;Volume类型&gt;/&lt;Volume名字&gt;:/&lt;容器内的目标目录&gt; 我的镜像 ...
 </code></pre></div><p>而kubelet是怎么把卷挂载到主机的volumes目录下的呢？这取决于Volume的类型。</p>
 <h3 id="远程块存储">远程块存储<a href="#远程块存储" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <ol>
@@ -113,7 +113,7 @@
 </ol>
 <h3 id="nfs">NFS<a href="#nfs" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p>NFS本身已经是一个远程的文件系统了，所以可以直接进行mount，相当于执行：</p>
-<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">mount -t nfs &lt;NFS服务器地址&gt;:/ /var/lib/kubelet/pods/&lt;Pod的ID&gt;/volumes/kubernetes.io~&lt;Volume类型&gt;/&lt;Volume名字&gt; 
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>mount -t nfs &lt;NFS服务器地址&gt;:/ /var/lib/kubelet/pods/&lt;Pod的ID&gt;/volumes/kubernetes.io~&lt;Volume类型&gt;/&lt;Volume名字&gt; 
 </code></pre></div><h3 id="hostpath">hostPath<a href="#hostpath" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p>hostPath类型的挂载方式，和宿主机上的Volume目录没啥关系，就是容器直接挂载指定的宿主机目录。</p>
 <h3 id="emptydirdownwardapiconfigmapsecret">emptyDir、downwardAPI、configMap、secret<a href="#emptydirdownwardapiconfigmapsecret" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>

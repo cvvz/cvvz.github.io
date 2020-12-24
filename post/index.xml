@@ -143,38 +143,38 @@
 <h3 id="kube-apiserver处理第一次删除请求">kube-apiserver处理第一次删除请求</h3>
 <p>首先，由kubectl发来的delete请求，会经过kube-apiserver的admission-controller进行准入校验。我们定义了admission webhook，所以kube-apiserver会将该请求相关的信息封装在<strong>AdmissionReview</strong>结构体中发送给webhook。这是第一次webhook收到delete请求。</p>
 <p>kube-apiserver作为一个http服务器，它的handler在<code>staging/src/k8s.io/apiserver/pkg/endpoints/installer.go</code>文件中的<code>registerResourceHandlers</code>函数中定义。其中<code>DELETE</code>请求的handler是<code>restfulDeleteResource</code>：</p>
-<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="k">case</span> <span class="s">&#34;DELETE&#34;</span><span class="p">:</span> <span class="c1">// Delete a resource.
-</span><span class="c1"></span>    <span class="c1">// ...
-</span><span class="c1"></span>
-    <span class="nx">handler</span> <span class="o">:=</span> <span class="nx">metrics</span><span class="p">.</span><span class="nf">InstrumentRouteFunc</span><span class="p">(</span><span class="nx">action</span><span class="p">.</span><span class="nx">Verb</span><span class="p">,</span> <span class="nx">group</span><span class="p">,</span> <span class="nx">version</span><span class="p">,</span> <span class="nx">resource</span><span class="p">,</span> <span class="nx">subresource</span><span class="p">,</span> <span class="nx">requestScope</span><span class="p">,</span> <span class="nx">metrics</span><span class="p">.</span><span class="nx">APIServerComponent</span><span class="p">,</span> <span class="nx">deprecated</span><span class="p">,</span> <span class="nx">removedRelease</span><span class="p">,</span> <span class="nf">restfulDeleteResource</span><span class="p">(</span><span class="nx">gracefulDeleter</span><span class="p">,</span> <span class="nx">isGracefulDeleter</span><span class="p">,</span> <span class="nx">reqScope</span><span class="p">,</span> <span class="nx">admit</span><span class="p">))</span>
-
-    <span class="o">...</span>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln">1</span><span class="k">case</span> <span class="s">&#34;DELETE&#34;</span><span class="p">:</span> <span class="c1">// Delete a resource.
+</span><span class="ln">2</span><span class="c1"></span>    <span class="c1">// ...
+</span><span class="ln">3</span><span class="c1"></span>
+<span class="ln">4</span>    <span class="nx">handler</span> <span class="o">:=</span> <span class="nx">metrics</span><span class="p">.</span><span class="nf">InstrumentRouteFunc</span><span class="p">(</span><span class="nx">action</span><span class="p">.</span><span class="nx">Verb</span><span class="p">,</span> <span class="nx">group</span><span class="p">,</span> <span class="nx">version</span><span class="p">,</span> <span class="nx">resource</span><span class="p">,</span> <span class="nx">subresource</span><span class="p">,</span> <span class="nx">requestScope</span><span class="p">,</span> <span class="nx">metrics</span><span class="p">.</span><span class="nx">APIServerComponent</span><span class="p">,</span> <span class="nx">deprecated</span><span class="p">,</span> <span class="nx">removedRelease</span><span class="p">,</span> <span class="nf">restfulDeleteResource</span><span class="p">(</span><span class="nx">gracefulDeleter</span><span class="p">,</span> <span class="nx">isGracefulDeleter</span><span class="p">,</span> <span class="nx">reqScope</span><span class="p">,</span> <span class="nx">admit</span><span class="p">))</span>
+<span class="ln">5</span>
+<span class="ln">6</span>    <span class="o">...</span>
 </code></pre></div><p><code>restfulDeleteResource</code>调用<code>DeleteResource</code>，后者则调用<code>staging/src/k8s.io/apiserver/pkg/registry/generic/registry/store.go</code>文件中的<code>Delete</code>方法对对象进行删除</p>
-<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">restfulDeleteResource</span><span class="p">(</span><span class="nx">r</span> <span class="nx">rest</span><span class="p">.</span><span class="nx">GracefulDeleter</span><span class="p">,</span> <span class="nx">allowsOptions</span> <span class="kt">bool</span><span class="p">,</span> <span class="nx">scope</span> <span class="nx">handlers</span><span class="p">.</span><span class="nx">RequestScope</span><span class="p">,</span> <span class="nx">admit</span> <span class="nx">admission</span><span class="p">.</span><span class="nx">Interface</span><span class="p">)</span> <span class="nx">restful</span><span class="p">.</span><span class="nx">RouteFunction</span> <span class="p">{</span>
-	<span class="k">return</span> <span class="kd">func</span><span class="p">(</span><span class="nx">req</span> <span class="o">*</span><span class="nx">restful</span><span class="p">.</span><span class="nx">Request</span><span class="p">,</span> <span class="nx">res</span> <span class="o">*</span><span class="nx">restful</span><span class="p">.</span><span class="nx">Response</span><span class="p">)</span> <span class="p">{</span>
-		<span class="nx">handlers</span><span class="p">.</span><span class="nf">DeleteResource</span><span class="p">(</span><span class="nx">r</span><span class="p">,</span> <span class="nx">allowsOptions</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">scope</span><span class="p">,</span> <span class="nx">admit</span><span class="p">)(</span><span class="nx">res</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">req</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span>
-	<span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">DeleteResource</span><span class="p">(</span><span class="nx">r</span> <span class="nx">rest</span><span class="p">.</span><span class="nx">GracefulDeleter</span><span class="p">,</span> <span class="nx">allowsOptions</span> <span class="kt">bool</span><span class="p">,</span> <span class="nx">scope</span> <span class="o">*</span><span class="nx">RequestScope</span><span class="p">,</span> <span class="nx">admit</span> <span class="nx">admission</span><span class="p">.</span><span class="nx">Interface</span><span class="p">)</span> <span class="nx">http</span><span class="p">.</span><span class="nx">HandlerFunc</span> <span class="p">{</span>
-    <span class="c1">//...
-</span><span class="c1"></span>
-    <span class="nx">trace</span><span class="p">.</span><span class="nf">Step</span><span class="p">(</span><span class="s">&#34;About to delete object from database&#34;</span><span class="p">)</span>
-		<span class="nx">wasDeleted</span> <span class="o">:=</span> <span class="kc">true</span>
-		<span class="nx">userInfo</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">request</span><span class="p">.</span><span class="nf">UserFrom</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
-		<span class="nx">staticAdmissionAttrs</span> <span class="o">:=</span> <span class="nx">admission</span><span class="p">.</span><span class="nf">NewAttributesRecord</span><span class="p">(</span><span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">scope</span><span class="p">.</span><span class="nx">Kind</span><span class="p">,</span> <span class="nx">namespace</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">scope</span><span class="p">.</span><span class="nx">Resource</span><span class="p">,</span> <span class="nx">scope</span><span class="p">.</span><span class="nx">Subresource</span><span class="p">,</span> <span class="nx">admission</span><span class="p">.</span><span class="nx">Delete</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">dryrun</span><span class="p">.</span><span class="nf">IsDryRun</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">DryRun</span><span class="p">),</span> <span class="nx">userInfo</span><span class="p">)</span>
-		<span class="nx">result</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">finishRequest</span><span class="p">(</span><span class="nx">timeout</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">(</span><span class="nx">runtime</span><span class="p">.</span><span class="nx">Object</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
-			<span class="nx">obj</span><span class="p">,</span> <span class="nx">deleted</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">rest</span><span class="p">.</span><span class="nf">AdmissionToValidateObjectDeleteFunc</span><span class="p">(</span><span class="nx">admit</span><span class="p">,</span> <span class="nx">staticAdmissionAttrs</span><span class="p">,</span> <span class="nx">scope</span><span class="p">),</span> <span class="nx">options</span><span class="p">)</span>
-			<span class="nx">wasDeleted</span> <span class="p">=</span> <span class="nx">deleted</span>
-			<span class="k">return</span> <span class="nx">obj</span><span class="p">,</span> <span class="nx">err</span>
-		<span class="p">})</span>
-		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-			<span class="nx">scope</span><span class="p">.</span><span class="nf">err</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">w</span><span class="p">,</span> <span class="nx">req</span><span class="p">)</span>
-			<span class="k">return</span>
-		<span class="p">}</span>
-        <span class="nx">trace</span><span class="p">.</span><span class="nf">Step</span><span class="p">(</span><span class="s">&#34;Object deleted from database&#34;</span><span class="p">)</span>
-        
-        <span class="o">...</span>
-<span class="p">}</span>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln">1</span><span class="kd">func</span> <span class="nf">restfulDeleteResource</span><span class="p">(</span><span class="nx">r</span> <span class="nx">rest</span><span class="p">.</span><span class="nx">GracefulDeleter</span><span class="p">,</span> <span class="nx">allowsOptions</span> <span class="kt">bool</span><span class="p">,</span> <span class="nx">scope</span> <span class="nx">handlers</span><span class="p">.</span><span class="nx">RequestScope</span><span class="p">,</span> <span class="nx">admit</span> <span class="nx">admission</span><span class="p">.</span><span class="nx">Interface</span><span class="p">)</span> <span class="nx">restful</span><span class="p">.</span><span class="nx">RouteFunction</span> <span class="p">{</span>
+<span class="ln">2</span>	<span class="k">return</span> <span class="kd">func</span><span class="p">(</span><span class="nx">req</span> <span class="o">*</span><span class="nx">restful</span><span class="p">.</span><span class="nx">Request</span><span class="p">,</span> <span class="nx">res</span> <span class="o">*</span><span class="nx">restful</span><span class="p">.</span><span class="nx">Response</span><span class="p">)</span> <span class="p">{</span>
+<span class="ln">3</span>		<span class="nx">handlers</span><span class="p">.</span><span class="nf">DeleteResource</span><span class="p">(</span><span class="nx">r</span><span class="p">,</span> <span class="nx">allowsOptions</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">scope</span><span class="p">,</span> <span class="nx">admit</span><span class="p">)(</span><span class="nx">res</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">req</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span>
+<span class="ln">4</span>	<span class="p">}</span>
+<span class="ln">5</span><span class="p">}</span>
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln"> 1</span><span class="kd">func</span> <span class="nf">DeleteResource</span><span class="p">(</span><span class="nx">r</span> <span class="nx">rest</span><span class="p">.</span><span class="nx">GracefulDeleter</span><span class="p">,</span> <span class="nx">allowsOptions</span> <span class="kt">bool</span><span class="p">,</span> <span class="nx">scope</span> <span class="o">*</span><span class="nx">RequestScope</span><span class="p">,</span> <span class="nx">admit</span> <span class="nx">admission</span><span class="p">.</span><span class="nx">Interface</span><span class="p">)</span> <span class="nx">http</span><span class="p">.</span><span class="nx">HandlerFunc</span> <span class="p">{</span>
+<span class="ln"> 2</span>    <span class="c1">//...
+</span><span class="ln"> 3</span><span class="c1"></span>
+<span class="ln"> 4</span>    <span class="nx">trace</span><span class="p">.</span><span class="nf">Step</span><span class="p">(</span><span class="s">&#34;About to delete object from database&#34;</span><span class="p">)</span>
+<span class="ln"> 5</span>		<span class="nx">wasDeleted</span> <span class="o">:=</span> <span class="kc">true</span>
+<span class="ln"> 6</span>		<span class="nx">userInfo</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">request</span><span class="p">.</span><span class="nf">UserFrom</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
+<span class="ln"> 7</span>		<span class="nx">staticAdmissionAttrs</span> <span class="o">:=</span> <span class="nx">admission</span><span class="p">.</span><span class="nf">NewAttributesRecord</span><span class="p">(</span><span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">scope</span><span class="p">.</span><span class="nx">Kind</span><span class="p">,</span> <span class="nx">namespace</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">scope</span><span class="p">.</span><span class="nx">Resource</span><span class="p">,</span> <span class="nx">scope</span><span class="p">.</span><span class="nx">Subresource</span><span class="p">,</span> <span class="nx">admission</span><span class="p">.</span><span class="nx">Delete</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">dryrun</span><span class="p">.</span><span class="nf">IsDryRun</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">DryRun</span><span class="p">),</span> <span class="nx">userInfo</span><span class="p">)</span>
+<span class="ln"> 8</span>		<span class="nx">result</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">finishRequest</span><span class="p">(</span><span class="nx">timeout</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">(</span><span class="nx">runtime</span><span class="p">.</span><span class="nx">Object</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+<span class="ln"> 9</span>			<span class="nx">obj</span><span class="p">,</span> <span class="nx">deleted</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">rest</span><span class="p">.</span><span class="nf">AdmissionToValidateObjectDeleteFunc</span><span class="p">(</span><span class="nx">admit</span><span class="p">,</span> <span class="nx">staticAdmissionAttrs</span><span class="p">,</span> <span class="nx">scope</span><span class="p">),</span> <span class="nx">options</span><span class="p">)</span>
+<span class="ln">10</span>			<span class="nx">wasDeleted</span> <span class="p">=</span> <span class="nx">deleted</span>
+<span class="ln">11</span>			<span class="k">return</span> <span class="nx">obj</span><span class="p">,</span> <span class="nx">err</span>
+<span class="ln">12</span>		<span class="p">})</span>
+<span class="ln">13</span>		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+<span class="ln">14</span>			<span class="nx">scope</span><span class="p">.</span><span class="nf">err</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">w</span><span class="p">,</span> <span class="nx">req</span><span class="p">)</span>
+<span class="ln">15</span>			<span class="k">return</span>
+<span class="ln">16</span>		<span class="p">}</span>
+<span class="ln">17</span>        <span class="nx">trace</span><span class="p">.</span><span class="nf">Step</span><span class="p">(</span><span class="s">&#34;Object deleted from database&#34;</span><span class="p">)</span>
+<span class="ln">18</span>        
+<span class="ln">19</span>        <span class="o">...</span>
+<span class="ln">20</span><span class="p">}</span>
 </code></pre></div><p><code>Delete</code>方法中，在<code>BeforeDelete</code>函数中判断是否需要优雅删除，判断的标准是<code>DeletionGracePeriodSeconds</code>值是否为0，不为零则认为是优雅删除，kube-apiserver不会立即将这个API对象从etcd中删除，否则直接删除。</p>
 <p>对于Pod而言，默认<code>DeletionGracePeriodSeconds</code>为30秒，因此这里不会被kube-apiserver立刻删除掉。而是将<code>DeletionTimestamp</code>设置为当前时间，<code>DeletionGracePeriodSeconds</code>设置为默认值30秒。</p>
 <h3 id="kubelet杀掉容器">kubelet杀掉容器</h3>
@@ -182,120 +182,120 @@
 <p>Kubelet在<code>makePodSourceConfig</code>函数中，监听了三种类型的Pod：通过<a href="https://kubernetes.io/zh/docs/tasks/configure-pod-container/static-pod/#configuration-files">文件系统上的配置文件</a>配置的静态Pod，通过<a href="https://kubernetes.io/zh/docs/tasks/configure-pod-container/static-pod/#pods-created-via-http">web 网络上的配置文件</a>配置的静态Pod，以及kube-apiserver中的pod。我们主要关心第三种。</p>
 <p>Kubelet通过reflactor watch到Pod资源发生变化后，是通过channel的方式将Pod及其变化传递给syncLoop主控制循环中进行处理的，<strong>并没有使用informer+workqueque的方式</strong>。</p>
 <p>kubelet的主控制循环在<code>pkg/kubelet/kubelet.go</code>文件中的<code>syncLoopIteration</code>函数：</p>
-<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">kl</span> <span class="o">*</span><span class="nx">Kubelet</span><span class="p">)</span> <span class="nf">syncLoopIteration</span><span class="p">(</span><span class="nx">configCh</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="nx">kubetypes</span><span class="p">.</span><span class="nx">PodUpdate</span><span class="p">,</span> <span class="nx">handler</span> <span class="nx">SyncHandler</span><span class="p">,</span>
-	<span class="nx">syncCh</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Time</span><span class="p">,</span> <span class="nx">housekeepingCh</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Time</span><span class="p">,</span> <span class="nx">plegCh</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="o">*</span><span class="nx">pleg</span><span class="p">.</span><span class="nx">PodLifecycleEvent</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
-	<span class="k">select</span> <span class="p">{</span>
-	<span class="k">case</span> <span class="nx">u</span><span class="p">,</span> <span class="nx">open</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">configCh</span><span class="p">:</span>
-		<span class="c1">// Update from a config source; dispatch it to the right handler
-</span><span class="c1"></span>		<span class="c1">// callback.
-</span><span class="c1"></span>		<span class="k">if</span> <span class="p">!</span><span class="nx">open</span> <span class="p">{</span>
-			<span class="nx">klog</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Update channel is closed. Exiting the sync loop.&#34;</span><span class="p">)</span>
-			<span class="k">return</span> <span class="kc">false</span>
-		<span class="p">}</span>
-
-		<span class="k">switch</span> <span class="nx">u</span><span class="p">.</span><span class="nx">Op</span> <span class="p">{</span>
-		<span class="k">case</span> <span class="nx">kubetypes</span><span class="p">.</span><span class="nx">ADD</span><span class="p">:</span>
-			<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nf">Infof</span><span class="p">(</span><span class="s">&#34;SyncLoop (ADD, %q): %q&#34;</span><span class="p">,</span> <span class="nx">u</span><span class="p">.</span><span class="nx">Source</span><span class="p">,</span> <span class="nx">format</span><span class="p">.</span><span class="nf">Pods</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Pods</span><span class="p">))</span>
-			<span class="c1">// After restarting, kubelet will get all existing pods through
-</span><span class="c1"></span>			<span class="c1">// ADD as if they are new pods. These pods will then go through the
-</span><span class="c1"></span>			<span class="c1">// admission process and *may* be rejected. This can be resolved
-</span><span class="c1"></span>			<span class="c1">// once we have checkpointing.
-</span><span class="c1"></span>			<span class="nx">handler</span><span class="p">.</span><span class="nf">HandlePodAdditions</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Pods</span><span class="p">)</span>
-		<span class="k">case</span> <span class="nx">kubetypes</span><span class="p">.</span><span class="nx">UPDATE</span><span class="p">:</span>
-			<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nf">Infof</span><span class="p">(</span><span class="s">&#34;SyncLoop (UPDATE, %q): %q&#34;</span><span class="p">,</span> <span class="nx">u</span><span class="p">.</span><span class="nx">Source</span><span class="p">,</span> <span class="nx">format</span><span class="p">.</span><span class="nf">PodsWithDeletionTimestamps</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Pods</span><span class="p">))</span>
-			<span class="nx">handler</span><span class="p">.</span><span class="nf">HandlePodUpdates</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Pods</span><span class="p">)</span>
-		<span class="k">case</span> <span class="nx">kubetypes</span><span class="p">.</span><span class="nx">REMOVE</span><span class="p">:</span>
-			<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nf">Infof</span><span class="p">(</span><span class="s">&#34;SyncLoop (REMOVE, %q): %q&#34;</span><span class="p">,</span> <span class="nx">u</span><span class="p">.</span><span class="nx">Source</span><span class="p">,</span> <span class="nx">format</span><span class="p">.</span><span class="nf">Pods</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Pods</span><span class="p">))</span>
-			<span class="nx">handler</span><span class="p">.</span><span class="nf">HandlePodRemoves</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Pods</span><span class="p">)</span>
-		<span class="k">case</span> <span class="nx">kubetypes</span><span class="p">.</span><span class="nx">RECONCILE</span><span class="p">:</span>
-			<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">4</span><span class="p">).</span><span class="nf">Infof</span><span class="p">(</span><span class="s">&#34;SyncLoop (RECONCILE, %q): %q&#34;</span><span class="p">,</span> <span class="nx">u</span><span class="p">.</span><span class="nx">Source</span><span class="p">,</span> <span class="nx">format</span><span class="p">.</span><span class="nf">Pods</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Pods</span><span class="p">))</span>
-			<span class="nx">handler</span><span class="p">.</span><span class="nf">HandlePodReconcile</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Pods</span><span class="p">)</span>
-		<span class="k">case</span> <span class="nx">kubetypes</span><span class="p">.</span><span class="nx">DELETE</span><span class="p">:</span>
-			<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nf">Infof</span><span class="p">(</span><span class="s">&#34;SyncLoop (DELETE, %q): %q&#34;</span><span class="p">,</span> <span class="nx">u</span><span class="p">.</span><span class="nx">Source</span><span class="p">,</span> <span class="nx">format</span><span class="p">.</span><span class="nf">Pods</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Pods</span><span class="p">))</span>
-			<span class="c1">// DELETE is treated as a UPDATE because of graceful deletion.
-</span><span class="c1"></span>			<span class="nx">handler</span><span class="p">.</span><span class="nf">HandlePodUpdates</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Pods</span><span class="p">)</span>
-		<span class="k">case</span> <span class="nx">kubetypes</span><span class="p">.</span><span class="nx">RESTORE</span><span class="p">:</span>
-			<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nf">Infof</span><span class="p">(</span><span class="s">&#34;SyncLoop (RESTORE, %q): %q&#34;</span><span class="p">,</span> <span class="nx">u</span><span class="p">.</span><span class="nx">Source</span><span class="p">,</span> <span class="nx">format</span><span class="p">.</span><span class="nf">Pods</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Pods</span><span class="p">))</span>
-			<span class="c1">// These are pods restored from the checkpoint. Treat them as new
-</span><span class="c1"></span>			<span class="c1">// pods.
-</span><span class="c1"></span>			<span class="nx">handler</span><span class="p">.</span><span class="nf">HandlePodAdditions</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Pods</span><span class="p">)</span>
-		<span class="k">case</span> <span class="nx">kubetypes</span><span class="p">.</span><span class="nx">SET</span><span class="p">:</span>
-			<span class="c1">// TODO: Do we want to support this?
-</span><span class="c1"></span>			<span class="nx">klog</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Kubelet does not support snapshot update&#34;</span><span class="p">)</span>
-        <span class="p">}</span>
-
-        <span class="o">...</span>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln"> 1</span><span class="kd">func</span> <span class="p">(</span><span class="nx">kl</span> <span class="o">*</span><span class="nx">Kubelet</span><span class="p">)</span> <span class="nf">syncLoopIteration</span><span class="p">(</span><span class="nx">configCh</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="nx">kubetypes</span><span class="p">.</span><span class="nx">PodUpdate</span><span class="p">,</span> <span class="nx">handler</span> <span class="nx">SyncHandler</span><span class="p">,</span>
+<span class="ln"> 2</span>	<span class="nx">syncCh</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Time</span><span class="p">,</span> <span class="nx">housekeepingCh</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Time</span><span class="p">,</span> <span class="nx">plegCh</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="o">*</span><span class="nx">pleg</span><span class="p">.</span><span class="nx">PodLifecycleEvent</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
+<span class="ln"> 3</span>	<span class="k">select</span> <span class="p">{</span>
+<span class="ln"> 4</span>	<span class="k">case</span> <span class="nx">u</span><span class="p">,</span> <span class="nx">open</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">configCh</span><span class="p">:</span>
+<span class="ln"> 5</span>		<span class="c1">// Update from a config source; dispatch it to the right handler
+</span><span class="ln"> 6</span><span class="c1"></span>		<span class="c1">// callback.
+</span><span class="ln"> 7</span><span class="c1"></span>		<span class="k">if</span> <span class="p">!</span><span class="nx">open</span> <span class="p">{</span>
+<span class="ln"> 8</span>			<span class="nx">klog</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Update channel is closed. Exiting the sync loop.&#34;</span><span class="p">)</span>
+<span class="ln"> 9</span>			<span class="k">return</span> <span class="kc">false</span>
+<span class="ln">10</span>		<span class="p">}</span>
+<span class="ln">11</span>
+<span class="ln">12</span>		<span class="k">switch</span> <span class="nx">u</span><span class="p">.</span><span class="nx">Op</span> <span class="p">{</span>
+<span class="ln">13</span>		<span class="k">case</span> <span class="nx">kubetypes</span><span class="p">.</span><span class="nx">ADD</span><span class="p">:</span>
+<span class="ln">14</span>			<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nf">Infof</span><span class="p">(</span><span class="s">&#34;SyncLoop (ADD, %q): %q&#34;</span><span class="p">,</span> <span class="nx">u</span><span class="p">.</span><span class="nx">Source</span><span class="p">,</span> <span class="nx">format</span><span class="p">.</span><span class="nf">Pods</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Pods</span><span class="p">))</span>
+<span class="ln">15</span>			<span class="c1">// After restarting, kubelet will get all existing pods through
+</span><span class="ln">16</span><span class="c1"></span>			<span class="c1">// ADD as if they are new pods. These pods will then go through the
+</span><span class="ln">17</span><span class="c1"></span>			<span class="c1">// admission process and *may* be rejected. This can be resolved
+</span><span class="ln">18</span><span class="c1"></span>			<span class="c1">// once we have checkpointing.
+</span><span class="ln">19</span><span class="c1"></span>			<span class="nx">handler</span><span class="p">.</span><span class="nf">HandlePodAdditions</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Pods</span><span class="p">)</span>
+<span class="ln">20</span>		<span class="k">case</span> <span class="nx">kubetypes</span><span class="p">.</span><span class="nx">UPDATE</span><span class="p">:</span>
+<span class="ln">21</span>			<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nf">Infof</span><span class="p">(</span><span class="s">&#34;SyncLoop (UPDATE, %q): %q&#34;</span><span class="p">,</span> <span class="nx">u</span><span class="p">.</span><span class="nx">Source</span><span class="p">,</span> <span class="nx">format</span><span class="p">.</span><span class="nf">PodsWithDeletionTimestamps</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Pods</span><span class="p">))</span>
+<span class="ln">22</span>			<span class="nx">handler</span><span class="p">.</span><span class="nf">HandlePodUpdates</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Pods</span><span class="p">)</span>
+<span class="ln">23</span>		<span class="k">case</span> <span class="nx">kubetypes</span><span class="p">.</span><span class="nx">REMOVE</span><span class="p">:</span>
+<span class="ln">24</span>			<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nf">Infof</span><span class="p">(</span><span class="s">&#34;SyncLoop (REMOVE, %q): %q&#34;</span><span class="p">,</span> <span class="nx">u</span><span class="p">.</span><span class="nx">Source</span><span class="p">,</span> <span class="nx">format</span><span class="p">.</span><span class="nf">Pods</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Pods</span><span class="p">))</span>
+<span class="ln">25</span>			<span class="nx">handler</span><span class="p">.</span><span class="nf">HandlePodRemoves</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Pods</span><span class="p">)</span>
+<span class="ln">26</span>		<span class="k">case</span> <span class="nx">kubetypes</span><span class="p">.</span><span class="nx">RECONCILE</span><span class="p">:</span>
+<span class="ln">27</span>			<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">4</span><span class="p">).</span><span class="nf">Infof</span><span class="p">(</span><span class="s">&#34;SyncLoop (RECONCILE, %q): %q&#34;</span><span class="p">,</span> <span class="nx">u</span><span class="p">.</span><span class="nx">Source</span><span class="p">,</span> <span class="nx">format</span><span class="p">.</span><span class="nf">Pods</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Pods</span><span class="p">))</span>
+<span class="ln">28</span>			<span class="nx">handler</span><span class="p">.</span><span class="nf">HandlePodReconcile</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Pods</span><span class="p">)</span>
+<span class="ln">29</span>		<span class="k">case</span> <span class="nx">kubetypes</span><span class="p">.</span><span class="nx">DELETE</span><span class="p">:</span>
+<span class="ln">30</span>			<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nf">Infof</span><span class="p">(</span><span class="s">&#34;SyncLoop (DELETE, %q): %q&#34;</span><span class="p">,</span> <span class="nx">u</span><span class="p">.</span><span class="nx">Source</span><span class="p">,</span> <span class="nx">format</span><span class="p">.</span><span class="nf">Pods</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Pods</span><span class="p">))</span>
+<span class="ln">31</span>			<span class="c1">// DELETE is treated as a UPDATE because of graceful deletion.
+</span><span class="ln">32</span><span class="c1"></span>			<span class="nx">handler</span><span class="p">.</span><span class="nf">HandlePodUpdates</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Pods</span><span class="p">)</span>
+<span class="ln">33</span>		<span class="k">case</span> <span class="nx">kubetypes</span><span class="p">.</span><span class="nx">RESTORE</span><span class="p">:</span>
+<span class="ln">34</span>			<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nf">Infof</span><span class="p">(</span><span class="s">&#34;SyncLoop (RESTORE, %q): %q&#34;</span><span class="p">,</span> <span class="nx">u</span><span class="p">.</span><span class="nx">Source</span><span class="p">,</span> <span class="nx">format</span><span class="p">.</span><span class="nf">Pods</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Pods</span><span class="p">))</span>
+<span class="ln">35</span>			<span class="c1">// These are pods restored from the checkpoint. Treat them as new
+</span><span class="ln">36</span><span class="c1"></span>			<span class="c1">// pods.
+</span><span class="ln">37</span><span class="c1"></span>			<span class="nx">handler</span><span class="p">.</span><span class="nf">HandlePodAdditions</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">Pods</span><span class="p">)</span>
+<span class="ln">38</span>		<span class="k">case</span> <span class="nx">kubetypes</span><span class="p">.</span><span class="nx">SET</span><span class="p">:</span>
+<span class="ln">39</span>			<span class="c1">// TODO: Do we want to support this?
+</span><span class="ln">40</span><span class="c1"></span>			<span class="nx">klog</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Kubelet does not support snapshot update&#34;</span><span class="p">)</span>
+<span class="ln">41</span>        <span class="p">}</span>
+<span class="ln">42</span>
+<span class="ln">43</span>        <span class="o">...</span>
 </code></pre></div><p>当Pod的<code>DeletionTimestamp</code>被设置时，Kubelet会走入<code>kubetypes.DELETE</code>这个分支，最终会调用到<code>pkg/kubelet/kubelet.go</code>中的<code>syncPod</code>函数，<strong><code>syncPod</code> 这个函数是 kubelet 核心处理函数</strong>。这个函数会调用到容器运行时的<code>KillPod</code>方法，该方法进而又会以goroutine的方式，使用<code>pkg/kubelet/kuberuntime/kuberuntime_container.go</code>中定义的<code>killContainer</code>方法<strong>并行的杀掉</strong>所有容器。<code>killContainer</code>的代码实现如下所示：</p>
-<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">kubeGenericRuntimeManager</span><span class="p">)</span> <span class="nf">killContainer</span><span class="p">(</span><span class="nx">pod</span> <span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">Pod</span><span class="p">,</span> <span class="nx">containerID</span> <span class="nx">kubecontainer</span><span class="p">.</span><span class="nx">ContainerID</span><span class="p">,</span> <span class="nx">containerName</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">message</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">gracePeriodOverride</span> <span class="o">*</span><span class="kt">int64</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
-	<span class="o">...</span>
-
-	<span class="c1">// From this point, pod and container must be non-nil.
-</span><span class="c1"></span>	<span class="nx">gracePeriod</span> <span class="o">:=</span> <span class="nb">int64</span><span class="p">(</span><span class="nx">minimumGracePeriodInSeconds</span><span class="p">)</span>
-	<span class="k">switch</span> <span class="p">{</span>
-	<span class="k">case</span> <span class="nx">pod</span><span class="p">.</span><span class="nx">DeletionGracePeriodSeconds</span> <span class="o">!=</span> <span class="kc">nil</span><span class="p">:</span>
-		<span class="nx">gracePeriod</span> <span class="p">=</span> <span class="o">*</span><span class="nx">pod</span><span class="p">.</span><span class="nx">DeletionGracePeriodSeconds</span>
-	<span class="k">case</span> <span class="nx">pod</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">TerminationGracePeriodSeconds</span> <span class="o">!=</span> <span class="kc">nil</span><span class="p">:</span>
-		<span class="nx">gracePeriod</span> <span class="p">=</span> <span class="o">*</span><span class="nx">pod</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">TerminationGracePeriodSeconds</span>
-	<span class="p">}</span>
-
-	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">message</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
-		<span class="nx">message</span> <span class="p">=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;Stopping container %s&#34;</span><span class="p">,</span> <span class="nx">containerSpec</span><span class="p">.</span><span class="nx">Name</span><span class="p">)</span>
-	<span class="p">}</span>
-	<span class="nx">m</span><span class="p">.</span><span class="nf">recordContainerEvent</span><span class="p">(</span><span class="nx">pod</span><span class="p">,</span> <span class="nx">containerSpec</span><span class="p">,</span> <span class="nx">containerID</span><span class="p">.</span><span class="nx">ID</span><span class="p">,</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">EventTypeNormal</span><span class="p">,</span> <span class="nx">events</span><span class="p">.</span><span class="nx">KillingContainer</span><span class="p">,</span> <span class="nx">message</span><span class="p">)</span>
-
-	<span class="c1">// Run internal pre-stop lifecycle hook
-</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">m</span><span class="p">.</span><span class="nx">internalLifecycle</span><span class="p">.</span><span class="nf">PreStopContainer</span><span class="p">(</span><span class="nx">containerID</span><span class="p">.</span><span class="nx">ID</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-		<span class="k">return</span> <span class="nx">err</span>
-	<span class="p">}</span>
-
-	<span class="c1">// Run the pre-stop lifecycle hooks if applicable and if there is enough time to run it
-</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">containerSpec</span><span class="p">.</span><span class="nx">Lifecycle</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="o">&amp;&amp;</span> <span class="nx">containerSpec</span><span class="p">.</span><span class="nx">Lifecycle</span><span class="p">.</span><span class="nx">PreStop</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="o">&amp;&amp;</span> <span class="nx">gracePeriod</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
-		<span class="nx">gracePeriod</span> <span class="p">=</span> <span class="nx">gracePeriod</span> <span class="o">-</span> <span class="nx">m</span><span class="p">.</span><span class="nf">executePreStopHook</span><span class="p">(</span><span class="nx">pod</span><span class="p">,</span> <span class="nx">containerID</span><span class="p">,</span> <span class="nx">containerSpec</span><span class="p">,</span> <span class="nx">gracePeriod</span><span class="p">)</span>
-	<span class="p">}</span>
-	<span class="c1">// always give containers a minimal shutdown window to avoid unnecessary SIGKILLs
-</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">gracePeriod</span> <span class="p">&lt;</span> <span class="nx">minimumGracePeriodInSeconds</span> <span class="p">{</span>
-		<span class="nx">gracePeriod</span> <span class="p">=</span> <span class="nx">minimumGracePeriodInSeconds</span>
-	<span class="p">}</span>
-	<span class="k">if</span> <span class="nx">gracePeriodOverride</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-		<span class="nx">gracePeriod</span> <span class="p">=</span> <span class="o">*</span><span class="nx">gracePeriodOverride</span>
-		<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="nf">Infof</span><span class="p">(</span><span class="s">&#34;Killing container %q, but using %d second grace period override&#34;</span><span class="p">,</span> <span class="nx">containerID</span><span class="p">,</span> <span class="nx">gracePeriod</span><span class="p">)</span>
-	<span class="p">}</span>
-
-	<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nf">Infof</span><span class="p">(</span><span class="s">&#34;Killing container %q with %d second grace period&#34;</span><span class="p">,</span> <span class="nx">containerID</span><span class="p">.</span><span class="nf">String</span><span class="p">(),</span> <span class="nx">gracePeriod</span><span class="p">)</span>
-
-	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">m</span><span class="p">.</span><span class="nx">runtimeService</span><span class="p">.</span><span class="nf">StopContainer</span><span class="p">(</span><span class="nx">containerID</span><span class="p">.</span><span class="nx">ID</span><span class="p">,</span> <span class="nx">gracePeriod</span><span class="p">)</span>
-	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-		<span class="nx">klog</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Container %q termination failed with gracePeriod %d: %v&#34;</span><span class="p">,</span> <span class="nx">containerID</span><span class="p">.</span><span class="nf">String</span><span class="p">(),</span> <span class="nx">gracePeriod</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-		<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="nf">Infof</span><span class="p">(</span><span class="s">&#34;Container %q exited normally&#34;</span><span class="p">,</span> <span class="nx">containerID</span><span class="p">.</span><span class="nf">String</span><span class="p">())</span>
-	<span class="p">}</span>
-
-	<span class="nx">m</span><span class="p">.</span><span class="nx">containerRefManager</span><span class="p">.</span><span class="nf">ClearRef</span><span class="p">(</span><span class="nx">containerID</span><span class="p">)</span>
-
-	<span class="k">return</span> <span class="nx">err</span>
-<span class="p">}</span>  
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln"> 1</span><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">kubeGenericRuntimeManager</span><span class="p">)</span> <span class="nf">killContainer</span><span class="p">(</span><span class="nx">pod</span> <span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">Pod</span><span class="p">,</span> <span class="nx">containerID</span> <span class="nx">kubecontainer</span><span class="p">.</span><span class="nx">ContainerID</span><span class="p">,</span> <span class="nx">containerName</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">message</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">gracePeriodOverride</span> <span class="o">*</span><span class="kt">int64</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+<span class="ln"> 2</span>	<span class="o">...</span>
+<span class="ln"> 3</span>
+<span class="ln"> 4</span>	<span class="c1">// From this point, pod and container must be non-nil.
+</span><span class="ln"> 5</span><span class="c1"></span>	<span class="nx">gracePeriod</span> <span class="o">:=</span> <span class="nb">int64</span><span class="p">(</span><span class="nx">minimumGracePeriodInSeconds</span><span class="p">)</span>
+<span class="ln"> 6</span>	<span class="k">switch</span> <span class="p">{</span>
+<span class="ln"> 7</span>	<span class="k">case</span> <span class="nx">pod</span><span class="p">.</span><span class="nx">DeletionGracePeriodSeconds</span> <span class="o">!=</span> <span class="kc">nil</span><span class="p">:</span>
+<span class="ln"> 8</span>		<span class="nx">gracePeriod</span> <span class="p">=</span> <span class="o">*</span><span class="nx">pod</span><span class="p">.</span><span class="nx">DeletionGracePeriodSeconds</span>
+<span class="ln"> 9</span>	<span class="k">case</span> <span class="nx">pod</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">TerminationGracePeriodSeconds</span> <span class="o">!=</span> <span class="kc">nil</span><span class="p">:</span>
+<span class="ln">10</span>		<span class="nx">gracePeriod</span> <span class="p">=</span> <span class="o">*</span><span class="nx">pod</span><span class="p">.</span><span class="nx">Spec</span><span class="p">.</span><span class="nx">TerminationGracePeriodSeconds</span>
+<span class="ln">11</span>	<span class="p">}</span>
+<span class="ln">12</span>
+<span class="ln">13</span>	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">message</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+<span class="ln">14</span>		<span class="nx">message</span> <span class="p">=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;Stopping container %s&#34;</span><span class="p">,</span> <span class="nx">containerSpec</span><span class="p">.</span><span class="nx">Name</span><span class="p">)</span>
+<span class="ln">15</span>	<span class="p">}</span>
+<span class="ln">16</span>	<span class="nx">m</span><span class="p">.</span><span class="nf">recordContainerEvent</span><span class="p">(</span><span class="nx">pod</span><span class="p">,</span> <span class="nx">containerSpec</span><span class="p">,</span> <span class="nx">containerID</span><span class="p">.</span><span class="nx">ID</span><span class="p">,</span> <span class="nx">v1</span><span class="p">.</span><span class="nx">EventTypeNormal</span><span class="p">,</span> <span class="nx">events</span><span class="p">.</span><span class="nx">KillingContainer</span><span class="p">,</span> <span class="nx">message</span><span class="p">)</span>
+<span class="ln">17</span>
+<span class="ln">18</span>	<span class="c1">// Run internal pre-stop lifecycle hook
+</span><span class="ln">19</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">m</span><span class="p">.</span><span class="nx">internalLifecycle</span><span class="p">.</span><span class="nf">PreStopContainer</span><span class="p">(</span><span class="nx">containerID</span><span class="p">.</span><span class="nx">ID</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+<span class="ln">20</span>		<span class="k">return</span> <span class="nx">err</span>
+<span class="ln">21</span>	<span class="p">}</span>
+<span class="ln">22</span>
+<span class="ln">23</span>	<span class="c1">// Run the pre-stop lifecycle hooks if applicable and if there is enough time to run it
+</span><span class="ln">24</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">containerSpec</span><span class="p">.</span><span class="nx">Lifecycle</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="o">&amp;&amp;</span> <span class="nx">containerSpec</span><span class="p">.</span><span class="nx">Lifecycle</span><span class="p">.</span><span class="nx">PreStop</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="o">&amp;&amp;</span> <span class="nx">gracePeriod</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+<span class="ln">25</span>		<span class="nx">gracePeriod</span> <span class="p">=</span> <span class="nx">gracePeriod</span> <span class="o">-</span> <span class="nx">m</span><span class="p">.</span><span class="nf">executePreStopHook</span><span class="p">(</span><span class="nx">pod</span><span class="p">,</span> <span class="nx">containerID</span><span class="p">,</span> <span class="nx">containerSpec</span><span class="p">,</span> <span class="nx">gracePeriod</span><span class="p">)</span>
+<span class="ln">26</span>	<span class="p">}</span>
+<span class="ln">27</span>	<span class="c1">// always give containers a minimal shutdown window to avoid unnecessary SIGKILLs
+</span><span class="ln">28</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">gracePeriod</span> <span class="p">&lt;</span> <span class="nx">minimumGracePeriodInSeconds</span> <span class="p">{</span>
+<span class="ln">29</span>		<span class="nx">gracePeriod</span> <span class="p">=</span> <span class="nx">minimumGracePeriodInSeconds</span>
+<span class="ln">30</span>	<span class="p">}</span>
+<span class="ln">31</span>	<span class="k">if</span> <span class="nx">gracePeriodOverride</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+<span class="ln">32</span>		<span class="nx">gracePeriod</span> <span class="p">=</span> <span class="o">*</span><span class="nx">gracePeriodOverride</span>
+<span class="ln">33</span>		<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="nf">Infof</span><span class="p">(</span><span class="s">&#34;Killing container %q, but using %d second grace period override&#34;</span><span class="p">,</span> <span class="nx">containerID</span><span class="p">,</span> <span class="nx">gracePeriod</span><span class="p">)</span>
+<span class="ln">34</span>	<span class="p">}</span>
+<span class="ln">35</span>
+<span class="ln">36</span>	<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nf">Infof</span><span class="p">(</span><span class="s">&#34;Killing container %q with %d second grace period&#34;</span><span class="p">,</span> <span class="nx">containerID</span><span class="p">.</span><span class="nf">String</span><span class="p">(),</span> <span class="nx">gracePeriod</span><span class="p">)</span>
+<span class="ln">37</span>
+<span class="ln">38</span>	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">m</span><span class="p">.</span><span class="nx">runtimeService</span><span class="p">.</span><span class="nf">StopContainer</span><span class="p">(</span><span class="nx">containerID</span><span class="p">.</span><span class="nx">ID</span><span class="p">,</span> <span class="nx">gracePeriod</span><span class="p">)</span>
+<span class="ln">39</span>	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+<span class="ln">40</span>		<span class="nx">klog</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Container %q termination failed with gracePeriod %d: %v&#34;</span><span class="p">,</span> <span class="nx">containerID</span><span class="p">.</span><span class="nf">String</span><span class="p">(),</span> <span class="nx">gracePeriod</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+<span class="ln">41</span>	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+<span class="ln">42</span>		<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="nf">Infof</span><span class="p">(</span><span class="s">&#34;Container %q exited normally&#34;</span><span class="p">,</span> <span class="nx">containerID</span><span class="p">.</span><span class="nf">String</span><span class="p">())</span>
+<span class="ln">43</span>	<span class="p">}</span>
+<span class="ln">44</span>
+<span class="ln">45</span>	<span class="nx">m</span><span class="p">.</span><span class="nx">containerRefManager</span><span class="p">.</span><span class="nf">ClearRef</span><span class="p">(</span><span class="nx">containerID</span><span class="p">)</span>
+<span class="ln">46</span>
+<span class="ln">47</span>	<span class="k">return</span> <span class="nx">err</span>
+<span class="ln">48</span><span class="p">}</span>  
 </code></pre></div><p>这个方法就是先调用prestop hook，然后在通过<code>runtimeService.StopContainer</code>方法杀掉容器进程，整个过程总时长不能超过<code>DeletionGracePeriodSeconds</code>。注意，prestop hook是不会进行重试的，失败了kubelet也不管，容器还是照杀不误。</p>
 <h3 id="statusmanager发送删除请求">statusManager发送删除请求</h3>
 <p>kubelet以goroutine的方式运行着一个<code>statusManager</code>，它的作用就是周期性的监听Pod的状态变化，然后执行<code>func (m *manager) syncPod(uid types.UID, status versionedPodStatus) {</code>。在<code>syncPod</code>中，注意到有如下的逻辑：</p>
-<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">manager</span><span class="p">)</span> <span class="nf">syncPod</span><span class="p">(</span><span class="nx">uid</span> <span class="nx">types</span><span class="p">.</span><span class="nx">UID</span><span class="p">,</span> <span class="nx">status</span> <span class="nx">versionedPodStatus</span><span class="p">)</span> <span class="p">{</span>
-    <span class="o">...</span>
-
-    <span class="k">if</span> <span class="nx">m</span><span class="p">.</span><span class="nf">canBeDeleted</span><span class="p">(</span><span class="nx">pod</span><span class="p">,</span> <span class="nx">status</span><span class="p">.</span><span class="nx">status</span><span class="p">)</span> <span class="p">{</span>
-		<span class="nx">deleteOptions</span> <span class="o">:=</span> <span class="nx">metav1</span><span class="p">.</span><span class="nx">DeleteOptions</span><span class="p">{</span>
-			<span class="nx">GracePeriodSeconds</span><span class="p">:</span> <span class="nb">new</span><span class="p">(</span><span class="kt">int64</span><span class="p">),</span>
-			<span class="c1">// Use the pod UID as the precondition for deletion to prevent deleting a
-</span><span class="c1"></span>			<span class="c1">// newly created pod with the same name and namespace.
-</span><span class="c1"></span>			<span class="nx">Preconditions</span><span class="p">:</span> <span class="nx">metav1</span><span class="p">.</span><span class="nf">NewUIDPreconditions</span><span class="p">(</span><span class="nb">string</span><span class="p">(</span><span class="nx">pod</span><span class="p">.</span><span class="nx">UID</span><span class="p">)),</span>
-		<span class="p">}</span>
-		<span class="nx">err</span> <span class="p">=</span> <span class="nx">m</span><span class="p">.</span><span class="nx">kubeClient</span><span class="p">.</span><span class="nf">CoreV1</span><span class="p">().</span><span class="nf">Pods</span><span class="p">(</span><span class="nx">pod</span><span class="p">.</span><span class="nx">Namespace</span><span class="p">).</span><span class="nf">Delete</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">pod</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">deleteOptions</span><span class="p">)</span>
-		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-			<span class="nx">klog</span><span class="p">.</span><span class="nf">Warningf</span><span class="p">(</span><span class="s">&#34;Failed to delete status for pod %q: %v&#34;</span><span class="p">,</span> <span class="nx">format</span><span class="p">.</span><span class="nf">Pod</span><span class="p">(</span><span class="nx">pod</span><span class="p">),</span> <span class="nx">err</span><span class="p">)</span>
-			<span class="k">return</span>
-		<span class="p">}</span>
-		<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="nf">Infof</span><span class="p">(</span><span class="s">&#34;Pod %q fully terminated and removed from etcd&#34;</span><span class="p">,</span> <span class="nx">format</span><span class="p">.</span><span class="nf">Pod</span><span class="p">(</span><span class="nx">pod</span><span class="p">))</span>
-		<span class="nx">m</span><span class="p">.</span><span class="nf">deletePodStatus</span><span class="p">(</span><span class="nx">uid</span><span class="p">)</span>
-	<span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln"> 1</span><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">manager</span><span class="p">)</span> <span class="nf">syncPod</span><span class="p">(</span><span class="nx">uid</span> <span class="nx">types</span><span class="p">.</span><span class="nx">UID</span><span class="p">,</span> <span class="nx">status</span> <span class="nx">versionedPodStatus</span><span class="p">)</span> <span class="p">{</span>
+<span class="ln"> 2</span>    <span class="o">...</span>
+<span class="ln"> 3</span>
+<span class="ln"> 4</span>    <span class="k">if</span> <span class="nx">m</span><span class="p">.</span><span class="nf">canBeDeleted</span><span class="p">(</span><span class="nx">pod</span><span class="p">,</span> <span class="nx">status</span><span class="p">.</span><span class="nx">status</span><span class="p">)</span> <span class="p">{</span>
+<span class="ln"> 5</span>		<span class="nx">deleteOptions</span> <span class="o">:=</span> <span class="nx">metav1</span><span class="p">.</span><span class="nx">DeleteOptions</span><span class="p">{</span>
+<span class="ln"> 6</span>			<span class="nx">GracePeriodSeconds</span><span class="p">:</span> <span class="nb">new</span><span class="p">(</span><span class="kt">int64</span><span class="p">),</span>
+<span class="ln"> 7</span>			<span class="c1">// Use the pod UID as the precondition for deletion to prevent deleting a
+</span><span class="ln"> 8</span><span class="c1"></span>			<span class="c1">// newly created pod with the same name and namespace.
+</span><span class="ln"> 9</span><span class="c1"></span>			<span class="nx">Preconditions</span><span class="p">:</span> <span class="nx">metav1</span><span class="p">.</span><span class="nf">NewUIDPreconditions</span><span class="p">(</span><span class="nb">string</span><span class="p">(</span><span class="nx">pod</span><span class="p">.</span><span class="nx">UID</span><span class="p">)),</span>
+<span class="ln">10</span>		<span class="p">}</span>
+<span class="ln">11</span>		<span class="nx">err</span> <span class="p">=</span> <span class="nx">m</span><span class="p">.</span><span class="nx">kubeClient</span><span class="p">.</span><span class="nf">CoreV1</span><span class="p">().</span><span class="nf">Pods</span><span class="p">(</span><span class="nx">pod</span><span class="p">.</span><span class="nx">Namespace</span><span class="p">).</span><span class="nf">Delete</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">pod</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">deleteOptions</span><span class="p">)</span>
+<span class="ln">12</span>		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+<span class="ln">13</span>			<span class="nx">klog</span><span class="p">.</span><span class="nf">Warningf</span><span class="p">(</span><span class="s">&#34;Failed to delete status for pod %q: %v&#34;</span><span class="p">,</span> <span class="nx">format</span><span class="p">.</span><span class="nf">Pod</span><span class="p">(</span><span class="nx">pod</span><span class="p">),</span> <span class="nx">err</span><span class="p">)</span>
+<span class="ln">14</span>			<span class="k">return</span>
+<span class="ln">15</span>		<span class="p">}</span>
+<span class="ln">16</span>		<span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="nf">Infof</span><span class="p">(</span><span class="s">&#34;Pod %q fully terminated and removed from etcd&#34;</span><span class="p">,</span> <span class="nx">format</span><span class="p">.</span><span class="nf">Pod</span><span class="p">(</span><span class="nx">pod</span><span class="p">))</span>
+<span class="ln">17</span>		<span class="nx">m</span><span class="p">.</span><span class="nf">deletePodStatus</span><span class="p">(</span><span class="nx">uid</span><span class="p">)</span>
+<span class="ln">18</span>	<span class="p">}</span>
+<span class="ln">19</span><span class="p">}</span>
 </code></pre></div><p>也就是说，<strong><code>statusManager</code>发现Pod可以被删除的时候，就会去调用clientset的delete接口将Pod资源从kube-apiserver中删掉</strong>。那什么时候Pod可以被删除呢？自然是在上一步中，kubelet将Pod的容器、卷、cgroup sandbox等资源统统删除掉，就可以被删除了。</p>
 <p>这里，webhook就会收到第二次删除请求，而且这次请求中，将<code>GracePeriodSeconds</code>设置为了0，这就代表着kube-apiserver收到这个DELETE请求后，可以将Pod从etcd中删除了。</p>
 <h3 id="第三次delete请求">第三次delete请求</h3>
@@ -304,51 +304,51 @@
 <p>其实，第三次DELETE请求是kube-apiserver自己发的。</p>
 <p>在第一部分中，我提到kube-apiserver收到DELETE请求后最终会调用<code>staging/src/k8s.io/apiserver/pkg/registry/generic/registry/store.go</code>文件中的<code>Delete</code>方法，然后由于走的是优雅删除，它更新完Pod的<code>DeletionTimestamp</code>和<code>DeletionGracePeriodSeconds</code>两个字段后，就返回了。</p>
 <p>现在，第二次DELETE请求将<code>GracePeriodSeconds</code>设置为了0，于是现在可以开始执行实际的删除操作了。</p>
-<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">e</span> <span class="o">*</span><span class="nx">Store</span><span class="p">)</span> <span class="nf">Delete</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">name</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">deleteValidation</span> <span class="nx">rest</span><span class="p">.</span><span class="nx">ValidateObjectFunc</span><span class="p">,</span> <span class="nx">options</span> <span class="o">*</span><span class="nx">metav1</span><span class="p">.</span><span class="nx">DeleteOptions</span><span class="p">)</span> <span class="p">(</span><span class="nx">runtime</span><span class="p">.</span><span class="nx">Object</span><span class="p">,</span> <span class="kt">bool</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="o">...</span>
-    <span class="c1">// delete immediately, or no graceful deletion supported
-</span><span class="c1"></span>    <span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">6</span><span class="p">).</span><span class="nf">Infof</span><span class="p">(</span><span class="s">&#34;going to delete %s from registry: &#34;</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span>
-    <span class="nx">out</span> <span class="p">=</span> <span class="nx">e</span><span class="p">.</span><span class="nf">NewFunc</span><span class="p">()</span>
-    <span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">Storage</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">out</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">preconditions</span><span class="p">,</span> <span class="nx">storage</span><span class="p">.</span><span class="nf">ValidateObjectFunc</span><span class="p">(</span><span class="nx">deleteValidation</span><span class="p">),</span> <span class="nx">dryrun</span><span class="p">.</span><span class="nf">IsDryRun</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">DryRun</span><span class="p">));</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-        <span class="c1">// Please refer to the place where we set ignoreNotFound for the reason
-</span><span class="c1"></span>        <span class="c1">// why we ignore the NotFound error .
-</span><span class="c1"></span>        <span class="k">if</span> <span class="nx">storage</span><span class="p">.</span><span class="nf">IsNotFound</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">ignoreNotFound</span> <span class="o">&amp;&amp;</span> <span class="nx">lastExisting</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-            <span class="c1">// The lastExisting object may not be the last state of the object
-</span><span class="c1"></span>            <span class="c1">// before its deletion, but it&#39;s the best approximation.
-</span><span class="c1"></span>            <span class="nx">out</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">e</span><span class="p">.</span><span class="nf">finalizeDelete</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">lastExisting</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
-            <span class="k">return</span> <span class="nx">out</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">err</span>
-        <span class="p">}</span>
-        <span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">storeerr</span><span class="p">.</span><span class="nf">InterpretDeleteError</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">qualifiedResource</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span>
-    <span class="p">}</span>
-    <span class="o">...</span>
-<span class="p">}</span>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln"> 1</span><span class="kd">func</span> <span class="p">(</span><span class="nx">e</span> <span class="o">*</span><span class="nx">Store</span><span class="p">)</span> <span class="nf">Delete</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">name</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">deleteValidation</span> <span class="nx">rest</span><span class="p">.</span><span class="nx">ValidateObjectFunc</span><span class="p">,</span> <span class="nx">options</span> <span class="o">*</span><span class="nx">metav1</span><span class="p">.</span><span class="nx">DeleteOptions</span><span class="p">)</span> <span class="p">(</span><span class="nx">runtime</span><span class="p">.</span><span class="nx">Object</span><span class="p">,</span> <span class="kt">bool</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+<span class="ln"> 2</span>    <span class="o">...</span>
+<span class="ln"> 3</span>    <span class="c1">// delete immediately, or no graceful deletion supported
+</span><span class="ln"> 4</span><span class="c1"></span>    <span class="nx">klog</span><span class="p">.</span><span class="nf">V</span><span class="p">(</span><span class="mi">6</span><span class="p">).</span><span class="nf">Infof</span><span class="p">(</span><span class="s">&#34;going to delete %s from registry: &#34;</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span>
+<span class="ln"> 5</span>    <span class="nx">out</span> <span class="p">=</span> <span class="nx">e</span><span class="p">.</span><span class="nf">NewFunc</span><span class="p">()</span>
+<span class="ln"> 6</span>    <span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">Storage</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">out</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">preconditions</span><span class="p">,</span> <span class="nx">storage</span><span class="p">.</span><span class="nf">ValidateObjectFunc</span><span class="p">(</span><span class="nx">deleteValidation</span><span class="p">),</span> <span class="nx">dryrun</span><span class="p">.</span><span class="nf">IsDryRun</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">DryRun</span><span class="p">));</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+<span class="ln"> 7</span>        <span class="c1">// Please refer to the place where we set ignoreNotFound for the reason
+</span><span class="ln"> 8</span><span class="c1"></span>        <span class="c1">// why we ignore the NotFound error .
+</span><span class="ln"> 9</span><span class="c1"></span>        <span class="k">if</span> <span class="nx">storage</span><span class="p">.</span><span class="nf">IsNotFound</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">ignoreNotFound</span> <span class="o">&amp;&amp;</span> <span class="nx">lastExisting</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+<span class="ln">10</span>            <span class="c1">// The lastExisting object may not be the last state of the object
+</span><span class="ln">11</span><span class="c1"></span>            <span class="c1">// before its deletion, but it&#39;s the best approximation.
+</span><span class="ln">12</span><span class="c1"></span>            <span class="nx">out</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">e</span><span class="p">.</span><span class="nf">finalizeDelete</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">lastExisting</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
+<span class="ln">13</span>            <span class="k">return</span> <span class="nx">out</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">err</span>
+<span class="ln">14</span>        <span class="p">}</span>
+<span class="ln">15</span>        <span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">storeerr</span><span class="p">.</span><span class="nf">InterpretDeleteError</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">qualifiedResource</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span>
+<span class="ln">16</span>    <span class="p">}</span>
+<span class="ln">17</span>    <span class="o">...</span>
+<span class="ln">18</span><span class="p">}</span>
 </code></pre></div><p>在<code>e.Storage.Delete</code>方法中，定义了<code>storage.ValidateObjectFunc(deleteValidation)</code>参数，仔细阅读这个方法的实现细节，原来，kube-apiserver在进行删除前，还会再对这个删除操作执行一次准入控制校验，即Validating和Mutating。代码逻辑见<code>staging/src/k8s.io/apiserver/pkg/storage/etcd3/store.go</code>中的<code>conditionalDelete</code>函数：</p>
-<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">store</span><span class="p">)</span> <span class="nf">conditionalDelete</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">key</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">out</span> <span class="nx">runtime</span><span class="p">.</span><span class="nx">Object</span><span class="p">,</span> <span class="nx">v</span> <span class="nx">reflect</span><span class="p">.</span><span class="nx">Value</span><span class="p">,</span> <span class="nx">preconditions</span> <span class="o">*</span><span class="nx">storage</span><span class="p">.</span><span class="nx">Preconditions</span><span class="p">,</span> <span class="nx">validateDeletion</span> <span class="nx">storage</span><span class="p">.</span><span class="nx">ValidateObjectFunc</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
-    <span class="o">...</span>
-    <span class="k">for</span> <span class="p">{</span>
-		<span class="nx">origState</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">getState</span><span class="p">(</span><span class="nx">getResp</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">v</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span>
-		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="nx">err</span>
-		<span class="p">}</span>
-		<span class="k">if</span> <span class="nx">preconditions</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-			<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">preconditions</span><span class="p">.</span><span class="nf">Check</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">origState</span><span class="p">.</span><span class="nx">obj</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-				<span class="k">return</span> <span class="nx">err</span>
-			<span class="p">}</span>
-		<span class="p">}</span>
-		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">validateDeletion</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">origState</span><span class="p">.</span><span class="nx">obj</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="nx">err</span>
-		<span class="p">}</span>
-		<span class="nx">startTime</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">()</span>
-		<span class="nx">txnResp</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nx">KV</span><span class="p">.</span><span class="nf">Txn</span><span class="p">(</span><span class="nx">ctx</span><span class="p">).</span><span class="nf">If</span><span class="p">(</span>
-			<span class="nx">clientv3</span><span class="p">.</span><span class="nf">Compare</span><span class="p">(</span><span class="nx">clientv3</span><span class="p">.</span><span class="nf">ModRevision</span><span class="p">(</span><span class="nx">key</span><span class="p">),</span> <span class="s">&#34;=&#34;</span><span class="p">,</span> <span class="nx">origState</span><span class="p">.</span><span class="nx">rev</span><span class="p">),</span>
-		<span class="p">).</span><span class="nf">Then</span><span class="p">(</span>
-			<span class="nx">clientv3</span><span class="p">.</span><span class="nf">OpDelete</span><span class="p">(</span><span class="nx">key</span><span class="p">),</span>
-		<span class="p">).</span><span class="nf">Else</span><span class="p">(</span>
-			<span class="nx">clientv3</span><span class="p">.</span><span class="nf">OpGet</span><span class="p">(</span><span class="nx">key</span><span class="p">),</span>
-        <span class="p">).</span><span class="nf">Commit</span><span class="p">()</span>
-    <span class="o">...</span>
-
-<span class="p">}</span>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln"> 1</span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">store</span><span class="p">)</span> <span class="nf">conditionalDelete</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">key</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">out</span> <span class="nx">runtime</span><span class="p">.</span><span class="nx">Object</span><span class="p">,</span> <span class="nx">v</span> <span class="nx">reflect</span><span class="p">.</span><span class="nx">Value</span><span class="p">,</span> <span class="nx">preconditions</span> <span class="o">*</span><span class="nx">storage</span><span class="p">.</span><span class="nx">Preconditions</span><span class="p">,</span> <span class="nx">validateDeletion</span> <span class="nx">storage</span><span class="p">.</span><span class="nx">ValidateObjectFunc</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+<span class="ln"> 2</span>    <span class="o">...</span>
+<span class="ln"> 3</span>    <span class="k">for</span> <span class="p">{</span>
+<span class="ln"> 4</span>		<span class="nx">origState</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">getState</span><span class="p">(</span><span class="nx">getResp</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">v</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span>
+<span class="ln"> 5</span>		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+<span class="ln"> 6</span>			<span class="k">return</span> <span class="nx">err</span>
+<span class="ln"> 7</span>		<span class="p">}</span>
+<span class="ln"> 8</span>		<span class="k">if</span> <span class="nx">preconditions</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+<span class="ln"> 9</span>			<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">preconditions</span><span class="p">.</span><span class="nf">Check</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">origState</span><span class="p">.</span><span class="nx">obj</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+<span class="ln">10</span>				<span class="k">return</span> <span class="nx">err</span>
+<span class="ln">11</span>			<span class="p">}</span>
+<span class="ln">12</span>		<span class="p">}</span>
+<span class="ln">13</span>		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">validateDeletion</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">origState</span><span class="p">.</span><span class="nx">obj</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+<span class="ln">14</span>			<span class="k">return</span> <span class="nx">err</span>
+<span class="ln">15</span>		<span class="p">}</span>
+<span class="ln">16</span>		<span class="nx">startTime</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">()</span>
+<span class="ln">17</span>		<span class="nx">txnResp</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nx">KV</span><span class="p">.</span><span class="nf">Txn</span><span class="p">(</span><span class="nx">ctx</span><span class="p">).</span><span class="nf">If</span><span class="p">(</span>
+<span class="ln">18</span>			<span class="nx">clientv3</span><span class="p">.</span><span class="nf">Compare</span><span class="p">(</span><span class="nx">clientv3</span><span class="p">.</span><span class="nf">ModRevision</span><span class="p">(</span><span class="nx">key</span><span class="p">),</span> <span class="s">&#34;=&#34;</span><span class="p">,</span> <span class="nx">origState</span><span class="p">.</span><span class="nx">rev</span><span class="p">),</span>
+<span class="ln">19</span>		<span class="p">).</span><span class="nf">Then</span><span class="p">(</span>
+<span class="ln">20</span>			<span class="nx">clientv3</span><span class="p">.</span><span class="nf">OpDelete</span><span class="p">(</span><span class="nx">key</span><span class="p">),</span>
+<span class="ln">21</span>		<span class="p">).</span><span class="nf">Else</span><span class="p">(</span>
+<span class="ln">22</span>			<span class="nx">clientv3</span><span class="p">.</span><span class="nf">OpGet</span><span class="p">(</span><span class="nx">key</span><span class="p">),</span>
+<span class="ln">23</span>        <span class="p">).</span><span class="nf">Commit</span><span class="p">()</span>
+<span class="ln">24</span>    <span class="o">...</span>
+<span class="ln">25</span>
+<span class="ln">26</span><span class="p">}</span>
 </code></pre></div><p>validateDeletion 即为进行DELETE准入控制校验的地方，这个过程中必定会调用到Validating webhook，也就有了第三次delete请求。至于为什么要再做一次准入控制，我也不太明白。</p>
 ]]></content>
 		</item>
@@ -363,16 +363,16 @@
 			<content type="html"><![CDATA[<h2 id="容器运行时挂载卷的过程">容器运行时挂载卷的过程</h2>
 <p>如果CRI是通过dockershim实现的话，kubelet通过CRI接口去拉起一个容器，就好比是通过docker-daemon执行<code>docker run</code>命令。</p>
 <p>而如果想要在容器中挂载宿主机目录的话，就要带上<code>-v</code>参数，以下面这条命令为例：</p>
-<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">docker run -v /home:/test ...
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>docker run -v /home:/test ...
 </code></pre></div><p>它的具体的实现过程如下：</p>
 <ol>
 <li>
 <p>创建容器进程并开启Mount namespace</p>
-<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="n">pid</span> <span class="o">=</span> <span class="n">clone</span><span class="p">(</span><span class="n">main_function</span><span class="p">,</span> <span class="n">stack_size</span><span class="p">,</span> <span class="n">CLONE_NEWNS</span> <span class="o">|</span> <span class="n">SIGCHLD</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span> 
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="ln">1</span><span class="kt">int</span> <span class="n">pid</span> <span class="o">=</span> <span class="n">clone</span><span class="p">(</span><span class="n">main_function</span><span class="p">,</span> <span class="n">stack_size</span><span class="p">,</span> <span class="n">CLONE_NEWNS</span> <span class="o">|</span> <span class="n">SIGCHLD</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span> 
 </code></pre></div></li>
 <li>
 <p>将宿主机目录挂载到容器进程的目录中来</p>
-<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="n">mount</span><span class="p">(</span><span class="s">&#34;/home&#34;</span><span class="p">,</span> <span class="s">&#34;/test&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="n">MS_BIND</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">)</span>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="ln">1</span><span class="n">mount</span><span class="p">(</span><span class="s">&#34;/home&#34;</span><span class="p">,</span> <span class="s">&#34;/test&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="n">MS_BIND</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">)</span>
 </code></pre></div><blockquote>
 <p>此时虽然开启了mount namespace，只代表主机和容器之间mount点隔离开了，容器仍然可以看到主机的文件系统目录。</p>
 </blockquote>
@@ -385,7 +385,7 @@
 <p>当一个Pod被调度到一个节点上之后，kubelet首先为这个Pod在宿主机上创建一个Volume目录：</p>
 <p><strong>/var/lib/kubelet/pods/&lt;Pod的ID&gt;/volumes/kubernetes.io~&lt;Volume类型&gt;/&lt;Volume名字&gt;</strong>。</p>
 <p>在kubernetes中，卷<code>volumes</code>是Pod的一个属性，而不是容器的。kubelet先以Pod为单位，在宿主机这个Volume目录中准备好Pod需要的卷。接着启动容器，容器启动时，根据<code>volumeMounts</code>的定义将主机的这个目录下的部分卷资源挂载进来。挂载的过程如前所述，相当于为每个容器执行了命令：</p>
-<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">docker run -v /var/lib/kubelet/pods/&lt;Pod的ID&gt;/volumes/kubernetes.io~&lt;Volume类型&gt;/&lt;Volume名字&gt;:/&lt;容器内的目标目录&gt; 我的镜像 ...
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>docker run -v /var/lib/kubelet/pods/&lt;Pod的ID&gt;/volumes/kubernetes.io~&lt;Volume类型&gt;/&lt;Volume名字&gt;:/&lt;容器内的目标目录&gt; 我的镜像 ...
 </code></pre></div><p>而kubelet是怎么把卷挂载到主机的volumes目录下的呢？这取决于Volume的类型。</p>
 <h3 id="远程块存储">远程块存储</h3>
 <ol>
@@ -404,7 +404,7 @@
 </ol>
 <h3 id="nfs">NFS</h3>
 <p>NFS本身已经是一个远程的文件系统了，所以可以直接进行mount，相当于执行：</p>
-<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">mount -t nfs &lt;NFS服务器地址&gt;:/ /var/lib/kubelet/pods/&lt;Pod的ID&gt;/volumes/kubernetes.io~&lt;Volume类型&gt;/&lt;Volume名字&gt; 
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>mount -t nfs &lt;NFS服务器地址&gt;:/ /var/lib/kubelet/pods/&lt;Pod的ID&gt;/volumes/kubernetes.io~&lt;Volume类型&gt;/&lt;Volume名字&gt; 
 </code></pre></div><h3 id="hostpath">hostPath</h3>
 <p>hostPath类型的挂载方式，和宿主机上的Volume目录没啥关系，就是容器直接挂载指定的宿主机目录。</p>
 <h3 id="emptydirdownwardapiconfigmapsecret">emptyDir、downwardAPI、configMap、secret</h3>
@@ -514,19 +514,19 @@
 </blockquote>
 <h2 id="admission-webhook认证api-server的过程">admission webhook认证api server的过程</h2>
 <p>在启动 api server时，通过<code>--admission-control-config-file</code> 这个参数指定了客户端证书、私钥的配置文件，这个文件的格式如下所示：</p>
-<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiserver.config.k8s.io/v1</span><span class="w">
-</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">AdmissionConfiguration</span><span class="w">
-</span><span class="w"></span><span class="nt">plugins</span><span class="p">:</span><span class="w">
-</span><span class="w"></span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">ValidatingAdmissionWebhook</span><span class="w">
-</span><span class="w">  </span><span class="nt">configuration</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiserver.config.k8s.io/v1</span><span class="w">
-</span><span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">WebhookAdmissionConfiguration</span><span class="w">
-</span><span class="w">    </span><span class="nt">kubeConfigFile</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;&lt;path-to-kubeconfig-file&gt;&#34;</span><span class="w">
-</span><span class="w"></span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">MutatingAdmissionWebhook</span><span class="w">
-</span><span class="w">  </span><span class="nt">configuration</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiserver.config.k8s.io/v1</span><span class="w">
-</span><span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">WebhookAdmissionConfiguration</span><span class="w">
-</span><span class="w">    </span><span class="nt">kubeConfigFile</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;&lt;path-to-kubeconfig-file&gt;&#34;</span><span class="w">
+<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="ln"> 1</span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiserver.config.k8s.io/v1</span><span class="w">
+</span><span class="ln"> 2</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">AdmissionConfiguration</span><span class="w">
+</span><span class="ln"> 3</span><span class="w"></span><span class="nt">plugins</span><span class="p">:</span><span class="w">
+</span><span class="ln"> 4</span><span class="w"></span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">ValidatingAdmissionWebhook</span><span class="w">
+</span><span class="ln"> 5</span><span class="w">  </span><span class="nt">configuration</span><span class="p">:</span><span class="w">
+</span><span class="ln"> 6</span><span class="w">    </span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiserver.config.k8s.io/v1</span><span class="w">
+</span><span class="ln"> 7</span><span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">WebhookAdmissionConfiguration</span><span class="w">
+</span><span class="ln"> 8</span><span class="w">    </span><span class="nt">kubeConfigFile</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;&lt;path-to-kubeconfig-file&gt;&#34;</span><span class="w">
+</span><span class="ln"> 9</span><span class="w"></span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">MutatingAdmissionWebhook</span><span class="w">
+</span><span class="ln">10</span><span class="w">  </span><span class="nt">configuration</span><span class="p">:</span><span class="w">
+</span><span class="ln">11</span><span class="w">    </span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiserver.config.k8s.io/v1</span><span class="w">
+</span><span class="ln">12</span><span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">WebhookAdmissionConfiguration</span><span class="w">
+</span><span class="ln">13</span><span class="w">    </span><span class="nt">kubeConfigFile</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;&lt;path-to-kubeconfig-file&gt;&#34;</span><span class="w">
 </span></code></pre></div><p>其中，<code>kubeConfigFile</code> 参数指定了 <code>kubeconfig</code> 文件的存放位置。<code>kubeconfig</code> 文件和用 kubectl 连接 api server 时用到的那个 <code>kubeconfig</code> 格式一样。只不过这里，客户端是api server，而不是kubectl。</p>
 <p>可以看到，通过这种方式部署的webhook，需要手工管理客户端凭证（kubeConfig文件），且每个webhook都需要生成一个客户端凭证。而在webhook中，还需要使用生成证书所用的CA证书来校验api server。非常麻烦。</p>
 <h2 id="aggregated-api-server认证api-server的过程">aggregated API server认证api server的过程</h2>
@@ -553,23 +553,23 @@
 <ol>
 <li>
 <p>在(Validating/Mutating)WebhookConfiguration中，配置admission webhook为kubernetes服务：</p>
-<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">webhooks</span><span class="p">:</span><span class="w">
-</span><span class="w"></span>- <span class="nt">clientConfig</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">service</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kubernetes</span><span class="w">
-</span><span class="w">      </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">default</span><span class="w">
-</span><span class="w">      </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">/apis/{group}/{version}/{resource}</span><span class="w">
-</span><span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">443</span><span class="w">
+<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="ln">1</span><span class="nt">webhooks</span><span class="p">:</span><span class="w">
+</span><span class="ln">2</span><span class="w"></span>- <span class="nt">clientConfig</span><span class="p">:</span><span class="w">
+</span><span class="ln">3</span><span class="w">    </span><span class="nt">service</span><span class="p">:</span><span class="w">
+</span><span class="ln">4</span><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kubernetes</span><span class="w">
+</span><span class="ln">5</span><span class="w">      </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">default</span><span class="w">
+</span><span class="ln">6</span><span class="w">      </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">/apis/{group}/{version}/{resource}</span><span class="w">
+</span><span class="ln">7</span><span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">443</span><span class="w">
 </span></code></pre></div></li>
 <li>
 <p>在ApiService中，配置group、version，以及admission webhook的service：</p>
-<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span>{<span class="l">group}</span><span class="w">
-</span><span class="w">  </span><span class="nt">service</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span>{<span class="l">webhook-service}</span><span class="w">
-</span><span class="w">    </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span>{<span class="l">namespace}</span><span class="w">
-</span><span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">443</span><span class="w">
-</span><span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span>{<span class="l">version}</span><span class="w">
+<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="ln">1</span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="ln">2</span><span class="w">  </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span>{<span class="l">group}</span><span class="w">
+</span><span class="ln">3</span><span class="w">  </span><span class="nt">service</span><span class="p">:</span><span class="w">
+</span><span class="ln">4</span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span>{<span class="l">webhook-service}</span><span class="w">
+</span><span class="ln">5</span><span class="w">    </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span>{<span class="l">namespace}</span><span class="w">
+</span><span class="ln">6</span><span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">443</span><span class="w">
+</span><span class="ln">7</span><span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span>{<span class="l">version}</span><span class="w">
 </span></code></pre></div></li>
 </ol>
 <p>这种方式部署的admission webhook的整个工作流程如下图所示：
@@ -628,13 +628,13 @@
 <p>特别是第二点，这导致只要是和数组相关的patch操作，最好使用json patch。</p>
 <h2 id="json-patch">json patch</h2>
 <p>json patch 的格式如下：</p>
-<div class="highlight"><pre class="chroma"><code class="language-json" data-lang="json"><span class="p">[</span>
-    <span class="p">{</span>
-        <span class="nt">&#34;op&#34;</span> <span class="p">:</span> <span class="s2">&#34;&#34;</span><span class="p">,</span>
-        <span class="nt">&#34;path&#34;</span> <span class="p">:</span> <span class="s2">&#34;&#34;</span> <span class="p">,</span>
-        <span class="nt">&#34;value&#34;</span> <span class="p">:</span> <span class="s2">&#34;&#34;</span>
-    <span class="p">}</span>
-<span class="p">]</span>
+<div class="highlight"><pre class="chroma"><code class="language-json" data-lang="json"><span class="ln">1</span><span class="p">[</span>
+<span class="ln">2</span>    <span class="p">{</span>
+<span class="ln">3</span>        <span class="nt">&#34;op&#34;</span> <span class="p">:</span> <span class="s2">&#34;&#34;</span><span class="p">,</span>
+<span class="ln">4</span>        <span class="nt">&#34;path&#34;</span> <span class="p">:</span> <span class="s2">&#34;&#34;</span> <span class="p">,</span>
+<span class="ln">5</span>        <span class="nt">&#34;value&#34;</span> <span class="p">:</span> <span class="s2">&#34;&#34;</span>
+<span class="ln">6</span>    <span class="p">}</span>
+<span class="ln">7</span><span class="p">]</span>
 </code></pre></div><p>即由操作、字段路径、新值组成。具体例子查看<a href="https://erosb.github.io/post/json-patch-vs-merge-patch/">这篇文章</a>。可以看到这种操作方式非常灵活。</p>
 <h2 id="json-patch-转义字符">json patch 转义字符</h2>
 <ul>
@@ -720,6 +720,89 @@
 		</item>
 		
 		<item>
+			<title>Celery Worker僵尸进程问题定位记录</title>
+			<link>https://cvvz.github.io/post/celery-worker-zombie/</link>
+			<pubDate>Mon, 30 Mar 2020 10:36:36 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/post/celery-worker-zombie/</guid>
+			<description>最近在组内基于Flask + rabbitMQ + Celery搭建的web平台上开发需求时碰到了几个比较有趣的问题，在这里记录下来。 问题背景 web平台整体架构图</description>
+			<content type="html"><![CDATA[<blockquote>
+<p>最近在组内基于Flask + rabbitMQ + Celery搭建的web平台上开发需求时碰到了几个比较有趣的问题，在这里记录下来。</p>
+</blockquote>
+<h2 id="问题背景">问题背景</h2>
+<p>web平台整体架构图如下所示：</p>
+<figure>
+    <img src="/platform.drawio.svg" width="600px"/> 
+</figure>
+
+<p>Flask向rabbitMQ发送任务消息，后者再将任务分发给不同的Celery worker进行处理。由于每一个任务的处理时间较长，为了不阻塞worker处理下一个任务，在worker中，通过两次fork的方式，生成孤儿进程在后台进行任务处理。</p>
+<h2 id="问题现象">问题现象</h2>
+<ol>
+<li>
+<p>worker 生成的孤儿进程在抛出异常后，没有自动退出，仍然处于运行状态。</p>
+</li>
+<li>
+<p>kill worker的父进程（SIGTERM），父进程不退出，很多worker变成僵尸进程。（<strong>所有的celery worker都是由同一个父进程fork出来的</strong>）</p>
+</li>
+</ol>
+<h2 id="排查过程">排查过程</h2>
+<p>这个问题基本上是通过走读代码定位出来的，下面给出简化后的worker代码便于后面分析。</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="ln"> 1</span><span class="k">def</span> <span class="nf">worker</span><span class="p">():</span>
+<span class="ln"> 2</span>    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+<span class="ln"> 3</span>        <span class="c1"># 等待任务...</span>
+<span class="ln"> 4</span>        <span class="n">wait_task</span><span class="p">()</span>
+<span class="ln"> 5</span>
+<span class="ln"> 6</span>        <span class="k">try</span><span class="p">:</span>
+<span class="ln"> 7</span>            <span class="c1"># 处理任务</span>
+<span class="ln"> 8</span>            <span class="n">execute</span><span class="p">()</span>
+<span class="ln"> 9</span>        <span class="k">except</span><span class="p">:</span>
+<span class="ln">10</span>            <span class="n">on_failure</span><span class="p">()</span>
+<span class="ln">11</span>        
+<span class="ln">12</span>        <span class="o">...</span>
+<span class="ln">13</span>
+<span class="ln">14</span>
+<span class="ln">15</span><span class="k">def</span> <span class="nf">execute</span><span class="p">():</span>
+<span class="ln">16</span>    <span class="k">try</span><span class="p">:</span>
+<span class="ln">17</span>        <span class="n">pid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fork</span><span class="p">()</span>
+<span class="ln">18</span>        <span class="k">if</span> <span class="n">pid</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+<span class="ln">19</span>            <span class="k">raise</span> <span class="ne">Exception</span>
+<span class="ln">20</span>        <span class="k">elif</span> <span class="n">pid</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="ln">21</span>            <span class="n">pid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fork</span><span class="p">()</span>
+<span class="ln">22</span>            <span class="k">if</span> <span class="n">pid</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+<span class="ln">23</span>                <span class="k">raise</span> <span class="ne">Exception</span>
+<span class="ln">24</span>            <span class="k">elif</span> <span class="n">pid</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="ln">25</span>                <span class="c1"># 实际执行任务处理，遇到异常直接raise</span>
+<span class="ln">26</span>                <span class="n">do_execute</span><span class="p">()</span>
+<span class="ln">27</span>                <span class="n">os</span><span class="o">.</span><span class="n">_exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="ln">28</span>            <span class="k">else</span><span class="p">:</span>
+<span class="ln">29</span>                <span class="n">os</span><span class="o">.</span><span class="n">_exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="ln">30</span>        <span class="k">else</span><span class="p">:</span>
+<span class="ln">31</span>            <span class="k">return</span>
+<span class="ln">32</span>    <span class="k">except</span><span class="p">:</span>
+<span class="ln">33</span>        <span class="k">raise</span>
+</code></pre></div><h2 id="问题原因">问题原因</h2>
+<p>在分析问题原因前，先来运行这样一段代码：</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="ln">2</span>    <span class="n">pid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fork</span><span class="p">()</span>
+<span class="ln">3</span>    <span class="k">if</span> <span class="n">pid</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+<span class="ln">4</span>        <span class="k">print</span> <span class="s2">&#34;fork failed&#34;</span>
+<span class="ln">5</span>    <span class="k">elif</span> <span class="n">pid</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="ln">6</span>        <span class="k">print</span> <span class="s2">&#34;child pid &#34;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()</span>
+<span class="ln">7</span>    <span class="k">else</span><span class="p">:</span>
+<span class="ln">8</span>        <span class="k">print</span> <span class="s2">&#34;parent pid &#34;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()</span>
+<span class="ln">9</span>    <span class="k">print</span> <span class="s2">&#34;pid &#34;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()</span>
+</code></pre></div><p>运行结果是：</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>parent pid  <span class="m">78216</span>
+<span class="ln">2</span>pid  <span class="m">78216</span>
+<span class="ln">3</span>child pid  <span class="m">78217</span>
+<span class="ln">4</span>pid  <span class="m">78217</span>
+</code></pre></div><p>从这个结果我们可以看出，<strong>fork出来的子进程虽然和父进程不共享堆栈（子进程获得父进程堆栈的副本），但是他们共享正文段</strong>，所以他们都执行了程序的最后一行，各自输出了自己的pid。</p>
+<p>接着来分析上述worker的代码，在<code>execute()</code>中，通过两次fork，最终使得<code>do_execute()</code>运行在一个孤儿进程中，如果正常运行，最终会执行<code>os._exit(0)</code>正常退出。然而，如果运行过程中抛出异常又会发生什么呢？根据父子进程共享正文段这一结论，我们可以知道这个孤儿进程抛出的异常会被第32行的<code>except</code>捕获到，并继续向上抛出异常，然后会被第9行<code>worker()</code>中的<code>except</code>捕获，并执行<code>on_failure()</code>。<strong>也就是说，这个孤儿进程最终执行到了worker的代码里去了，而worker本身是一个死循环，因此这个孤儿进程就不会退出了。理论上来说，最终它会运行到第4行，成为一个“worker副本”，等待接收任务</strong>。</p>
+<p>至于为什么kill worker的父进程会导致worker变僵尸进程，需要深入研究一下celery源码中的信号处理方法。猜测是父进程在退出前，会先保证所有worker子进程已经退出，而它误以为这个“worker副本”也是自己的子进程，但是却没办法通过向子进程发送信号的方式使其退出，于是就阻塞住了自己的退出流程。而其他已经正常退出的worker就会一直处于僵尸状态。</p>
+]]></content>
+		</item>
+		
+		<item>
 			<title>用树莓派分析函数调用栈</title>
 			<link>https://cvvz.github.io/post/call-stack/</link>
 			<pubDate>Tue, 03 Sep 2019 18:44:12 +0800</pubDate>
@@ -777,18 +860,18 @@
 <li>接着压入返回地址；</li>
 <li>接着被调函数执行“标准开头”（x86）：</li>
 </ul>
-<pre><code class="language-x86asm" data-lang="x86asm">push rbp
-mov rbp rsp
-</code></pre><p>“标准开头”执行过程如下：</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback"><span class="ln">1</span>push rbp
+<span class="ln">2</span>mov rbp rsp
+</code></pre></div><p>“标准开头”执行过程如下：</p>
 <ul>
 <li>首先rbp入栈；</li>
 <li>rbp入栈后，rsp自动加8（64位），rsp此时指向存放rbp的栈帧地址；</li>
 <li>接着令<code>%rbp=%rsp</code>，这就使得rbp指向存放着上一个栈的rbp的内存地址。</li>
 </ul>
 <p>而ARM（32位）的“标准开头”长这样：</p>
-<pre><code class="language-armasm" data-lang="armasm">push {fp, lr}
-add fp, sp, #4
-</code></pre><ul>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback"><span class="ln">1</span>push {fp, lr}
+<span class="ln">2</span>add fp, sp, #4
+</code></pre></div><ul>
 <li>返回地址(lr)入栈</li>
 <li>栈帧指针(fp)入栈</li>
 <li>接着令<code>%fp=%sp+4</code>，也就是<strong>使fp（栈帧指针）指向存放返回地址的内存</strong>。</li>
@@ -800,12 +883,12 @@ add fp, sp, #4
 <h3 id="出栈过程">出栈过程</h3>
 <p>出栈与入栈动作刚好相反。</p>
 <p>x86的“标准结尾”如下：</p>
-<pre><code class="language-x86asm" data-lang="x86asm">leaveq
-retq
-</code></pre><p>实际上<code>leaveq</code>内部分为两条指令：</p>
-<pre><code class="language-x86asm" data-lang="x86asm">movq %rbp, %rsp
-popq %rbp
-</code></pre><p>所以，出栈过程可以分解为如下三步：</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback"><span class="ln">1</span>leaveq
+<span class="ln">2</span>retq
+</code></pre></div><p>实际上<code>leaveq</code>内部分为两条指令：</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback"><span class="ln">1</span>movq %rbp, %rsp
+<span class="ln">2</span>popq %rbp
+</code></pre></div><p>所以，出栈过程可以分解为如下三步：</p>
 <ul>
 <li>第一步是通过将rbp地址赋给rsp，即此时rsp指向的内存存放的是上一个栈的rbp。</li>
 <li>第二步弹出栈顶的数据到rbp中，即rbp指向上一个栈的栈底，出栈动作导致rsp自增，于是rsp此时指向的内存中存放函数返回地址；</li>
@@ -813,185 +896,185 @@ popq %rbp
 </ul>
 <p>这三步做完后，rsp、rbp、rip就恢复到调用函数以前的现场。</p>
 <p>ARM的行为和x86一致，它的“标准结尾”长这样：</p>
-<pre><code class="language-armasm" data-lang="armasm">sub sp, fp, #4
-pop {fp, pc}
-</code></pre><h2 id="基于树莓派3分析函数调用栈">基于树莓派3分析函数调用栈</h2>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback"><span class="ln">1</span>sub sp, fp, #4
+<span class="ln">2</span>pop {fp, pc}
+</code></pre></div><h2 id="基于树莓派3分析函数调用栈">基于树莓派3分析函数调用栈</h2>
 <p>我在树莓派3中运行了如下所示的C语言代码，并用GDB进行了调试：</p>
 <blockquote>
 <p>树莓派3使用的是<strong>32位、arm架构CPU</strong>，因此下面的调试过程涉及到的寄存器以及地址信息和64位x86 CPU不同</p>
 </blockquote>
-<div class="highlight"><pre class="chroma"><code class="language-C" data-lang="C"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
-</span><span class="cp"></span>
-<span class="kt">void</span> <span class="nf">test2</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="kt">int</span> <span class="n">ii</span><span class="p">;</span>
-    <span class="n">ii</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="kt">char</span> <span class="nf">test</span><span class="p">(</span><span class="kt">char</span> <span class="n">c</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
-    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;%c&#34;</span><span class="p">,</span><span class="n">c</span><span class="p">);</span>
-    <span class="n">test2</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
-    <span class="k">return</span> <span class="n">c</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
-<span class="p">{</span>
-    <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="sc">&#39;a&#39;</span><span class="p">;</span>
-    <span class="kt">char</span> <span class="n">ret</span><span class="p">;</span>
-    <span class="n">ret</span> <span class="o">=</span> <span class="n">test</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
+<div class="highlight"><pre class="chroma"><code class="language-C" data-lang="C"><span class="ln"> 1</span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="ln"> 2</span><span class="cp"></span>
+<span class="ln"> 3</span><span class="kt">void</span> <span class="nf">test2</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span>
+<span class="ln"> 4</span><span class="p">{</span>
+<span class="ln"> 5</span>    <span class="kt">int</span> <span class="n">ii</span><span class="p">;</span>
+<span class="ln"> 6</span>    <span class="n">ii</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+<span class="ln"> 7</span><span class="p">}</span>
+<span class="ln"> 8</span>
+<span class="ln"> 9</span><span class="kt">char</span> <span class="nf">test</span><span class="p">(</span><span class="kt">char</span> <span class="n">c</span><span class="p">)</span>
+<span class="ln">10</span><span class="p">{</span>
+<span class="ln">11</span>    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+<span class="ln">12</span>    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;%c&#34;</span><span class="p">,</span><span class="n">c</span><span class="p">);</span>
+<span class="ln">13</span>    <span class="n">test2</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+<span class="ln">14</span>    <span class="k">return</span> <span class="n">c</span><span class="p">;</span>
+<span class="ln">15</span><span class="p">}</span>
+<span class="ln">16</span>
+<span class="ln">17</span><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="ln">18</span><span class="p">{</span>
+<span class="ln">19</span>    <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="sc">&#39;a&#39;</span><span class="p">;</span>
+<span class="ln">20</span>    <span class="kt">char</span> <span class="n">ret</span><span class="p">;</span>
+<span class="ln">21</span>    <span class="n">ret</span> <span class="o">=</span> <span class="n">test</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+<span class="ln">22</span>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="ln">23</span><span class="p">}</span>
 </code></pre></div><h3 id="分析函数调用入栈过程">分析函数调用（入栈）过程</h3>
 <p>使用GDB进行调试，将断点打在main函数调用test之前，并使用<code>disassemble</code>查看反汇编结果：</p>
-<pre><code class="language-armasm" data-lang="armasm">(gdb) b *0x000104bc
-Breakpoint 2 at 0x104bc: file main.c, line 21.
-(gdb) disassemble /m main
-Dump of assembler code for function main:
-18 {
-   0x000104a0 &lt;+0&gt;: push {r11, lr}
-   0x000104a4 &lt;+4&gt;: add r11, sp, #4
-   0x000104a8 &lt;+8&gt;: sub sp, sp, #8
-
-19 char c = 'a';
-   0x000104ac &lt;+12&gt;: mov r3, #97 ; 0x61
-   0x000104b0 &lt;+16&gt;: strb r3, [r11, #-5]
-
-20 char ret;
-21 ret = test(c);
-   0x000104b4 &lt;+20&gt;: ldrb r3, [r11, #-5]
-   0x000104b8 &lt;+24&gt;: mov r0, r3
-=&gt; 0x000104bc &lt;+28&gt;: bl 0x10468 &lt;test&gt;
-   0x000104c0 &lt;+32&gt;: mov r3, r0
-   0x000104c4 &lt;+36&gt;: strb r3, [r11, #-6]
-
-22 return 0;
-   0x000104c8 &lt;+40&gt;: mov r3, #0
-
-23 }
-   0x000104cc &lt;+44&gt;: mov r0, r3
-   0x000104d0 &lt;+48&gt;: sub sp, r11, #4
-   0x000104d4 &lt;+52&gt;: pop {r11, pc}
-
-End of assembler dump.
-</code></pre><p>查看此时栈帧指针和栈顶指针的值：</p>
-<pre><code class="language-armasm" data-lang="armasm">(gdb) i r r11 sp
-r11            0x7efffaec 2130705132
-sp             0x7efffae0 0x7efffae0
-(gdb) x /xw 0x7efffaec
-0x7efffaec: 0x76e8f678
-(gdb) info symbol 0x76e8f678
-__libc_start_main + 276 in section .text of /lib/arm-linux-gnueabihf/libc.so.6
-</code></pre><p>可以看到，栈帧指针指向的返回地址是<code>__libc_start_main + 276</code>，即<strong>main函数是由__libc_start_main调用的</strong>。</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback"><span class="ln"> 1</span>(gdb) b *0x000104bc
+<span class="ln"> 2</span>Breakpoint 2 at 0x104bc: file main.c, line 21.
+<span class="ln"> 3</span>(gdb) disassemble /m main
+<span class="ln"> 4</span>Dump of assembler code for function main:
+<span class="ln"> 5</span>18 {
+<span class="ln"> 6</span>   0x000104a0 &lt;+0&gt;: push {r11, lr}
+<span class="ln"> 7</span>   0x000104a4 &lt;+4&gt;: add r11, sp, #4
+<span class="ln"> 8</span>   0x000104a8 &lt;+8&gt;: sub sp, sp, #8
+<span class="ln"> 9</span>
+<span class="ln">10</span>19 char c = &#39;a&#39;;
+<span class="ln">11</span>   0x000104ac &lt;+12&gt;: mov r3, #97 ; 0x61
+<span class="ln">12</span>   0x000104b0 &lt;+16&gt;: strb r3, [r11, #-5]
+<span class="ln">13</span>
+<span class="ln">14</span>20 char ret;
+<span class="ln">15</span>21 ret = test(c);
+<span class="ln">16</span>   0x000104b4 &lt;+20&gt;: ldrb r3, [r11, #-5]
+<span class="ln">17</span>   0x000104b8 &lt;+24&gt;: mov r0, r3
+<span class="ln">18</span>=&gt; 0x000104bc &lt;+28&gt;: bl 0x10468 &lt;test&gt;
+<span class="ln">19</span>   0x000104c0 &lt;+32&gt;: mov r3, r0
+<span class="ln">20</span>   0x000104c4 &lt;+36&gt;: strb r3, [r11, #-6]
+<span class="ln">21</span>
+<span class="ln">22</span>22 return 0;
+<span class="ln">23</span>   0x000104c8 &lt;+40&gt;: mov r3, #0
+<span class="ln">24</span>
+<span class="ln">25</span>23 }
+<span class="ln">26</span>   0x000104cc &lt;+44&gt;: mov r0, r3
+<span class="ln">27</span>   0x000104d0 &lt;+48&gt;: sub sp, r11, #4
+<span class="ln">28</span>   0x000104d4 &lt;+52&gt;: pop {r11, pc}
+<span class="ln">29</span>
+<span class="ln">30</span>End of assembler dump.
+</code></pre></div><p>查看此时栈帧指针和栈顶指针的值：</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback"><span class="ln">1</span>(gdb) i r r11 sp
+<span class="ln">2</span>r11            0x7efffaec 2130705132
+<span class="ln">3</span>sp             0x7efffae0 0x7efffae0
+<span class="ln">4</span>(gdb) x /xw 0x7efffaec
+<span class="ln">5</span>0x7efffaec: 0x76e8f678
+<span class="ln">6</span>(gdb) info symbol 0x76e8f678
+<span class="ln">7</span>__libc_start_main + 276 in section .text of /lib/arm-linux-gnueabihf/libc.so.6
+</code></pre></div><p>可以看到，栈帧指针指向的返回地址是<code>__libc_start_main + 276</code>，即<strong>main函数是由__libc_start_main调用的</strong>。</p>
 <p>由前面分析得知，栈帧指针-4地址处存放的是上一个函数的栈帧指针，于是我们继续向上追溯<code>__libc_start_main</code>的调用者地址，可以发现其值为0：</p>
-<pre><code class="language-armasm" data-lang="armasm">(gdb) x /xw 0x7efffaec-4
-0x7efffae8: 0x00000000
-</code></pre><p><strong>因此可以认为<code>__libc_start_main</code>是所有进程真正的起点。</strong></p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback"><span class="ln">1</span>(gdb) x /xw 0x7efffaec-4
+<span class="ln">2</span>0x7efffae8: 0x00000000
+</code></pre></div><p><strong>因此可以认为<code>__libc_start_main</code>是所有进程真正的起点。</strong></p>
 <p>接着执行调用test函数的命令，使用<code>si</code>单步运行，并查看汇编指令：</p>
-<pre><code class="language-armasm" data-lang="armasm">(gdb) si
-test (c=0 '\000') at main.c:10
-10 {
-(gdb) disassemble
-Dump of assembler code for function test:
-=&gt; 0x00010468 &lt;+0&gt;: push {r11, lr}
-   0x0001046c &lt;+4&gt;: add r11, sp, #4
-   0x00010470 &lt;+8&gt;: sub sp, sp, #16
-   0x00010474 &lt;+12&gt;: mov r3, r0
-   0x00010478 &lt;+16&gt;: strb r3, [r11, #-13]
-   0x0001047c &lt;+20&gt;: ldrb r3, [r11, #-13]
-   0x00010480 &lt;+24&gt;: mov r0, r3
-   0x00010484 &lt;+28&gt;: bl 0x10300 &lt;putchar@plt&gt;
-   0x00010488 &lt;+32&gt;: ldr r0, [r11, #-8]
-   0x0001048c &lt;+36&gt;: bl 0x10440 &lt;test2&gt;
-   0x00010490 &lt;+40&gt;: ldrb r3, [r11, #-13]
-   0x00010494 &lt;+44&gt;: mov r0, r3
-   0x00010498 &lt;+48&gt;: sub sp, r11, #4
-   0x0001049c &lt;+52&gt;: pop {r11, pc}
-End of assembler dump.
-(gdb) i r $lr
-lr             0x104c0 66752
-(gdb) info symbol $lr
-main + 32 in section .text of /root/main
-</code></pre><p>可以看到此时lr寄存器中保存的指令即调用test后的下一条指令。继续向下执行：</p>
-<pre><code class="language-armasm" data-lang="armasm">(gdb) ni
-0x0001046c 10 {
-(gdb) i r r11 sp
-r11            0x7efffaec 2130705132
-sp             0x7efffad8 0x7efffad8
-</code></pre><p>观察到将r11和lr入栈后，sp减少了8字节，不难猜测，高4字节存放了lr的值（返回地址），低4字节存放了sp的值（上一个栈的栈帧指针）：</p>
-<pre><code class="language-armasm" data-lang="armasm">(gdb) x /xw 0x7efffad8
-0x7efffad8: 0x7efffaec
-(gdb) x /xw 0x7efffadc
-0x7efffadc: 0x000104c0
-(gdb) i r $lr $r11
-lr             0x104c0 66752
-r11            0x7efffaec 2130705132
-</code></pre><p>继续执行：</p>
-<pre><code class="language-armasm" data-lang="armasm">(gdb) ni
-0x00010470 10 {
-(gdb) i r $r11
-r11            0x7efffadc 2130705116
-</code></pre><p>此时r11指向的是函数返回地址，而不是像x86一样指向上一个栈帧指针，和前面所说的一致。</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback"><span class="ln"> 1</span>(gdb) si
+<span class="ln"> 2</span>test (c=0 &#39;\000&#39;) at main.c:10
+<span class="ln"> 3</span>10 {
+<span class="ln"> 4</span>(gdb) disassemble
+<span class="ln"> 5</span>Dump of assembler code for function test:
+<span class="ln"> 6</span>=&gt; 0x00010468 &lt;+0&gt;: push {r11, lr}
+<span class="ln"> 7</span>   0x0001046c &lt;+4&gt;: add r11, sp, #4
+<span class="ln"> 8</span>   0x00010470 &lt;+8&gt;: sub sp, sp, #16
+<span class="ln"> 9</span>   0x00010474 &lt;+12&gt;: mov r3, r0
+<span class="ln">10</span>   0x00010478 &lt;+16&gt;: strb r3, [r11, #-13]
+<span class="ln">11</span>   0x0001047c &lt;+20&gt;: ldrb r3, [r11, #-13]
+<span class="ln">12</span>   0x00010480 &lt;+24&gt;: mov r0, r3
+<span class="ln">13</span>   0x00010484 &lt;+28&gt;: bl 0x10300 &lt;putchar@plt&gt;
+<span class="ln">14</span>   0x00010488 &lt;+32&gt;: ldr r0, [r11, #-8]
+<span class="ln">15</span>   0x0001048c &lt;+36&gt;: bl 0x10440 &lt;test2&gt;
+<span class="ln">16</span>   0x00010490 &lt;+40&gt;: ldrb r3, [r11, #-13]
+<span class="ln">17</span>   0x00010494 &lt;+44&gt;: mov r0, r3
+<span class="ln">18</span>   0x00010498 &lt;+48&gt;: sub sp, r11, #4
+<span class="ln">19</span>   0x0001049c &lt;+52&gt;: pop {r11, pc}
+<span class="ln">20</span>End of assembler dump.
+<span class="ln">21</span>(gdb) i r $lr
+<span class="ln">22</span>lr             0x104c0 66752
+<span class="ln">23</span>(gdb) info symbol $lr
+<span class="ln">24</span>main + 32 in section .text of /root/main
+</code></pre></div><p>可以看到此时lr寄存器中保存的指令即调用test后的下一条指令。继续向下执行：</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback"><span class="ln">1</span>(gdb) ni
+<span class="ln">2</span>0x0001046c 10 {
+<span class="ln">3</span>(gdb) i r r11 sp
+<span class="ln">4</span>r11            0x7efffaec 2130705132
+<span class="ln">5</span>sp             0x7efffad8 0x7efffad8
+</code></pre></div><p>观察到将r11和lr入栈后，sp减少了8字节，不难猜测，高4字节存放了lr的值（返回地址），低4字节存放了sp的值（上一个栈的栈帧指针）：</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback"><span class="ln">1</span>(gdb) x /xw 0x7efffad8
+<span class="ln">2</span>0x7efffad8: 0x7efffaec
+<span class="ln">3</span>(gdb) x /xw 0x7efffadc
+<span class="ln">4</span>0x7efffadc: 0x000104c0
+<span class="ln">5</span>(gdb) i r $lr $r11
+<span class="ln">6</span>lr             0x104c0 66752
+<span class="ln">7</span>r11            0x7efffaec 2130705132
+</code></pre></div><p>继续执行：</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback"><span class="ln">1</span>(gdb) ni
+<span class="ln">2</span>0x00010470 10 {
+<span class="ln">3</span>(gdb) i r $r11
+<span class="ln">4</span>r11            0x7efffadc 2130705116
+</code></pre></div><p>此时r11指向的是函数返回地址，而不是像x86一样指向上一个栈帧指针，和前面所说的一致。</p>
 <h2 id="分析函数返回出栈过程">分析函数返回（出栈）过程</h2>
 <p>test函数的汇编指令如下所示：</p>
-<pre><code class="language-armasm" data-lang="armasm">(gdb) disassemble /m test
-Dump of assembler code for function test:
-10 {
-   0x00010468 &lt;+0&gt;:	push	{r11, lr}
-   0x0001046c &lt;+4&gt;:	add	r11, sp, #4
-   0x00010470 &lt;+8&gt;:	sub	sp, sp, #16
-   0x00010474 &lt;+12&gt;:	mov	r3, r0
-   0x00010478 &lt;+16&gt;:	strb	r3, [r11, #-13]
-
-11		int i;
-12		printf(&quot;%c&quot;,c);
-   0x0001047c &lt;+20&gt;:	ldrb	r3, [r11, #-13]
-   0x00010480 &lt;+24&gt;:	mov	r0, r3
-   0x00010484 &lt;+28&gt;:	bl	0x10300 &lt;putchar@plt&gt;
-
-13		test2(i);
-   0x00010488 &lt;+32&gt;:	ldr	r0, [r11, #-8]
-   0x0001048c &lt;+36&gt;:	bl	0x10440 &lt;test2&gt;
-
-14		return c;
-   0x00010490 &lt;+40&gt;:	ldrb	r3, [r11, #-13]
-
-15	}
-   0x00010494 &lt;+44&gt;:	mov	r0, r3
-=&gt; 0x00010498 &lt;+48&gt;:	sub	sp, r11, #4
-   0x0001049c &lt;+52&gt;:	pop	{r11, pc}
-
-End of assembler dump.
-</code></pre><p>函数运行完毕进入出栈流程的执行过程分为如下几步：</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback"><span class="ln"> 1</span>(gdb) disassemble /m test
+<span class="ln"> 2</span>Dump of assembler code for function test:
+<span class="ln"> 3</span>10 {
+<span class="ln"> 4</span>   0x00010468 &lt;+0&gt;:	push	{r11, lr}
+<span class="ln"> 5</span>   0x0001046c &lt;+4&gt;:	add	r11, sp, #4
+<span class="ln"> 6</span>   0x00010470 &lt;+8&gt;:	sub	sp, sp, #16
+<span class="ln"> 7</span>   0x00010474 &lt;+12&gt;:	mov	r3, r0
+<span class="ln"> 8</span>   0x00010478 &lt;+16&gt;:	strb	r3, [r11, #-13]
+<span class="ln"> 9</span>
+<span class="ln">10</span>11		int i;
+<span class="ln">11</span>12		printf(&#34;%c&#34;,c);
+<span class="ln">12</span>   0x0001047c &lt;+20&gt;:	ldrb	r3, [r11, #-13]
+<span class="ln">13</span>   0x00010480 &lt;+24&gt;:	mov	r0, r3
+<span class="ln">14</span>   0x00010484 &lt;+28&gt;:	bl	0x10300 &lt;putchar@plt&gt;
+<span class="ln">15</span>
+<span class="ln">16</span>13		test2(i);
+<span class="ln">17</span>   0x00010488 &lt;+32&gt;:	ldr	r0, [r11, #-8]
+<span class="ln">18</span>   0x0001048c &lt;+36&gt;:	bl	0x10440 &lt;test2&gt;
+<span class="ln">19</span>
+<span class="ln">20</span>14		return c;
+<span class="ln">21</span>   0x00010490 &lt;+40&gt;:	ldrb	r3, [r11, #-13]
+<span class="ln">22</span>
+<span class="ln">23</span>15	}
+<span class="ln">24</span>   0x00010494 &lt;+44&gt;:	mov	r0, r3
+<span class="ln">25</span>=&gt; 0x00010498 &lt;+48&gt;:	sub	sp, r11, #4
+<span class="ln">26</span>   0x0001049c &lt;+52&gt;:	pop	{r11, pc}
+<span class="ln">27</span>
+<span class="ln">28</span>End of assembler dump.
+</code></pre></div><p>函数运行完毕进入出栈流程的执行过程分为如下几步：</p>
 <ul>
 <li>首先通过 <code>sub sp, r11, #4</code> 将栈顶指针指向上一个栈帧指针</li>
 <li>接着通过 <code>pop {r11, pc}</code> 将上一个栈帧指针赋值给r11，并将返回地址赋值给pc</li>
 <li>两次pop后，栈顶指针自动往栈底方向退两次</li>
 </ul>
 <p>最终，栈顶指针（sp）、栈帧指针（r11）和指令指针（pc）都还原成了main函数调用test前的样子，用GDB查看寄存器内容证实了这一点：</p>
-<pre><code class="language-armasm" data-lang="armasm">(gdb) disassemble 
-Dump of assembler code for function main:
-   0x000104a0 &lt;+0&gt;:	push	{r11, lr}
-   0x000104a4 &lt;+4&gt;:	add	r11, sp, #4
-   0x000104a8 &lt;+8&gt;:	sub	sp, sp, #8
-   0x000104ac &lt;+12&gt;:	mov	r3, #97	; 0x61
-   0x000104b0 &lt;+16&gt;:	strb	r3, [r11, #-5]
-   0x000104b4 &lt;+20&gt;:	ldrb	r3, [r11, #-5]
-   0x000104b8 &lt;+24&gt;:	mov	r0, r3
-   0x000104bc &lt;+28&gt;:	bl	0x10468 &lt;test&gt;
-=&gt; 0x000104c0 &lt;+32&gt;:	mov	r3, r0
-   0x000104c4 &lt;+36&gt;:	strb	r3, [r11, #-6]
-   0x000104c8 &lt;+40&gt;:	mov	r3, #0
-   0x000104cc &lt;+44&gt;:	mov	r0, r3
-   0x000104d0 &lt;+48&gt;:	sub	sp, r11, #4
-   0x000104d4 &lt;+52&gt;:	pop	{r11, pc}
-End of assembler dump.
-(gdb) i r r11 sp pc
-r11            0x7efffaec	2130705132
-sp             0x7efffae0	0x7efffae0
-pc             0x104c0	0x104c0 &lt;main+32&gt;
-</code></pre>]]></content>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback"><span class="ln"> 1</span>(gdb) disassemble 
+<span class="ln"> 2</span>Dump of assembler code for function main:
+<span class="ln"> 3</span>   0x000104a0 &lt;+0&gt;:	push	{r11, lr}
+<span class="ln"> 4</span>   0x000104a4 &lt;+4&gt;:	add	r11, sp, #4
+<span class="ln"> 5</span>   0x000104a8 &lt;+8&gt;:	sub	sp, sp, #8
+<span class="ln"> 6</span>   0x000104ac &lt;+12&gt;:	mov	r3, #97	; 0x61
+<span class="ln"> 7</span>   0x000104b0 &lt;+16&gt;:	strb	r3, [r11, #-5]
+<span class="ln"> 8</span>   0x000104b4 &lt;+20&gt;:	ldrb	r3, [r11, #-5]
+<span class="ln"> 9</span>   0x000104b8 &lt;+24&gt;:	mov	r0, r3
+<span class="ln">10</span>   0x000104bc &lt;+28&gt;:	bl	0x10468 &lt;test&gt;
+<span class="ln">11</span>=&gt; 0x000104c0 &lt;+32&gt;:	mov	r3, r0
+<span class="ln">12</span>   0x000104c4 &lt;+36&gt;:	strb	r3, [r11, #-6]
+<span class="ln">13</span>   0x000104c8 &lt;+40&gt;:	mov	r3, #0
+<span class="ln">14</span>   0x000104cc &lt;+44&gt;:	mov	r0, r3
+<span class="ln">15</span>   0x000104d0 &lt;+48&gt;:	sub	sp, r11, #4
+<span class="ln">16</span>   0x000104d4 &lt;+52&gt;:	pop	{r11, pc}
+<span class="ln">17</span>End of assembler dump.
+<span class="ln">18</span>(gdb) i r r11 sp pc
+<span class="ln">19</span>r11            0x7efffaec	2130705132
+<span class="ln">20</span>sp             0x7efffae0	0x7efffae0
+<span class="ln">21</span>pc             0x104c0	0x104c0 &lt;main+32&gt;
+</code></pre></div>]]></content>
 		</item>
 		
 		<item>
@@ -1303,7 +1386,7 @@ pc             0x104c0	0x104c0 &lt;main+32&gt;
 <p>因此，<strong>使用<code>pipe</code>创建管道后，必然要使用 <code>fork</code> 创建子进程，这样就可以做到父子进程使用不同的fd进行读写通信</strong>。</p>
 <h3 id="popen">popen</h3>
 <p>库函数 <code>popen</code> 就是使用匿名管道实现的。函数原型：</p>
-<div class="highlight"><pre class="chroma"><code class="language-C" data-lang="C"><span class="n">FILE</span> <span class="o">*</span> <span class="n">popen</span><span class="err">（</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">cmdstring</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">type</span><span class="err">）</span><span class="p">;</span>
+<div class="highlight"><pre class="chroma"><code class="language-C" data-lang="C"><span class="ln">1</span><span class="n">FILE</span> <span class="o">*</span> <span class="n">popen</span><span class="err">（</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">cmdstring</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">type</span><span class="err">）</span><span class="p">;</span>
 </code></pre></div><p><code>popen</code>创建了一个管道，然后执行fork，在子进程中使用<code>exec</code>执行cmdstring；返回的文件指针根据参数type指向管道的读或写端。</p>
 <p>type可取&quot;w&quot;和&quot;r&quot;：</p>
 <ul>

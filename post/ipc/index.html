@@ -33,7 +33,7 @@
 	<link rel="shortcut icon" href="/favicon.ico">
 
 	<title>进程间通信</title>
-	<link rel="stylesheet" href="https://cvvz.github.io/css/style.min.052d306dd1c49415658027c566de932b0e3c2d1278df9f6b44487a95c9b6c1ee.css">
+	<link rel="stylesheet" href="https://cvvz.github.io/css/style.min.7a1ec200e9f3394f73c6eda58011808507a3b24318de81e1e343f22a2470caef.css">
 	
 </head>
 
@@ -87,7 +87,7 @@
 <p>因此，<strong>使用<code>pipe</code>创建管道后，必然要使用 <code>fork</code> 创建子进程，这样就可以做到父子进程使用不同的fd进行读写通信</strong>。</p>
 <h3 id="popen">popen<a href="#popen" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p>库函数 <code>popen</code> 就是使用匿名管道实现的。函数原型：</p>
-<div class="highlight"><pre class="chroma"><code class="language-C" data-lang="C"><span class="n">FILE</span> <span class="o">*</span> <span class="n">popen</span><span class="err">（</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">cmdstring</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">type</span><span class="err">）</span><span class="p">;</span>
+<div class="highlight"><pre class="chroma"><code class="language-C" data-lang="C"><span class="ln">1</span><span class="n">FILE</span> <span class="o">*</span> <span class="n">popen</span><span class="err">（</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">cmdstring</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">type</span><span class="err">）</span><span class="p">;</span>
 </code></pre></div><p><code>popen</code>创建了一个管道，然后执行fork，在子进程中使用<code>exec</code>执行cmdstring；返回的文件指针根据参数type指向管道的读或写端。</p>
 <p>type可取&quot;w&quot;和&quot;r&quot;：</p>
 <ul>

@@ -10,7 +10,7 @@
 <meta itemprop="description" content="openshift 的 generic-admission-server库 是用来编写admission webhook的lib库，它声称使用该库可以避免为每一个w">
 <meta itemprop="datePublished" content="2020-12-01T07:19:06+08:00" />
 <meta itemprop="dateModified" content="2020-12-24T18:33:13+08:00" />
-<meta itemprop="wordCount" content="1996">
+<meta itemprop="wordCount" content="2004">
 
 
 
@@ -33,7 +33,7 @@
 	<link rel="shortcut icon" href="/favicon.ico">
 
 	<title>以aggregated API server的方式部署admission webhook</title>
-	<link rel="stylesheet" href="https://cvvz.github.io/css/style.min.052d306dd1c49415658027c566de932b0e3c2d1278df9f6b44487a95c9b6c1ee.css">
+	<link rel="stylesheet" href="https://cvvz.github.io/css/style.min.7a1ec200e9f3394f73c6eda58011808507a3b24318de81e1e343f22a2470caef.css">
 	
 </head>
 
@@ -79,19 +79,19 @@
 </blockquote>
 <h2 id="admission-webhook认证api-server的过程">admission webhook认证api server的过程<a href="#admission-webhook认证api-server的过程" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>在启动 api server时，通过<code>--admission-control-config-file</code> 这个参数指定了客户端证书、私钥的配置文件，这个文件的格式如下所示：</p>
-<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiserver.config.k8s.io/v1</span><span class="w">
-</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">AdmissionConfiguration</span><span class="w">
-</span><span class="w"></span><span class="nt">plugins</span><span class="p">:</span><span class="w">
-</span><span class="w"></span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">ValidatingAdmissionWebhook</span><span class="w">
-</span><span class="w">  </span><span class="nt">configuration</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiserver.config.k8s.io/v1</span><span class="w">
-</span><span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">WebhookAdmissionConfiguration</span><span class="w">
-</span><span class="w">    </span><span class="nt">kubeConfigFile</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;&lt;path-to-kubeconfig-file&gt;&#34;</span><span class="w">
-</span><span class="w"></span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">MutatingAdmissionWebhook</span><span class="w">
-</span><span class="w">  </span><span class="nt">configuration</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiserver.config.k8s.io/v1</span><span class="w">
-</span><span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">WebhookAdmissionConfiguration</span><span class="w">
-</span><span class="w">    </span><span class="nt">kubeConfigFile</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;&lt;path-to-kubeconfig-file&gt;&#34;</span><span class="w">
+<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="ln"> 1</span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiserver.config.k8s.io/v1</span><span class="w">
+</span><span class="ln"> 2</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">AdmissionConfiguration</span><span class="w">
+</span><span class="ln"> 3</span><span class="w"></span><span class="nt">plugins</span><span class="p">:</span><span class="w">
+</span><span class="ln"> 4</span><span class="w"></span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">ValidatingAdmissionWebhook</span><span class="w">
+</span><span class="ln"> 5</span><span class="w">  </span><span class="nt">configuration</span><span class="p">:</span><span class="w">
+</span><span class="ln"> 6</span><span class="w">    </span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiserver.config.k8s.io/v1</span><span class="w">
+</span><span class="ln"> 7</span><span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">WebhookAdmissionConfiguration</span><span class="w">
+</span><span class="ln"> 8</span><span class="w">    </span><span class="nt">kubeConfigFile</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;&lt;path-to-kubeconfig-file&gt;&#34;</span><span class="w">
+</span><span class="ln"> 9</span><span class="w"></span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">MutatingAdmissionWebhook</span><span class="w">
+</span><span class="ln">10</span><span class="w">  </span><span class="nt">configuration</span><span class="p">:</span><span class="w">
+</span><span class="ln">11</span><span class="w">    </span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apiserver.config.k8s.io/v1</span><span class="w">
+</span><span class="ln">12</span><span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">WebhookAdmissionConfiguration</span><span class="w">
+</span><span class="ln">13</span><span class="w">    </span><span class="nt">kubeConfigFile</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;&lt;path-to-kubeconfig-file&gt;&#34;</span><span class="w">
 </span></code></pre></div><p>其中，<code>kubeConfigFile</code> 参数指定了 <code>kubeconfig</code> 文件的存放位置。<code>kubeconfig</code> 文件和用 kubectl 连接 api server 时用到的那个 <code>kubeconfig</code> 格式一样。只不过这里，客户端是api server，而不是kubectl。</p>
 <p>可以看到，通过这种方式部署的webhook，需要手工管理客户端凭证（kubeConfig文件），且每个webhook都需要生成一个客户端凭证。而在webhook中，还需要使用生成证书所用的CA证书来校验api server。非常麻烦。</p>
 <h2 id="aggregated-api-server认证api-server的过程">aggregated API server认证api server的过程<a href="#aggregated-api-server认证api-server的过程" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
@@ -118,23 +118,23 @@
 <ol>
 <li>
 <p>在(Validating/Mutating)WebhookConfiguration中，配置admission webhook为kubernetes服务：</p>
-<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">webhooks</span><span class="p">:</span><span class="w">
-</span><span class="w"></span>- <span class="nt">clientConfig</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">service</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kubernetes</span><span class="w">
-</span><span class="w">      </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">default</span><span class="w">
-</span><span class="w">      </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">/apis/{group}/{version}/{resource}</span><span class="w">
-</span><span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">443</span><span class="w">
+<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="ln">1</span><span class="nt">webhooks</span><span class="p">:</span><span class="w">
+</span><span class="ln">2</span><span class="w"></span>- <span class="nt">clientConfig</span><span class="p">:</span><span class="w">
+</span><span class="ln">3</span><span class="w">    </span><span class="nt">service</span><span class="p">:</span><span class="w">
+</span><span class="ln">4</span><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kubernetes</span><span class="w">
+</span><span class="ln">5</span><span class="w">      </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">default</span><span class="w">
+</span><span class="ln">6</span><span class="w">      </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">/apis/{group}/{version}/{resource}</span><span class="w">
+</span><span class="ln">7</span><span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">443</span><span class="w">
 </span></code></pre></div></li>
 <li>
 <p>在ApiService中，配置group、version，以及admission webhook的service：</p>
-<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span>{<span class="l">group}</span><span class="w">
-</span><span class="w">  </span><span class="nt">service</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span>{<span class="l">webhook-service}</span><span class="w">
-</span><span class="w">    </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span>{<span class="l">namespace}</span><span class="w">
-</span><span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">443</span><span class="w">
-</span><span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span>{<span class="l">version}</span><span class="w">
+<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="ln">1</span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="ln">2</span><span class="w">  </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span>{<span class="l">group}</span><span class="w">
+</span><span class="ln">3</span><span class="w">  </span><span class="nt">service</span><span class="p">:</span><span class="w">
+</span><span class="ln">4</span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span>{<span class="l">webhook-service}</span><span class="w">
+</span><span class="ln">5</span><span class="w">    </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span>{<span class="l">namespace}</span><span class="w">
+</span><span class="ln">6</span><span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">443</span><span class="w">
+</span><span class="ln">7</span><span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span>{<span class="l">version}</span><span class="w">
 </span></code></pre></div></li>
 </ol>
 <p>这种方式部署的admission webhook的整个工作流程如下图所示：
@@ -162,7 +162,7 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/kubernetes">kubernetes</a></span><span class="tag"><a href="https://cvvz.github.io/tags/%E5%AE%89%E5%85%A8">安全</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1996 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2004 字</p>
 				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/c7d31831171cc9f78fba8d32cdf3e907e1d80618" target="_blank" rel="noopener">c7d3183</a> @ 2020-12-24</p>
 			</footer>
 		</article>
