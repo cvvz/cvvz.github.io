@@ -725,9 +725,9 @@
 			<pubDate>Mon, 30 Mar 2020 10:36:36 +0800</pubDate>
 			
 			<guid>https://cvvz.github.io/post/celery-worker-zombie/</guid>
-			<description>最近在组内基于Flask + rabbitMQ + Celery搭建的web平台上开发需求时碰到了几个比较有趣的问题，在这里记录下来。 问题背景 web平台整体架构图</description>
+			<description>组内有一个基于Flask + rabbitMQ + Celery搭建的web平台，最近在上面开发需求时碰到了一个比较有趣的问题，在这里记录下来。 问题背景 web平台</description>
 			<content type="html"><![CDATA[<blockquote>
-<p>最近在组内基于Flask + rabbitMQ + Celery搭建的web平台上开发需求时碰到了几个比较有趣的问题，在这里记录下来。</p>
+<p>组内有一个基于Flask + rabbitMQ + Celery搭建的web平台，最近在上面开发需求时碰到了一个比较有趣的问题，在这里记录下来。</p>
 </blockquote>
 <h2 id="问题背景">问题背景</h2>
 <p>web平台整体架构图如下所示：</p>
