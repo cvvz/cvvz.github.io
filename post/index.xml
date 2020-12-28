@@ -439,10 +439,10 @@
 		
 		<item>
 			<title>浅谈单机容器网络</title>
-			<link>https://cvvz.github.io/post/container-single-machine-network/</link>
+			<link>https://cvvz.github.io/post/container-network/</link>
 			<pubDate>Thu, 03 Dec 2020 00:16:18 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/container-single-machine-network/</guid>
+			<guid>https://cvvz.github.io/post/container-network/</guid>
 			<description>容器网络环境隔离怎么理解？ 容器的网络环境是隔离的，这个隔离就体现在不共用内核网络协议栈，那么必然也就不会共用网络协议栈要用到的数据和设备了：</description>
 			<content type="html"><![CDATA[<h2 id="容器网络环境隔离怎么理解">容器网络环境隔离怎么理解？</h2>
 <p>容器的网络环境是隔离的，这个隔离就体现在不共用内核网络协议栈，那么必然也就<strong>不会共用网络协议栈要用到的数据和设备</strong>了：</p>
