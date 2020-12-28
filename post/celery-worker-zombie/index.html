@@ -9,7 +9,7 @@
 <meta itemprop="name" content="Celery Worker僵尸进程问题定位记录">
 <meta itemprop="description" content="组内有一个基于Flask &#43; rabbitMQ &#43; Celery搭建的web平台，最近在上面开发需求时碰到了一个比较有趣的问题，在这里记录下来。 问题背景 web平台">
 <meta itemprop="datePublished" content="2020-03-30T10:36:36+08:00" />
-<meta itemprop="dateModified" content="2020-12-28T10:55:08+08:00" />
+<meta itemprop="dateModified" content="2020-12-28T10:57:19+08:00" />
 <meta itemprop="wordCount" content="1140">
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/celery-worker-zombie/" />
 <meta property="article:published_time" content="2020-03-30T10:36:36+08:00" />
-<meta property="article:modified_time" content="2020-12-28T10:55:08+08:00" />
+<meta property="article:modified_time" content="2020-12-28T10:57:19+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Celery Worker僵尸进程问题定位记录"/>
 <meta name="twitter:description" content="组内有一个基于Flask &#43; rabbitMQ &#43; Celery搭建的web平台，最近在上面开发需求时碰到了一个比较有趣的问题，在这里记录下来。 问题背景 web平台"/>
@@ -75,7 +75,7 @@
 <h2 id="问题背景">问题背景<a href="#问题背景" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>web平台整体架构图如下所示：</p>
 <figure>
-    <img src="/platform.drawio.svg" width="1000px"/> 
+    <img src="/platform.drawio.svg" width="800px"/> 
 </figure>
 
 <p>Flask向rabbitMQ发送任务消息，后者再将任务分发给不同的Celery worker进行处理。由于每一个任务的处理时间较长，为了不阻塞worker处理下一个任务，在worker中，通过两次fork的方式，生成孤儿进程在后台进行任务处理。</p>
@@ -150,7 +150,7 @@
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/celery">celery</a></span><span class="tag"><a href="https://cvvz.github.io/tags/linux">Linux</a></span>
 				</p>
 				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1140 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/1b05ed99d30f210a3466793c608aefb7c9385b7f" target="_blank" rel="noopener">1b05ed9</a> @ 2020-12-28</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/ab659a54e05829f3fbf62bca6a212c1148b54823" target="_blank" rel="noopener">ab659a5</a> @ 2020-12-28</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">
