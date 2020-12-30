@@ -97,30 +97,6 @@
 		</item>
 		
 		<item>
-			<title>kubernetes网络之service</title>
-			<link>https://cvvz.github.io/post/k8s-network-service/</link>
-			<pubDate>Wed, 30 Dec 2020 09:42:01 +0800</pubDate>
-			
-			<guid>https://cvvz.github.io/post/k8s-network-service/</guid>
-			<description>从ClusterIP到后端Pod 从NodePort到后端Pod externalTrafficPolicy设置为local kube-proxy Netfilter</description>
-			<content type="html"><![CDATA[<h2 id="从clusterip到后端pod">从ClusterIP到后端Pod</h2>
-<h2 id="从nodeport到后端pod">从NodePort到后端Pod</h2>
-<p>externalTrafficPolicy设置为local</p>
-<h2 id="kube-proxy">kube-proxy</h2>
-<h2 id="netfilter和iptables">Netfilter和iptables</h2>
-<h2 id="service的底层实现原理">service的底层实现原理</h2>
-<p>service其实是一个抽象的概念，<strong>service的IP和port其实只存在于主机iptables上的NAT表里，并不对应任何实体</strong>。</p>
-<p>kubernetes集群中的容器访问某个service的过程如下：</p>
-<ol>
-<li>首先根据容器内的路由规则将数据包发往宿主机上的cni网桥；</li>
-<li>宿主机内核网络协议栈处理数据包，由于iptables中配置了DNAT规则，所以目的ip地址最终会被netfilter转换成一个实际的后端Pod的ip地址。</li>
-<li>转换成Pod的IP地址后，如果是本主机上的容器，则会被内核路由回本机的cni网桥上；如果是其他主机上的容器，则如前所述进行跨主机通信。</li>
-<li>报文在离开节点前netfilter会再做一次SNAT，将源ip地址从Pod的ip地址替换为节点的ip地址，以便接收方可以顺利的将报文发送回来。</li>
-</ol>
-]]></content>
-		</item>
-		
-		<item>
 			<title>kubernetes网络之DNS</title>
 			<link>https://cvvz.github.io/post/k8s-network-dns/</link>
 			<pubDate>Wed, 30 Dec 2020 09:41:51 +0800</pubDate>

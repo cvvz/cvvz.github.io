@@ -18,15 +18,6 @@
     </item>
     
     <item>
-      <title>kubernetes网络之service</title>
-      <link>https://cvvz.github.io/post/k8s-network-service/</link>
-      <pubDate>Wed, 30 Dec 2020 09:42:01 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/k8s-network-service/</guid>
-      <description>从ClusterIP到后端Pod 从NodePort到后端Pod externalTrafficPolicy设置为local kube-proxy Netfilter</description>
-    </item>
-    
-    <item>
       <title>kubernetes网络之DNS</title>
       <link>https://cvvz.github.io/post/k8s-network-dns/</link>
       <pubDate>Wed, 30 Dec 2020 09:41:51 +0800</pubDate>
