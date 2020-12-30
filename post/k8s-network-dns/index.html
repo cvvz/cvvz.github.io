@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="google-site-verification" content="Wp3QtEkIlF0ZvtKx90lPmoXyH39d-pmBhiTyTbba9L4" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta itemprop="name" content="kubernetes网络之DNS">
+<meta itemprop="description" content="Service和DNS 尽管kubelet在启动容器时，会将同namespace下的Service信息注入到容器的环境变量中： 1➜ ~ kubectl get svc | grep">
+<meta itemprop="datePublished" content="2020-12-30T09:41:51+08:00" />
+<meta itemprop="dateModified" content="2020-12-30T14:32:28+08:00" />
+<meta itemprop="wordCount" content="1502">
+
+
+
+<meta itemprop="keywords" content="kubernetes,DNS," />
+<meta property="og:title" content="kubernetes网络之DNS" />
+<meta property="og:description" content="Service和DNS 尽管kubelet在启动容器时，会将同namespace下的Service信息注入到容器的环境变量中： 1➜ ~ kubectl get svc | grep" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://cvvz.github.io/post/k8s-network-dns/" />
+<meta property="article:published_time" content="2020-12-30T09:41:51+08:00" />
+<meta property="article:modified_time" content="2020-12-30T14:32:28+08:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="kubernetes网络之DNS"/>
+<meta name="twitter:description" content="Service和DNS 尽管kubelet在启动容器时，会将同namespace下的Service信息注入到容器的环境变量中： 1➜ ~ kubectl get svc | grep"/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>kubernetes网络之DNS</title>
+	<link rel="stylesheet" href="https://cvvz.github.io/css/style.min.7a1ec200e9f3394f73c6eda58011808507a3b24318de81e1e343f22a2470caef.css">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp faster">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://cvvz.github.io">Vic&#39;s Blog</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					<a href="https://cvvz.github.io/post/">文章</a>
+					<a href="https://cvvz.github.io/about/">关于</a>
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<button id="toc-btn" class="hdr-btn desktop-only-ib" title="目录"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-list"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3" y2="6"></line><line x1="3" y1="12" x2="3" y2="12"></line><line x1="3" y1="18" x2="3" y2="18"></line></svg></button><span class="hdr-social hide-in-mobile"><a href="https://github.com/cvvz" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="mailto:ftdchenwz@gmail.com" target="_blank" rel="noopener me" title="Email"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a></span><button id="menu-btn" class="hdr-btn" title="菜单"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://cvvz.github.io/post/">文章</a></li>
+			<li><a href="https://cvvz.github.io/about/">关于</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<h1>kubernetes网络之DNS</h1>
+			</header>
+			<div class="content">
+				<h2 id="service和dns">Service和DNS<a href="#service和dns" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>尽管kubelet在启动容器时，会将同namespace下的Service信息注入到容器的环境变量中：</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln"> 1</span>➜  ~ kubectl get svc <span class="p">|</span> grep kubernetes
+<span class="ln"> 2</span>kubernetes                      ClusterIP   192.168.0.1       &lt;none&gt;        443/TCP                                             347d
+<span class="ln"> 3</span>
+<span class="ln"> 4</span>➜  ~ kubectl <span class="nb">exec</span> -it debug-pod -n default -- env <span class="p">|</span> grep KUBERNETES
+<span class="ln"> 5</span><span class="nv">KUBERNETES_SERVICE_PORT</span><span class="o">=</span><span class="m">443</span>
+<span class="ln"> 6</span><span class="nv">KUBERNETES_PORT</span><span class="o">=</span>tcp://192.168.0.1:443
+<span class="ln"> 7</span><span class="nv">KUBERNETES_PORT_443_TCP_ADDR</span><span class="o">=</span>192.168.0.1
+<span class="ln"> 8</span><span class="nv">KUBERNETES_PORT_443_TCP_PORT</span><span class="o">=</span><span class="m">443</span>
+<span class="ln"> 9</span><span class="nv">KUBERNETES_PORT_443_TCP_PROTO</span><span class="o">=</span>tcp
+<span class="ln">10</span><span class="nv">KUBERNETES_PORT_443_TCP</span><span class="o">=</span>tcp://192.168.0.1:443
+<span class="ln">11</span><span class="nv">KUBERNETES_SERVICE_PORT_HTTPS</span><span class="o">=</span><span class="m">443</span>
+<span class="ln">12</span><span class="nv">KUBERNETES_SERVICE_HOST</span><span class="o">=</span>192.168.0.1
+</code></pre></div><p>但是通常情况下我们使用DNS域名解析的方式进行服务注册和发现。</p>
+<p>Kubernetes中的DNS应用部署好以后，会对外暴露一个服务，集群内的容器可以通过访问该服务的Cluster IP进行域名解析。DNS服务的Cluster IP由Kubelet的<code>cluster-dns</code>参数指定。并且在创建Pod时，由Kubelet将DNS Server的信息写入容器的<code>/etc/resolv.conf</code>文件中。</p>
+<p>查看<code>resolv.conf</code>文件的配置：</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>➜  ~ k <span class="nb">exec</span> -it debug-pod -n default -- cat /etc/resolv.conf
+<span class="ln">2</span>nameserver 192.168.0.2
+<span class="ln">3</span>search default.svc.cluster.local svc.cluster.local cluster.local
+<span class="ln">4</span>options ndots:5
+</code></pre></div><p><code>nameserver 192.168.0.2</code>即表示DNS服务的地址为<code>192.168.0.2</code>。</p>
+<p><code>search</code>这一行表示，如果无法直接解析域名，则会尝试加上<code>default.svc.cluster.local</code>, <code>svc.cluster.local</code>, <code>cluster.local</code>后缀进行域名解析。</p>
+<blockquote>
+<p>其中<code>default</code>是namespace，<code>cluster.local</code>是默认的集群域名后缀，kubelet可以通过<code>--cluster_domain</code>配置。</p>
+</blockquote>
+<p>也就是说：</p>
+<ul>
+<li>同namespace下，可以通过<code>nslookup</code> + <code>kubernetes</code>解析域名</li>
+<li>不同namespace下，可以通过<code>nslookup</code> + <code>kubernetes.default</code>、<code>kubernetes.default.svc</code>、<code>kubernetes.default.svc.cluster.local</code>解析域名</li>
+</ul>
+<p>因为dns服务器会帮你补齐全域名：<code>kubernetes.default.svc.cluster.local</code></p>
+<blockquote>
+<p><code>{svc name}.{svc namespace}.svc.{cluster domain}</code>就是kubernetes的FQDN格式。</p>
+</blockquote>
+<h2 id="headless-service的域名解析">Headless Service的域名解析<a href="#headless-service的域名解析" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>常规的ClusterIP类型的Service的域名解析如上所述，DNS服务会返回一个<code>A记录</code>，即域名和ClusterIP的对应关系：</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>➜  ~ k <span class="nb">exec</span> -it debug-pod -n default -- nslookup kubernetes.default
+<span class="ln">2</span>Server:		192.168.0.2
+<span class="ln">3</span>Address:	192.168.0.2#53
+<span class="ln">4</span>
+<span class="ln">5</span>Name:	kubernetes.default.svc.cluster.local
+<span class="ln">6</span>Address: 192.168.0.1
+</code></pre></div><p>Headless Service的域名解析稍微复杂一点。</p>
+<blockquote>
+<p>ClusterIP可以看作是Service的头，而Headless Service，顾名思义也就是指定他的ClusterIP为None的Service。</p>
+</blockquote>
+<h3 id="直接解析">直接解析<a href="#直接解析" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>当你直接解析它的域名时，返回的是EndPoints中的Pod IP列表：</p>
+<blockquote>
+<p>这个EndPoints后端的Pod，不仅可以通过在service中指定selector来选择，也可以自己定义，只要名字和service同名即可。</p>
+</blockquote>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln"> 1</span>➜  ~ k <span class="nb">exec</span> -it debug-pod -n default -- nslookup headless
+<span class="ln"> 2</span>Defaulting container name to debug.
+<span class="ln"> 3</span>Use <span class="s1">&#39;kubectl describe pod/debug-pod -n default&#39;</span> to see all of the containers in this pod.
+<span class="ln"> 4</span>Server:		192.168.0.2
+<span class="ln"> 5</span>Address:	192.168.0.2#53
+<span class="ln"> 6</span>
+<span class="ln"> 7</span>Name:	headless.default.svc.cluster.local
+<span class="ln"> 8</span>Address: 1.1.1.1
+<span class="ln"> 9</span>Name:	headless.default.svc.cluster.local
+<span class="ln">10</span>Address: 2.2.2.2
+<span class="ln">11</span>Name:	headless.default.svc.cluster.local
+<span class="ln">12</span>Address: 3.3.3.3
+</code></pre></div><h3 id="给pod生成a记录">给Pod生成A记录<a href="#给pod生成a记录" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>如果<strong>在<code>Pod.spec</code>中指定了<code>hostname</code>和<code>subdomain</code>，并且<code>subdomain</code>和headleass service的名字相同</strong>，那么kubernetes DNS会额外给这个Pod的FQDN生成A记录：</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>➜  ~ k <span class="nb">exec</span> -it debug-pod -n default -- nslookup mywebsite.headless.default.svc.cluster.local
+<span class="ln">2</span>Server:		192.168.0.2
+<span class="ln">3</span>Address:	192.168.0.2#53
+<span class="ln">4</span>
+<span class="ln">5</span>Name:	mywebsite.headless.default.svc.cluster.local
+<span class="ln">6</span>Address: 10.189.97.217
+</code></pre></div><blockquote>
+<p>Pod的FQDN是：<code>{hostname}.{subdomain}.{pod namespace}.svc.{cluster domain}</code></p>
+</blockquote>
+<h3 id="externalname-service">ExternalName Service<a href="#externalname-service" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>ExternalName 类型的Service，kubernetes DNS会根据<code>ExternalName</code>字段，为其生成<strong>CNAME记录</strong>，在DNS层进行重定向。</p>
+<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="ln">1</span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="ln">2</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Service</span><span class="w">
+</span><span class="ln">3</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="ln">4</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">external</span><span class="w">
+</span><span class="ln">5</span><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">default</span><span class="w">
+</span><span class="ln">6</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="ln">7</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">ExternalName</span><span class="w">
+</span><span class="ln">8</span><span class="w">  </span><span class="nt">externalName</span><span class="p">:</span><span class="w"> </span><span class="l">my.example.domain.com</span><span class="w">
+</span></code></pre></div><div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>➜  ~ k <span class="nb">exec</span> -it debug-pod -n default -- nslookup external
+<span class="ln">2</span>Server:		192.168.0.2
+<span class="ln">3</span>Address:	192.168.0.2#53
+<span class="ln">4</span>
+<span class="ln">5</span>external.default.svc.cluster.local	canonical <span class="nv">name</span> <span class="o">=</span> my.example.domain.com.
+<span class="ln">6</span>Name:	my.example.domain.com
+<span class="ln">7</span>Address: 66.96.162.92
+</code></pre></div>
+			</div>
+			<hr class="post-end">
+			<footer class="post-info">
+				<p>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/kubernetes">kubernetes</a></span><span class="tag"><a href="https://cvvz.github.io/tags/dns">DNS</a></span>
+				</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1502 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/12482c250fb6ab5bfa2e9aa6bb374c9013325402" target="_blank" rel="noopener">12482c2</a> @ 2020-12-30</p>
+			</footer>
+		</article>
+		<aside id="toc" class="show-toc">
+			<div class="toc-title">目录</div>
+			<nav id="TableOfContents">
+  <ul>
+    <li><a href="#service和dns">Service和DNS</a></li>
+    <li><a href="#headless-service的域名解析">Headless Service的域名解析</a>
+      <ul>
+        <li><a href="#直接解析">直接解析</a></li>
+        <li><a href="#给pod生成a记录">给Pod生成A记录</a></li>
+        <li><a href="#externalname-service">ExternalName Service</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+		</aside>
+		<div class="post-nav thin">
+			<a class="next-post" href="https://cvvz.github.io/post/k8s-network-service/">
+				<span class="post-nav-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>&nbsp;新</span><br><span>kubernetes网络之service</span>
+			</a>
+			<a class="prev-post" href="https://cvvz.github.io/post/k8s-network/">
+				<span class="post-nav-label">旧&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>浅谈 Kubernetes 容器网络</span>
+			</a>
+		</div>
+		<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+		<div id="gitalk-container" class="thin"></div>     
+		<script type="text/javascript">
+			var gitalk = new Gitalk({
+				clientID: '0f8bdcbe6b4973f9b206',
+				clientSecret: '4939e64d59c93fc5eb7eaf74469a746e4535700d',
+				repo: 'cvvz.github.io',
+				owner: 'cvvz',
+				admin: ['cvvz'],
+				id: location.pathname,      
+				distractionFreeMode: true 
+			});
+  			gitalk.render('gitalk-container');
+		</script>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2020 <a href="https://cvvz.github.io">陈维志</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://cvvz.github.io/post/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+	<script src="https://cvvz.github.io/js/main.min.784417f5847151f848c339cf0acb13a06cbb648b1483435a28ed4556c4ead69b.js"></script>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-M8Q3DKDEVL', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

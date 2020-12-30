@@ -15,20 +15,20 @@
 			<pubDate>Wed, 30 Dec 2020 09:51:44 +0800</pubDate>
 			
 			<guid>https://cvvz.github.io/post/k8s-network-cross-host/</guid>
-			<description>初始化infra容器网络环境 当kubelet通过RunPodSandbox创建好PodSandbox，即infra容器后，就需要调用SetU</description>
+			<description>初始化infra容器网络环境 当kubelet通过调用CRI的RunPodSandbox创建好PodSandbox，即infra容器后，就需要</description>
 			<content type="html"><![CDATA[<h2 id="初始化infra容器网络环境">初始化infra容器网络环境</h2>
-<p>当kubelet通过<a href="https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/cri-api/pkg/apis/services.go#L66">RunPodSandbox</a>创建好<code>PodSandbox</code>，即infra容器后，就需要调用<a href="https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/dockershim/network/plugins.go#L73">SetUpPod</a>方法为Pod（infra容器）创建网络环境，底层是调用CNI的<a href="https://github.com/containernetworking/cni/blob/master/libcni/api.go#L80">AddNetwork</a>为infra容器配置网络环境。</p>
+<p>当kubelet通过调用CRI的<a href="https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/cri-api/pkg/apis/services.go#L66">RunPodSandbox</a>创建好<code>PodSandbox</code>，即infra容器后，就需要调用<a href="https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/dockershim/network/plugins.go#L73">SetUpPod</a>方法为Pod（infra容器）创建网络环境，底层是调用CNI的<a href="https://github.com/containernetworking/cni/blob/master/libcni/api.go#L80">AddNetwork</a>为infra容器配置网络环境。</p>
 <p>这个配置网络环境的过程，就是kubelet从cni配置文件目录（<code>--cni-conf-dir</code>参数指定）中读取文件，并使用该文件中的CNI配置配置infra网络。kubelet根据配置文件，需要使用CNI插件二进制文件（存放在<code>--cni-bin-dir</code>参数指定的目录下）实际配置infra网络。</p>
 <p>这些 CNI 的基础可执行文件，按照功能可以分为三类：</p>
 <ol>
 <li><strong>Main 插件</strong>，它是用来创建具体网络设备的二进制文件，比如bridge（网桥设备）、loopback（lo 设备）、ptp（Veth Pair 设备）等等</li>
 <li><strong>IPAM（IP Address Management）插件</strong>，用来给容器分配IP地址，比如dhcp和host-local。</li>
-<li><strong>CNI 社区维护的内置 CNI 插件</strong>，比如flannel，提供跨主机通信方案</li>
+<li><strong>CNI 社区维护的第三方 CNI 插件</strong>，比如<code>flannel</code>，提供跨主机通信方案</li>
 </ol>
 <p>初始化一个容器网络环境的过程大致如下：</p>
 <ol>
 <li>没有网桥就使用<code>bridge</code>创建一个网桥设备</li>
-<li>使用<code>ptp</code>创建一个veth pair设备，并且把一端插在容器里，成为容器的eth0网卡，另一段插在网桥上</li>
+<li>使用<code>ptp</code>创建一个veth pair设备，并且把一端插在容器里，成为容器的eth0网卡，另一端插在网桥上</li>
 <li>使用<code>dhcp</code>或<code>host-local</code>为eth0网卡分配IP地址</li>
 <li>调用第三方CNI插件，比如<code>flannel</code>，实现容器跨主机通信方案</li>
 </ol>
@@ -94,6 +94,132 @@
 
 <p>可以看出，VXLAN模式中，flanneld维护的都是内核态数据：路由表、arp缓存表、FDB，VXLAN模式几乎全程运行在内核态。性能要比UDP模式好不少。</p>
 ]]></content>
+		</item>
+		
+		<item>
+			<title>kubernetes网络之service</title>
+			<link>https://cvvz.github.io/post/k8s-network-service/</link>
+			<pubDate>Wed, 30 Dec 2020 09:42:01 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/post/k8s-network-service/</guid>
+			<description>从ClusterIP到后端Pod 从NodePort到后端Pod externalTrafficPolicy设置为local kube-proxy Netfilter</description>
+			<content type="html"><![CDATA[<h2 id="从clusterip到后端pod">从ClusterIP到后端Pod</h2>
+<h2 id="从nodeport到后端pod">从NodePort到后端Pod</h2>
+<p>externalTrafficPolicy设置为local</p>
+<h2 id="kube-proxy">kube-proxy</h2>
+<h2 id="netfilter和iptables">Netfilter和iptables</h2>
+<h2 id="service的底层实现原理">service的底层实现原理</h2>
+<p>service其实是一个抽象的概念，<strong>service的IP和port其实只存在于主机iptables上的NAT表里，并不对应任何实体</strong>。</p>
+<p>kubernetes集群中的容器访问某个service的过程如下：</p>
+<ol>
+<li>首先根据容器内的路由规则将数据包发往宿主机上的cni网桥；</li>
+<li>宿主机内核网络协议栈处理数据包，由于iptables中配置了DNAT规则，所以目的ip地址最终会被netfilter转换成一个实际的后端Pod的ip地址。</li>
+<li>转换成Pod的IP地址后，如果是本主机上的容器，则会被内核路由回本机的cni网桥上；如果是其他主机上的容器，则如前所述进行跨主机通信。</li>
+<li>报文在离开节点前netfilter会再做一次SNAT，将源ip地址从Pod的ip地址替换为节点的ip地址，以便接收方可以顺利的将报文发送回来。</li>
+</ol>
+]]></content>
+		</item>
+		
+		<item>
+			<title>kubernetes网络之DNS</title>
+			<link>https://cvvz.github.io/post/k8s-network-dns/</link>
+			<pubDate>Wed, 30 Dec 2020 09:41:51 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/post/k8s-network-dns/</guid>
+			<description>Service和DNS 尽管kubelet在启动容器时，会将同namespace下的Service信息注入到容器的环境变量中： 1➜ ~ kubectl get svc | grep</description>
+			<content type="html"><![CDATA[<h2 id="service和dns">Service和DNS</h2>
+<p>尽管kubelet在启动容器时，会将同namespace下的Service信息注入到容器的环境变量中：</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln"> 1</span>➜  ~ kubectl get svc <span class="p">|</span> grep kubernetes
+<span class="ln"> 2</span>kubernetes                      ClusterIP   192.168.0.1       &lt;none&gt;        443/TCP                                             347d
+<span class="ln"> 3</span>
+<span class="ln"> 4</span>➜  ~ kubectl <span class="nb">exec</span> -it debug-pod -n default -- env <span class="p">|</span> grep KUBERNETES
+<span class="ln"> 5</span><span class="nv">KUBERNETES_SERVICE_PORT</span><span class="o">=</span><span class="m">443</span>
+<span class="ln"> 6</span><span class="nv">KUBERNETES_PORT</span><span class="o">=</span>tcp://192.168.0.1:443
+<span class="ln"> 7</span><span class="nv">KUBERNETES_PORT_443_TCP_ADDR</span><span class="o">=</span>192.168.0.1
+<span class="ln"> 8</span><span class="nv">KUBERNETES_PORT_443_TCP_PORT</span><span class="o">=</span><span class="m">443</span>
+<span class="ln"> 9</span><span class="nv">KUBERNETES_PORT_443_TCP_PROTO</span><span class="o">=</span>tcp
+<span class="ln">10</span><span class="nv">KUBERNETES_PORT_443_TCP</span><span class="o">=</span>tcp://192.168.0.1:443
+<span class="ln">11</span><span class="nv">KUBERNETES_SERVICE_PORT_HTTPS</span><span class="o">=</span><span class="m">443</span>
+<span class="ln">12</span><span class="nv">KUBERNETES_SERVICE_HOST</span><span class="o">=</span>192.168.0.1
+</code></pre></div><p>但是通常情况下我们使用DNS域名解析的方式进行服务注册和发现。</p>
+<p>Kubernetes中的DNS应用部署好以后，会对外暴露一个服务，集群内的容器可以通过访问该服务的Cluster IP进行域名解析。DNS服务的Cluster IP由Kubelet的<code>cluster-dns</code>参数指定。并且在创建Pod时，由Kubelet将DNS Server的信息写入容器的<code>/etc/resolv.conf</code>文件中。</p>
+<p>查看<code>resolv.conf</code>文件的配置：</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>➜  ~ k <span class="nb">exec</span> -it debug-pod -n default -- cat /etc/resolv.conf
+<span class="ln">2</span>nameserver 192.168.0.2
+<span class="ln">3</span>search default.svc.cluster.local svc.cluster.local cluster.local
+<span class="ln">4</span>options ndots:5
+</code></pre></div><p><code>nameserver 192.168.0.2</code>即表示DNS服务的地址为<code>192.168.0.2</code>。</p>
+<p><code>search</code>这一行表示，如果无法直接解析域名，则会尝试加上<code>default.svc.cluster.local</code>, <code>svc.cluster.local</code>, <code>cluster.local</code>后缀进行域名解析。</p>
+<blockquote>
+<p>其中<code>default</code>是namespace，<code>cluster.local</code>是默认的集群域名后缀，kubelet可以通过<code>--cluster_domain</code>配置。</p>
+</blockquote>
+<p>也就是说：</p>
+<ul>
+<li>同namespace下，可以通过<code>nslookup</code> + <code>kubernetes</code>解析域名</li>
+<li>不同namespace下，可以通过<code>nslookup</code> + <code>kubernetes.default</code>、<code>kubernetes.default.svc</code>、<code>kubernetes.default.svc.cluster.local</code>解析域名</li>
+</ul>
+<p>因为dns服务器会帮你补齐全域名：<code>kubernetes.default.svc.cluster.local</code></p>
+<blockquote>
+<p><code>{svc name}.{svc namespace}.svc.{cluster domain}</code>就是kubernetes的FQDN格式。</p>
+</blockquote>
+<h2 id="headless-service的域名解析">Headless Service的域名解析</h2>
+<p>常规的ClusterIP类型的Service的域名解析如上所述，DNS服务会返回一个<code>A记录</code>，即域名和ClusterIP的对应关系：</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>➜  ~ k <span class="nb">exec</span> -it debug-pod -n default -- nslookup kubernetes.default
+<span class="ln">2</span>Server:		192.168.0.2
+<span class="ln">3</span>Address:	192.168.0.2#53
+<span class="ln">4</span>
+<span class="ln">5</span>Name:	kubernetes.default.svc.cluster.local
+<span class="ln">6</span>Address: 192.168.0.1
+</code></pre></div><p>Headless Service的域名解析稍微复杂一点。</p>
+<blockquote>
+<p>ClusterIP可以看作是Service的头，而Headless Service，顾名思义也就是指定他的ClusterIP为None的Service。</p>
+</blockquote>
+<h3 id="直接解析">直接解析</h3>
+<p>当你直接解析它的域名时，返回的是EndPoints中的Pod IP列表：</p>
+<blockquote>
+<p>这个EndPoints后端的Pod，不仅可以通过在service中指定selector来选择，也可以自己定义，只要名字和service同名即可。</p>
+</blockquote>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln"> 1</span>➜  ~ k <span class="nb">exec</span> -it debug-pod -n default -- nslookup headless
+<span class="ln"> 2</span>Defaulting container name to debug.
+<span class="ln"> 3</span>Use <span class="s1">&#39;kubectl describe pod/debug-pod -n default&#39;</span> to see all of the containers in this pod.
+<span class="ln"> 4</span>Server:		192.168.0.2
+<span class="ln"> 5</span>Address:	192.168.0.2#53
+<span class="ln"> 6</span>
+<span class="ln"> 7</span>Name:	headless.default.svc.cluster.local
+<span class="ln"> 8</span>Address: 1.1.1.1
+<span class="ln"> 9</span>Name:	headless.default.svc.cluster.local
+<span class="ln">10</span>Address: 2.2.2.2
+<span class="ln">11</span>Name:	headless.default.svc.cluster.local
+<span class="ln">12</span>Address: 3.3.3.3
+</code></pre></div><h3 id="给pod生成a记录">给Pod生成A记录</h3>
+<p>如果<strong>在<code>Pod.spec</code>中指定了<code>hostname</code>和<code>subdomain</code>，并且<code>subdomain</code>和headleass service的名字相同</strong>，那么kubernetes DNS会额外给这个Pod的FQDN生成A记录：</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>➜  ~ k <span class="nb">exec</span> -it debug-pod -n default -- nslookup mywebsite.headless.default.svc.cluster.local
+<span class="ln">2</span>Server:		192.168.0.2
+<span class="ln">3</span>Address:	192.168.0.2#53
+<span class="ln">4</span>
+<span class="ln">5</span>Name:	mywebsite.headless.default.svc.cluster.local
+<span class="ln">6</span>Address: 10.189.97.217
+</code></pre></div><blockquote>
+<p>Pod的FQDN是：<code>{hostname}.{subdomain}.{pod namespace}.svc.{cluster domain}</code></p>
+</blockquote>
+<h3 id="externalname-service">ExternalName Service</h3>
+<p>ExternalName 类型的Service，kubernetes DNS会根据<code>ExternalName</code>字段，为其生成<strong>CNAME记录</strong>，在DNS层进行重定向。</p>
+<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="ln">1</span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="ln">2</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Service</span><span class="w">
+</span><span class="ln">3</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="ln">4</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">external</span><span class="w">
+</span><span class="ln">5</span><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">default</span><span class="w">
+</span><span class="ln">6</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="ln">7</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">ExternalName</span><span class="w">
+</span><span class="ln">8</span><span class="w">  </span><span class="nt">externalName</span><span class="p">:</span><span class="w"> </span><span class="l">my.example.domain.com</span><span class="w">
+</span></code></pre></div><div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>➜  ~ k <span class="nb">exec</span> -it debug-pod -n default -- nslookup external
+<span class="ln">2</span>Server:		192.168.0.2
+<span class="ln">3</span>Address:	192.168.0.2#53
+<span class="ln">4</span>
+<span class="ln">5</span>external.default.svc.cluster.local	canonical <span class="nv">name</span> <span class="o">=</span> my.example.domain.com.
+<span class="ln">6</span>Name:	my.example.domain.com
+<span class="ln">7</span>Address: 66.96.162.92
+</code></pre></div>]]></content>
 		</item>
 		
 		<item>

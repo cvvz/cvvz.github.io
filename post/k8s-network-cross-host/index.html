@@ -7,23 +7,23 @@
 	<meta name="google-site-verification" content="Wp3QtEkIlF0ZvtKx90lPmoXyH39d-pmBhiTyTbba9L4" />
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 <meta itemprop="name" content="kubernetes网络之CNI与跨节点通信原理">
-<meta itemprop="description" content="初始化infra容器网络环境 当kubelet通过RunPodSandbox创建好PodSandbox，即infra容器后，就需要调用SetU">
+<meta itemprop="description" content="初始化infra容器网络环境 当kubelet通过调用CRI的RunPodSandbox创建好PodSandbox，即infra容器后，就需要">
 <meta itemprop="datePublished" content="2020-12-30T09:51:44+08:00" />
-<meta itemprop="dateModified" content="2020-12-30T11:20:42+08:00" />
-<meta itemprop="wordCount" content="2115">
+<meta itemprop="dateModified" content="2020-12-30T14:31:33+08:00" />
+<meta itemprop="wordCount" content="2122">
 
 
 
 <meta itemprop="keywords" content="kubernetes,CNI,容器," />
 <meta property="og:title" content="kubernetes网络之CNI与跨节点通信原理" />
-<meta property="og:description" content="初始化infra容器网络环境 当kubelet通过RunPodSandbox创建好PodSandbox，即infra容器后，就需要调用SetU" />
+<meta property="og:description" content="初始化infra容器网络环境 当kubelet通过调用CRI的RunPodSandbox创建好PodSandbox，即infra容器后，就需要" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/k8s-network-cross-host/" />
 <meta property="article:published_time" content="2020-12-30T09:51:44+08:00" />
-<meta property="article:modified_time" content="2020-12-30T11:20:42+08:00" />
+<meta property="article:modified_time" content="2020-12-30T14:31:33+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="kubernetes网络之CNI与跨节点通信原理"/>
-<meta name="twitter:description" content="初始化infra容器网络环境 当kubelet通过RunPodSandbox创建好PodSandbox，即infra容器后，就需要调用SetU"/>
+<meta name="twitter:description" content="初始化infra容器网络环境 当kubelet通过调用CRI的RunPodSandbox创建好PodSandbox，即infra容器后，就需要"/>
 
 	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -70,18 +70,18 @@
 			</header>
 			<div class="content">
 				<h2 id="初始化infra容器网络环境">初始化infra容器网络环境<a href="#初始化infra容器网络环境" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
-<p>当kubelet通过<a href="https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/cri-api/pkg/apis/services.go#L66">RunPodSandbox</a>创建好<code>PodSandbox</code>，即infra容器后，就需要调用<a href="https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/dockershim/network/plugins.go#L73">SetUpPod</a>方法为Pod（infra容器）创建网络环境，底层是调用CNI的<a href="https://github.com/containernetworking/cni/blob/master/libcni/api.go#L80">AddNetwork</a>为infra容器配置网络环境。</p>
+<p>当kubelet通过调用CRI的<a href="https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/cri-api/pkg/apis/services.go#L66">RunPodSandbox</a>创建好<code>PodSandbox</code>，即infra容器后，就需要调用<a href="https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/dockershim/network/plugins.go#L73">SetUpPod</a>方法为Pod（infra容器）创建网络环境，底层是调用CNI的<a href="https://github.com/containernetworking/cni/blob/master/libcni/api.go#L80">AddNetwork</a>为infra容器配置网络环境。</p>
 <p>这个配置网络环境的过程，就是kubelet从cni配置文件目录（<code>--cni-conf-dir</code>参数指定）中读取文件，并使用该文件中的CNI配置配置infra网络。kubelet根据配置文件，需要使用CNI插件二进制文件（存放在<code>--cni-bin-dir</code>参数指定的目录下）实际配置infra网络。</p>
 <p>这些 CNI 的基础可执行文件，按照功能可以分为三类：</p>
 <ol>
 <li><strong>Main 插件</strong>，它是用来创建具体网络设备的二进制文件，比如bridge（网桥设备）、loopback（lo 设备）、ptp（Veth Pair 设备）等等</li>
 <li><strong>IPAM（IP Address Management）插件</strong>，用来给容器分配IP地址，比如dhcp和host-local。</li>
-<li><strong>CNI 社区维护的内置 CNI 插件</strong>，比如flannel，提供跨主机通信方案</li>
+<li><strong>CNI 社区维护的第三方 CNI 插件</strong>，比如<code>flannel</code>，提供跨主机通信方案</li>
 </ol>
 <p>初始化一个容器网络环境的过程大致如下：</p>
 <ol>
 <li>没有网桥就使用<code>bridge</code>创建一个网桥设备</li>
-<li>使用<code>ptp</code>创建一个veth pair设备，并且把一端插在容器里，成为容器的eth0网卡，另一段插在网桥上</li>
+<li>使用<code>ptp</code>创建一个veth pair设备，并且把一端插在容器里，成为容器的eth0网卡，另一端插在网桥上</li>
 <li>使用<code>dhcp</code>或<code>host-local</code>为eth0网卡分配IP地址</li>
 <li>调用第三方CNI插件，比如<code>flannel</code>，实现容器跨主机通信方案</li>
 </ol>
@@ -153,8 +153,8 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/kubernetes">kubernetes</a></span><span class="tag"><a href="https://cvvz.github.io/tags/cni">CNI</a></span><span class="tag"><a href="https://cvvz.github.io/tags/%E5%AE%B9%E5%99%A8">容器</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2115 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/1763726a8753ce1c18c2c25d26dd0c836b6e815f" target="_blank" rel="noopener">1763726</a> @ 2020-12-30</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2122 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/8af8388d49e3e53f9d79845e710b83daca8f1012" target="_blank" rel="noopener">8af8388</a> @ 2020-12-30</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">
@@ -173,8 +173,8 @@
 </nav>
 		</aside>
 		<div class="post-nav thin">
-			<a class="prev-post" href="https://cvvz.github.io/post/k8s-network/">
-				<span class="post-nav-label">旧&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>浅谈 Kubernetes 容器网络</span>
+			<a class="prev-post" href="https://cvvz.github.io/post/k8s-network-service/">
+				<span class="post-nav-label">旧&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>kubernetes网络之service</span>
 			</a>
 		</div>
 		<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">

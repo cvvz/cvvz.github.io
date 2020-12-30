@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>DNS on Vic&#39;s Blog</title>
+    <link>https://cvvz.github.io/tags/dns/</link>
+    <description>Recent content in DNS on Vic&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-hans</language>
+    <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
+    <lastBuildDate>Wed, 30 Dec 2020 09:41:51 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/dns/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>kubernetes网络之DNS</title>
+      <link>https://cvvz.github.io/post/k8s-network-dns/</link>
+      <pubDate>Wed, 30 Dec 2020 09:41:51 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/k8s-network-dns/</guid>
+      <description>Service和DNS 尽管kubelet在启动容器时，会将同namespace下的Service信息注入到容器的环境变量中： 1➜ ~ kubectl get svc | grep</description>
+    </item>
+    
+  </channel>
+</rss>
