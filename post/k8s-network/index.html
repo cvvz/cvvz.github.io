@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="google-site-verification" content="Wp3QtEkIlF0ZvtKx90lPmoXyH39d-pmBhiTyTbba9L4" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta itemprop="name" content="浅谈 Kubernetes 容器网络">
+<meta itemprop="description" content="初始化infra容器网络环境 当kubelet通过RunPodSandbox创建好PodSandbox，即infra容器后，就需要调用SetU">
+<meta itemprop="datePublished" content="2020-12-28T22:17:12+08:00" />
+<meta itemprop="dateModified" content="2020-12-28T22:17:12+08:00" />
+<meta itemprop="wordCount" content="2115">
+
+
+
+<meta itemprop="keywords" content="kubernetes,Linux,容器," />
+<meta property="og:title" content="浅谈 Kubernetes 容器网络" />
+<meta property="og:description" content="初始化infra容器网络环境 当kubelet通过RunPodSandbox创建好PodSandbox，即infra容器后，就需要调用SetU" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://cvvz.github.io/post/k8s-network/" />
+<meta property="article:published_time" content="2020-12-28T22:17:12+08:00" />
+<meta property="article:modified_time" content="2020-12-28T22:17:12+08:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="浅谈 Kubernetes 容器网络"/>
+<meta name="twitter:description" content="初始化infra容器网络环境 当kubelet通过RunPodSandbox创建好PodSandbox，即infra容器后，就需要调用SetU"/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>浅谈 Kubernetes 容器网络</title>
+	<link rel="stylesheet" href="https://cvvz.github.io/css/style.min.7a1ec200e9f3394f73c6eda58011808507a3b24318de81e1e343f22a2470caef.css">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp faster">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://cvvz.github.io">Vic&#39;s Blog</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					<a href="https://cvvz.github.io/post/">文章</a>
+					<a href="https://cvvz.github.io/about/">关于</a>
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<button id="toc-btn" class="hdr-btn desktop-only-ib" title="目录"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-list"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3" y2="6"></line><line x1="3" y1="12" x2="3" y2="12"></line><line x1="3" y1="18" x2="3" y2="18"></line></svg></button><span class="hdr-social hide-in-mobile"><a href="https://github.com/cvvz" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="mailto:ftdchenwz@gmail.com" target="_blank" rel="noopener me" title="Email"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a></span><button id="menu-btn" class="hdr-btn" title="菜单"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://cvvz.github.io/post/">文章</a></li>
+			<li><a href="https://cvvz.github.io/about/">关于</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<h1>浅谈 Kubernetes 容器网络</h1>
+			</header>
+			<div class="content">
+				<h2 id="初始化infra容器网络环境">初始化infra容器网络环境<a href="#初始化infra容器网络环境" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>当kubelet通过<a href="https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/cri-api/pkg/apis/services.go#L66">RunPodSandbox</a>创建好<code>PodSandbox</code>，即infra容器后，就需要调用<a href="https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/dockershim/network/plugins.go#L73">SetUpPod</a>方法为Pod（infra容器）创建网络环境，底层是调用CNI的<a href="https://github.com/containernetworking/cni/blob/master/libcni/api.go#L80">AddNetwork</a>为infra容器配置网络环境。</p>
+<p>这个配置网络环境的过程，就是kubelet从cni配置文件目录（<code>--cni-conf-dir</code>参数指定）中读取文件，并使用该文件中的CNI配置配置infra网络。kubelet根据配置文件，需要使用CNI插件二进制文件（存放在<code>--cni-bin-dir</code>参数指定的目录下）实际配置infra网络。</p>
+<p>这些 CNI 的基础可执行文件，按照功能可以分为三类：</p>
+<ol>
+<li><strong>Main 插件</strong>，它是用来创建具体网络设备的二进制文件，比如bridge（网桥设备）、loopback（lo 设备）、ptp（Veth Pair 设备）等等</li>
+<li><strong>IPAM（IP Address Management）插件</strong>，用来给容器分配IP地址，比如dhcp和host-local。</li>
+<li><strong>CNI 社区维护的内置 CNI 插件</strong>，比如flannel，提供跨主机通信方案</li>
+</ol>
+<p>初始化一个容器网络环境的过程大致如下：</p>
+<ol>
+<li>没有网桥就使用<code>bridge</code>创建一个网桥设备</li>
+<li>使用<code>ptp</code>创建一个veth pair设备，并且把一端插在容器里，成为容器的eth0网卡，另一段插在网桥上</li>
+<li>使用<code>dhcp</code>或<code>host-local</code>为eth0网卡分配IP地址</li>
+<li>调用第三方CNI插件，比如<code>flannel</code>，实现容器跨主机通信方案</li>
+</ol>
+<h2 id="容器跨主机通信">容器跨主机通信<a href="#容器跨主机通信" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>在<a href="https://cvvz.github.io/post/container-network/">浅谈单机容器网络</a>一文中，已经详细分析了同一主机内部容器之间通过veth + 网桥的方式通信的过程，下面分析一下容器跨主机通信的过程。</p>
+<p>容器的跨主机网络方案可以分为两类：<strong>overlay</strong>和<strong>underlay</strong>。</p>
+<h3 id="underlay和overlay">underlay和overlay<a href="#underlay和overlay" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>所谓<strong>underlay</strong>，也就是没有在宿主机网络上的虚拟层，容器和宿主机处于同一个网络层面上。</p>
+<blockquote>
+<p>在这种情形下，Kubernetes 内外网络是互通的，运行在kubernetes中的容器可以很方便的和公司内部已有的非云原生基础设施进行联动，比如DNS、负载均衡、配置中心等，而不需要借助kubernetes内部的DNS、ingress和service做服务发现和负载均衡。</p>
+</blockquote>
+<p>所谓<strong>overlay</strong>，其实就是在容器的IP包外面附加额外的数据包头，然后<strong>整体作为宿主机网络报文中的数据进行传输</strong>。容器的IP包加上额外的数据包头就用于跨主机的容器之间通信，<strong>容器网络就相当于覆盖(overlay)在宿主机网络上的一层虚拟网络</strong>。如下图所示：</p>
+<figure>
+    <img src="/overlay-network.png" width="600px"/> 
+</figure>
+
+<h3 id="flannel-udp模式">Flannel UDP模式<a href="#flannel-udp模式" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>Flannel的UDP模式的工作流程：</p>
+<ol>
+<li>container-1根据默认路由规则，将IP包发往cni网桥，出现在宿主机的网络栈上；</li>
+<li>flanneld预先在宿主机上创建好了路由规则，数据包到达cni网桥后，随即被转发给了flannel0</li>
+<li>flannel0的功能就是将数据包传给用户态的flanneld进程</li>
+<li>flanneld进程查询etcd，找到目的容器ip地址和目的宿主机ip的对应关系，然后将原ip包封装在一个udp包中发送到目的宿主机上的flanneld进程。</li>
+<li>目的宿主机的flanneld收到包后，反向处理一遍就发送到了目的容器中。</li>
+</ol>
+<p>整个过程如下图所示：</p>
+<figure>
+    <img src="/flannel-udp.jpg" width="600px"/> 
+</figure>
+
+<p>由于这中间数据从flannel0发送到了用户态的flanneld，又从flanneld发送到宿主机的eth0网卡，用户态和内核态发生了两次数据传递，且在用户态还进行了封包操作，所以udp模式性能很差。</p>
+<h3 id="flannel-vxlan模式">Flannel VXLAN模式<a href="#flannel-vxlan模式" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>Flannel VXLAN模式的原理和UDP模式差不多，区别在于：</p>
+<ol>
+<li>UDP模式创建的是TUN设备(flannel0)，VXLAN模式创建的是VTEP设备（flannel.1）。</li>
+<li>VTEP设备全程工作在内核态，性能比UDP模式更好。</li>
+</ol>
+<p>VXLAN模式的工作流程：</p>
+<ol>
+<li>container-1根据默认路由规则，将IP包发往cni网桥，出现在宿主机的网络栈上；</li>
+<li>flanneld预先在宿主机上创建好了路由规则，数据包到达cni网桥后，随即被转发给了flannel.1，flannel.1是一个VTEP设备，<strong>它既有 IP 地址，也有 MAC 地址</strong>；</li>
+<li><strong>在node2上的目的VTEP设备启动时，node1上的flanneld会将目的VTEP设备的IP地址和MAC地址分别写到node1上的路由表和ARP缓存表中</strong>。</li>
+<li>因此，node1上的flannel.1通过查询路由表，知道要发往目的容器，需要经过10.1.16.0这个网关。<strong>其实这个网关，就是目的VTEP设备的ip地址</strong>。</li>
+</ol>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>$ route -n
+<span class="ln">2</span>Kernel IP routing table
+<span class="ln">3</span>Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+<span class="ln">4</span>...
+<span class="ln">5</span>10.1.16.0       10.1.16.0       255.255.255.0   UG    <span class="m">0</span>      <span class="m">0</span>        <span class="m">0</span> flannel.1
+</code></pre></div><ol start="5">
+<li>又由于<strong>这个网关的MAC地址，事先已经被flanneld写到了ARP缓存表中</strong>，所以内核直接把目的VTEP设备的MAC地址封装到链路层的帧头即可：
+<figure>
+    <img src="/flannel-vxlan-frame.jpg" width="500px"/> 
+</figure>
+</li>
+<li><strong>flanneld还负责维护FDB（转发数据库）中的信息</strong>，查询FDB，就可以通过这个目的VTEP设备的MAC地址找到宿主机Node2的ip地址。</li>
+<li>有了目的IP地址，接下来进行一次常规的、宿主机网络上的封包即可。</li>
+</ol>
+<p>整个过程如下图所示：</p>
+<figure>
+    <img src="/flannel-vxlan.jpg" width="600px"/> 
+</figure>
+
+<p>可以看出，VXLAN模式中，flanneld维护的都是内核态数据：路由表、arp缓存表、FDB，VXLAN模式几乎全程运行在内核态。性能要比UDP模式好不少。</p>
+
+			</div>
+			<hr class="post-end">
+			<footer class="post-info">
+				<p>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/kubernetes">kubernetes</a></span><span class="tag"><a href="https://cvvz.github.io/tags/linux">Linux</a></span><span class="tag"><a href="https://cvvz.github.io/tags/%E5%AE%B9%E5%99%A8">容器</a></span>
+				</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2115 字</p>
+			</footer>
+		</article>
+		<aside id="toc" class="show-toc">
+			<div class="toc-title">目录</div>
+			<nav id="TableOfContents">
+  <ul>
+    <li><a href="#初始化infra容器网络环境">初始化infra容器网络环境</a></li>
+    <li><a href="#容器跨主机通信">容器跨主机通信</a>
+      <ul>
+        <li><a href="#underlay和overlay">underlay和overlay</a></li>
+        <li><a href="#flannel-udp模式">Flannel UDP模式</a></li>
+        <li><a href="#flannel-vxlan模式">Flannel VXLAN模式</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+		</aside>
+		<div class="post-nav thin">
+			<a class="next-post" href="https://cvvz.github.io/post/k8s-network-cross-host/">
+				<span class="post-nav-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>&nbsp;新</span><br><span>kubernetes网络之CNI与跨节点通信原理</span>
+			</a>
+			<a class="prev-post" href="https://cvvz.github.io/post/container/">
+				<span class="post-nav-label">旧&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>容器相关知识汇总</span>
+			</a>
+		</div>
+		<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+		<div id="gitalk-container" class="thin"></div>     
+		<script type="text/javascript">
+			var gitalk = new Gitalk({
+				clientID: '0f8bdcbe6b4973f9b206',
+				clientSecret: '4939e64d59c93fc5eb7eaf74469a746e4535700d',
+				repo: 'cvvz.github.io',
+				owner: 'cvvz',
+				admin: ['cvvz'],
+				id: location.pathname,      
+				distractionFreeMode: true 
+			});
+  			gitalk.render('gitalk-container');
+		</script>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2020 <a href="https://cvvz.github.io">陈维志</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://cvvz.github.io/post/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+	<script src="https://cvvz.github.io/js/main.min.784417f5847151f848c339cf0acb13a06cbb648b1483435a28ed4556c4ead69b.js"></script>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-M8Q3DKDEVL', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

@@ -7,7 +7,25 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Thu, 24 Dec 2020 10:33:00 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 30 Dec 2020 09:51:44 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>kubernetes网络之CNI与跨节点通信原理</title>
+      <link>https://cvvz.github.io/post/k8s-network-cross-host/</link>
+      <pubDate>Wed, 30 Dec 2020 09:51:44 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/k8s-network-cross-host/</guid>
+      <description>初始化infra容器网络环境 当kubelet通过RunPodSandbox创建好PodSandbox，即infra容器后，就需要调用SetU</description>
+    </item>
+    
+    <item>
+      <title>浅谈 Kubernetes 容器网络</title>
+      <link>https://cvvz.github.io/post/k8s-network/</link>
+      <pubDate>Mon, 28 Dec 2020 22:17:12 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/k8s-network/</guid>
+      <description>初始化infra容器网络环境 当kubelet通过RunPodSandbox创建好PodSandbox，即infra容器后，就需要调用SetU</description>
+    </item>
+    
     <item>
       <title>容器相关知识汇总</title>
       <link>https://cvvz.github.io/post/container/</link>

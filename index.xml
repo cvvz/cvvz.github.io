@@ -7,7 +7,25 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Thu, 24 Dec 2020 10:33:00 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 30 Dec 2020 09:51:44 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>kubernetes网络之CNI与跨节点通信原理</title>
+      <link>https://cvvz.github.io/post/k8s-network-cross-host/</link>
+      <pubDate>Wed, 30 Dec 2020 09:51:44 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/k8s-network-cross-host/</guid>
+      <description>初始化infra容器网络环境 当kubelet通过RunPodSandbox创建好PodSandbox，即infra容器后，就需要调用SetU</description>
+    </item>
+    
+    <item>
+      <title>浅谈 Kubernetes 容器网络</title>
+      <link>https://cvvz.github.io/post/k8s-network/</link>
+      <pubDate>Mon, 28 Dec 2020 22:17:12 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/k8s-network/</guid>
+      <description>初始化infra容器网络环境 当kubelet通过RunPodSandbox创建好PodSandbox，即infra容器后，就需要调用SetU</description>
+    </item>
+    
     <item>
       <title>容器相关知识汇总</title>
       <link>https://cvvz.github.io/post/container/</link>
@@ -41,7 +59,7 @@
       <pubDate>Thu, 03 Dec 2020 00:16:18 +0800</pubDate>
       
       <guid>https://cvvz.github.io/post/container-network/</guid>
-      <description>容器网络环境隔离怎么理解？ 容器的网络环境是隔离的，这个隔离就体现在不共用内核网络协议栈，那么必然也就不会共用网络协议栈要用到的数据和设备了：</description>
+      <description>容器网络环境隔离怎么理解？ 容器的网络环境是隔离的，这个隔离就体现在不共用内核网络协议栈，即不共用网络协议栈要用到的数据和设备了： 传输层：端口</description>
     </item>
     
     <item>

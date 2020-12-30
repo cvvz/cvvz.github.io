@@ -7,11 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Thu, 24 Dec 2020 10:33:00 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 30 Dec 2020 09:51:44 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>CNI</title>
+      <link>https://cvvz.github.io/tags/cni/</link>
+      <pubDate>Wed, 30 Dec 2020 09:51:44 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/tags/cni/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>kubernetes</title>
       <link>https://cvvz.github.io/tags/kubernetes/</link>
-      <pubDate>Thu, 24 Dec 2020 10:33:00 +0800</pubDate>
+      <pubDate>Wed, 30 Dec 2020 09:51:44 +0800</pubDate>
       
       <guid>https://cvvz.github.io/tags/kubernetes/</guid>
       <description></description>
@@ -20,7 +29,7 @@
     <item>
       <title>容器</title>
       <link>https://cvvz.github.io/tags/%E5%AE%B9%E5%99%A8/</link>
-      <pubDate>Thu, 24 Dec 2020 10:33:00 +0800</pubDate>
+      <pubDate>Wed, 30 Dec 2020 09:51:44 +0800</pubDate>
       
       <guid>https://cvvz.github.io/tags/%E5%AE%B9%E5%99%A8/</guid>
       <description></description>
@@ -29,7 +38,7 @@
     <item>
       <title>Linux</title>
       <link>https://cvvz.github.io/tags/linux/</link>
-      <pubDate>Sat, 12 Dec 2020 12:32:33 +0800</pubDate>
+      <pubDate>Mon, 28 Dec 2020 22:17:12 +0800</pubDate>
       
       <guid>https://cvvz.github.io/tags/linux/</guid>
       <description></description>
