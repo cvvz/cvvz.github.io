@@ -53,16 +53,6 @@
   </url>
   
   <url>
-    <loc>https://cvvz.github.io/tags/linux/</loc>
-    <lastmod>2020-12-30T11:20:42+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://cvvz.github.io/post/k8s-network/</loc>
-    <lastmod>2020-12-28T22:17:12+08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://cvvz.github.io/post/container/</loc>
     <lastmod>2020-12-24T18:40:08+08:00</lastmod>
   </url>
@@ -75,6 +65,11 @@
   <url>
     <loc>https://cvvz.github.io/post/k8s-volume/</loc>
     <lastmod>2020-12-24T18:33:13+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://cvvz.github.io/tags/linux/</loc>
+    <lastmod>2020-12-30T11:20:42+08:00</lastmod>
   </url>
   
   <url>

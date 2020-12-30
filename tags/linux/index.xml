@@ -7,16 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Mon, 28 Dec 2020 22:17:12 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>浅谈 Kubernetes 容器网络</title>
-      <link>https://cvvz.github.io/post/k8s-network/</link>
-      <pubDate>Mon, 28 Dec 2020 22:17:12 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/k8s-network/</guid>
-      <description>初始化infra容器网络环境 当kubelet通过RunPodSandbox创建好PodSandbox，即infra容器后，就需要调用SetU</description>
-    </item>
-    
+    <lastBuildDate>Sat, 12 Dec 2020 12:32:33 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Kubernetes Volume实现原理</title>
       <link>https://cvvz.github.io/post/k8s-volume/</link>

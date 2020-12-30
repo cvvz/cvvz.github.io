@@ -36,15 +36,6 @@
     </item>
     
     <item>
-      <title>浅谈 Kubernetes 容器网络</title>
-      <link>https://cvvz.github.io/post/k8s-network/</link>
-      <pubDate>Mon, 28 Dec 2020 22:17:12 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/k8s-network/</guid>
-      <description>初始化infra容器网络环境 当kubelet通过RunPodSandbox创建好PodSandbox，即infra容器后，就需要调用SetU</description>
-    </item>
-    
-    <item>
       <title>容器相关知识汇总</title>
       <link>https://cvvz.github.io/post/container/</link>
       <pubDate>Thu, 24 Dec 2020 10:33:00 +0800</pubDate>
@@ -186,6 +177,15 @@
       
       <guid>https://cvvz.github.io/post/usage-of-git/</guid>
       <description>整理一下最近学习的git知识，以及平时常用的git功能。 .git 使用git init或clone一个远端仓，会在本地建立一个.git目录。这个目录是</description>
+    </item>
+    
+    <item>
+      <title>进程间通信</title>
+      <link>https://cvvz.github.io/post/ipc/</link>
+      <pubDate>Fri, 02 Nov 2018 22:34:20 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/ipc/</guid>
+      <description>进程间通信的六种方式： 管道 共享内存 消息队列 信号量 信号 socket 管道 管道机制和UNIX系统的文件系统密切关联，使用管道和使用文件系统非常类似。实际上使</description>
     </item>
     
   </channel>

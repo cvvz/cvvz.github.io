@@ -27,15 +27,6 @@
     </item>
     
     <item>
-      <title>浅谈 Kubernetes 容器网络</title>
-      <link>https://cvvz.github.io/post/k8s-network/</link>
-      <pubDate>Mon, 28 Dec 2020 22:17:12 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/k8s-network/</guid>
-      <description>初始化infra容器网络环境 当kubelet通过RunPodSandbox创建好PodSandbox，即infra容器后，就需要调用SetU</description>
-    </item>
-    
-    <item>
       <title>容器相关知识汇总</title>
       <link>https://cvvz.github.io/post/container/</link>
       <pubDate>Thu, 24 Dec 2020 10:33:00 +0800</pubDate>
