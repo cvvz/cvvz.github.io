@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Wed, 30 Dec 2020 09:51:44 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 30 Dec 2020 15:42:01 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>kubernetes网络之service</title>
+      <link>https://cvvz.github.io/post/k8s-network-service/</link>
+      <pubDate>Wed, 30 Dec 2020 15:42:01 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/k8s-network-service/</guid>
+      <description>在kubernetes中，service其实只是一个保存在etcd里的API对象，并不对应任何具体的实体，真正起作用的是watch servi</description>
+    </item>
+    
     <item>
       <title>kubernetes网络之CNI与跨节点通信原理</title>
       <link>https://cvvz.github.io/post/k8s-network-cross-host/</link>
