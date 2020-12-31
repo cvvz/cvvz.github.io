@@ -15,8 +15,8 @@
 			<pubDate>Wed, 30 Dec 2020 15:42:01 +0800</pubDate>
 			
 			<guid>https://cvvz.github.io/post/k8s-network-service/</guid>
-			<description>在kubernetes中，service其实只是一个保存在etcd里的API对象，并不对应任何具体的实体，真正起作用的是watch servi</description>
-			<content type="html"><![CDATA[<p>在kubernetes中，service其实只是一个保存在etcd里的API对象，并不对应任何具体的实体，真正起作用的是watch service、endpoint、pod等资源的的DNS、kube-proxy，以及iptables等，他们共同配合，实现service的各项功能。</p>
+			<description>在kubernetes中，service其实只是一个保存在etcd里的API对象，并不对应任何具体的实例。service即k8s中的“微服务</description>
+			<content type="html"><![CDATA[<p>在kubernetes中，service其实只是一个保存在etcd里的API对象，并不对应任何具体的实例。service即k8s中的“微服务”，而它的服务注册与发现、健康检查、负载均衡等功能其实是底层watch service、endpoint、pod等资源的DNS、kube-proxy，以及iptables等共同配合实现的。</p>
 <h2 id="从集群内部访问clusterip服务">从集群内部访问ClusterIP服务</h2>
 <p>在<a href="https://cvvz.github.io/post/k8s-network-dns/">kubernetes网络之DNS
 </a>一文中，已经详细说明了从域名到ClusterIP的转换过程。</p>

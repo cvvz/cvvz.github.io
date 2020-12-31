@@ -14,7 +14,7 @@
       <pubDate>Wed, 30 Dec 2020 15:42:01 +0800</pubDate>
       
       <guid>https://cvvz.github.io/post/k8s-network-service/</guid>
-      <description>在kubernetes中，service其实只是一个保存在etcd里的API对象，并不对应任何具体的实体，真正起作用的是watch servi</description>
+      <description>在kubernetes中，service其实只是一个保存在etcd里的API对象，并不对应任何具体的实例。service即k8s中的“微服务</description>
     </item>
     
     <item>
