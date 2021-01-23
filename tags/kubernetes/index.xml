@@ -32,7 +32,7 @@
       <pubDate>Wed, 30 Dec 2020 09:41:51 +0800</pubDate>
       
       <guid>https://cvvz.github.io/post/k8s-network-dns/</guid>
-      <description>Service和DNS 尽管kubelet在启动容器时，会将同namespace下的Service信息注入到容器的环境变量中： 1➜ ~ kubectl get svc | grep</description>
+      <description>默认DNS策略 Pod默认的dns策略是 ClusterFirst，意思是先通过kubernetes的权威DNS服务器（如CoreDNS）直接</description>
     </item>
     
     <item>

@@ -210,8 +210,35 @@
 			<pubDate>Wed, 30 Dec 2020 09:41:51 +0800</pubDate>
 			
 			<guid>https://cvvz.github.io/post/k8s-network-dns/</guid>
-			<description>Service和DNS 尽管kubelet在启动容器时，会将同namespace下的Service信息注入到容器的环境变量中： 1➜ ~ kubectl get svc | grep</description>
-			<content type="html"><![CDATA[<h2 id="service和dns">Service和DNS</h2>
+			<description>默认DNS策略 Pod默认的dns策略是 ClusterFirst，意思是先通过kubernetes的权威DNS服务器（如CoreDNS）直接</description>
+			<content type="html"><![CDATA[<h2 id="默认dns策略">默认DNS策略</h2>
+<p>Pod默认的<a href="https://kubernetes.io/zh/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy">dns策略</a>是 <code>ClusterFirst</code>，意思是先通过kubernetes的<strong>权威DNS服务器</strong>（如CoreDNS）直接解析出A记录或CNAME记录；如果解析失败，再根据配置，将其转发给<strong>上游DNS服务器</strong>。以CoreDNS为例，它的配置文件Corefile如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln"> 1</span>➜  ~ kubectl get cm -n kube-system coredns -o yaml
+<span class="ln"> 2</span>apiVersion: v1
+<span class="ln"> 3</span>data:
+<span class="ln"> 4</span>  Corefile: <span class="p">|</span>
+<span class="ln"> 5</span>    .:53 <span class="o">{</span>
+<span class="ln"> 6</span>        errors
+<span class="ln"> 7</span>        health <span class="o">{</span>
+<span class="ln"> 8</span>           lameduck 5s
+<span class="ln"> 9</span>        <span class="o">}</span>
+<span class="ln">10</span>        ready
+<span class="ln">11</span>        kubernetes cluster.local in-addr.arpa ip6.arpa <span class="o">{</span>
+<span class="ln">12</span>           pods insecure
+<span class="ln">13</span>           fallthrough in-addr.arpa ip6.arpa
+<span class="ln">14</span>           ttl <span class="m">30</span>
+<span class="ln">15</span>        <span class="o">}</span>
+<span class="ln">16</span>        prometheus :9153
+<span class="ln">17</span>        forward . /etc/resolv.conf
+<span class="ln">18</span>        cache <span class="m">30</span>
+<span class="ln">19</span>        loop
+<span class="ln">20</span>        reload
+<span class="ln">21</span>        loadbalance
+<span class="ln">22</span>    <span class="o">}</span>
+<span class="ln">23</span>kind: ConfigMap
+<span class="ln">24</span>...
+</code></pre></div><p>第17行使用<a href="https://coredns.io/plugins/forward/">forward插件</a>配置了上游域名服务器为主机的<code>/etc/resolv.conf</code>中指定的<code>nameserver</code>。</p>
+<h2 id="service和dns">Service和DNS</h2>
 <p>尽管kubelet在启动容器时，会将同namespace下的Service信息注入到容器的环境变量中：</p>
 <div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln"> 1</span>➜  ~ kubectl get svc <span class="p">|</span> grep kubernetes
 <span class="ln"> 2</span>kubernetes                      ClusterIP   192.168.0.1       &lt;none&gt;        443/TCP                                             347d
@@ -232,11 +259,17 @@
 <span class="ln">2</span>nameserver 192.168.0.2
 <span class="ln">3</span>search default.svc.cluster.local svc.cluster.local cluster.local
 <span class="ln">4</span>options ndots:5
-</code></pre></div><p><code>nameserver 192.168.0.2</code>即表示DNS服务的地址为<code>192.168.0.2</code>。</p>
+</code></pre></div><ul>
+<li>
+<p><code>nameserver 192.168.0.2</code>这一行即表示DNS服务的地址（Cluster IP）为<code>192.168.0.2</code>。</p>
+</li>
+<li>
 <p><code>search</code>这一行表示，如果无法直接解析域名，则会尝试加上<code>default.svc.cluster.local</code>, <code>svc.cluster.local</code>, <code>cluster.local</code>后缀进行域名解析。</p>
 <blockquote>
-<p>其中<code>default</code>是namespace，<code>cluster.local</code>是默认的集群域名后缀，kubelet可以通过<code>--cluster_domain</code>配置。</p>
+<p>其中<code>default</code>是namespace，<code>cluster.local</code>是默认的集群域名后缀，kubelet也可以通过<code>--cluster-domain</code>参数进行配置。</p>
 </blockquote>
+</li>
+</ul>
 <p>也就是说：</p>
 <ul>
 <li>同namespace下，可以通过<code>nslookup</code> + <code>kubernetes</code>解析域名</li>
