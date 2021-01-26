@@ -1483,43 +1483,6 @@
 		</item>
 		
 		<item>
-			<title>进程和线程</title>
-			<link>https://cvvz.github.io/post/process-and-thread/</link>
-			<pubDate>Sun, 23 Jun 2019 20:34:56 +0800</pubDate>
-			
-			<guid>https://cvvz.github.io/post/process-and-thread/</guid>
-			<description>从“程序”开始 对于UNIX操作系统，程序是存放在磁盘上的ELF文件（可以通过file命令查看文件类型） 对于windows操作系统，程序是存放</description>
-			<content type="html"><![CDATA[<h2 id="从程序开始">从“程序”开始</h2>
-<ul>
-<li>对于UNIX操作系统，程序是存放在磁盘上的<strong>ELF文件</strong>（可以通过<code>file</code>命令查看文件类型）</li>
-<li>对于windows操作系统，程序是存放在磁盘上的<strong>PE文件</strong>，其中最常见的是<code>.exe</code>文件。</li>
-</ul>
-<p>编译器将高级语言编写成的程序编译成机器码，操作系统将ELF文件读入内存后，ELF文件中的<strong>代码段</strong>也就是CPU可以执行的机器码（可以通过<code>readelf</code>命令查看ELF文件的代码段内容），CPU从内存中读取机器码并执行。</p>
-<h2 id="为进程分配资源">为进程分配资源</h2>
-<p>进程产生的标志是：内核为每一个进程都分配了一个<code>task_struct</code>结构体，在<code>task_struct</code>中记录了这个进程所拥有的资源，如全局变量、虚拟内存等，所以说<strong>进程是资源分配的最小单位</strong>。</p>
-<h2 id="调度线程">调度线程</h2>
-<p><strong>线程是CPU调度的最小单位</strong>，也就是说<strong>内核进行调度的对象实际上是线程，而进程是负责为线程提供共享资源的</strong>。</p>
-<p>一个进程中的多个线程共享这个进程的资源，但是<strong>它们虽然共享同一片虚拟内存，自身却拥有这片虚拟内存中的不同的栈空间</strong>；</p>
-<h2 id="通信方式">通信方式</h2>
-<p>由于同一进程中的线程共享资源，所以通信非常方便，直接读写同一块用户态内存即可，但是这必然就涉及到互斥和原子性问题。</p>
-<p>而进程要实现通信则需要借助内核和文件，所有的IPC，都是把内核和文件充当交换信息的桥梁。</p>
-<h2 id="上下文切换">上下文切换</h2>
-<blockquote>
-<p>同一进程中的线程上下文切换，简称<strong>线程上下文切换</strong>。</p>
-<p>不同进程中的线程上下文切换，简称<strong>进程上下文切换</strong>。</p>
-</blockquote>
-<p>不管是线程上下文切换，还是进程上下文切换，都会涉及CPU寄存器和程序计数器的保存和更新。<strong>因此都涉及CPU上下文切换</strong>。</p>
-<p>由于线程共享进程中的虚拟内存空间，所以线程上下文切换时，<strong>不需要更新虚拟内存到物理内存的内存映射表</strong>。而进程上下文切换时，则要更新虚拟内存到物理内存的内存映射表。</p>
-<p>当内核找不到虚拟内存到物理内存的映射关系时，便会产生<code>缺页中断</code>。所以<strong>进程上下文切换后，程序执行更容易产生缺页中断</strong>。</p>
-<h2 id="怎么理解linux中的线程是以进程的方式实现的">怎么理解Linux中的线程是以进程的方式实现的</h2>
-<ul>
-<li>对于支持线程的操作系统而言，如果一个进程中有N个线程，则存在一个进程描述符，依次轮流指向N个线程。这个进程描述符指明共享资源，包括内存空间和打开的文件。而每一个线程描述它们自己独享的资源。也就是说<strong>内核中描述线程的结构体和描述进程的结构体不同</strong>。</li>
-<li>而在Linux中，则有N个<code>task_struct</code>数据结构，只是这些数据结构的某些资源项是共享的，某些是独占的。</li>
-</ul>
-]]></content>
-		</item>
-		
-		<item>
 			<title>抓包解读smtp和tls协议</title>
 			<link>https://cvvz.github.io/post/smtp-with-tls/</link>
 			<pubDate>Sat, 22 Jun 2019 23:21:54 +0800</pubDate>
@@ -1671,40 +1634,6 @@
 		</item>
 		
 		<item>
-			<title>Git笔记</title>
-			<link>https://cvvz.github.io/post/usage-of-git/</link>
-			<pubDate>Sun, 02 Jun 2019 23:41:24 +0800</pubDate>
-			
-			<guid>https://cvvz.github.io/post/usage-of-git/</guid>
-			<description>整理一下最近学习的git知识，以及平时常用的git功能。 .git 使用git init或clone一个远端仓，会在本地建立一个.git目录。这个目录是</description>
-			<content type="html"><![CDATA[<blockquote>
-<p>整理一下最近学习的git知识，以及平时常用的git功能。</p>
-</blockquote>
-<h2 id="git">.git</h2>
-<p>使用git init或clone一个远端仓，会在本地建立一个.git目录。<strong>这个目录是git仓的全部，把.git拷贝到其他目录下，就能在该目录下建立一个一模一样的git仓</strong>。</p>
-<h2 id="缓存区staged">缓存区（staged）</h2>
-<ul>
-<li>对working derictoy中的文件做的改动，他们的状态是unstaged</li>
-<li>使用 <code>git add</code>/<code>git rm</code>/<code>git mv</code> 将其送入缓存区（staged）</li>
-<li>使用 <code>git commit</code> 提交缓存区中记录的改动。</li>
-<li><code>git diff {filename}</code> 可以查看unstaged和staged中文件的不同</li>
-<li><code>git diff --staged {filename}</code> 可以查看staged中的文件和原文件的不同</li>
-<li>注意staged和<code>stash</code>的区别</li>
-</ul>
-<h2 id="上游分支">上游分支</h2>
-<p><code>git clone</code>可以通过参数 <code>-b</code> 来指定clone远端仓库到本地后拉取哪条分支，不指定则默认拉取<code>master</code>；远端仓库中必须存在同名分支，作为本地分支的上游分支。</p>
-<p>通过<code>git branch -vv</code> 或 <code>git status</code> 命令可以查看本地分支相比上游分支领先/落后多少个commit。</p>
-<p><code>git checkout -b {local_branch} {remote_branch}</code>用来创建并切换分支，并指定该分支的上游分支。</p>
-<h2 id="revert和reset">revert和reset</h2>
-<p><code>git reset</code>把HEAD指针指向到某一个commit id，这次commit之后的所有commit都会被删除。</p>
-<p><code>git revert</code>用来撤销某一次commit带来的变化，不会影响其他commit。revert本身也需要commit。</p>
-<p>非fast-forward形式合并两条分支时，git会自动生成一个合并提交。如果想回退某条分支的merge操作，可以revert这次合并提交的commit，git会让你选择留下这次合并提交的哪一个父分支，另一个父分支所作的改动会被回退。</p>
-<h2 id="如何修改一次历史commit">如何修改一次历史commit</h2>
-<p>执行<code>git rebase -i {commitid}^</code>（commitid是想要修改的那次提交），git会以commitid的前一次提交作为base，采用交互式的方式，重新提交后面的每一次commit，将想要修改的那一次的提交命令设置为edit即可。</p>
-]]></content>
-		</item>
-		
-		<item>
 			<title>进程间通信</title>
 			<link>https://cvvz.github.io/post/ipc/</link>
 			<pubDate>Fri, 02 Nov 2018 22:34:20 +0800</pubDate>
@@ -1762,6 +1691,167 @@
 <h3 id="共享内存">共享内存</h3>
 <p>共享内存可以看成是把内核中的一块内存映射到进程的内存映射区。这样，两个进程共享同一块内存就可以实现通信了，由于是直接对内存读写，这种IPC方式也是最快的。</p>
 <p>通过<code>shmget</code>、<code>shmctl</code>、<code>shmat</code>、<code>shmdt</code>管理共享内存。</p>
+]]></content>
+		</item>
+		
+		<item>
+			<title>记一次编译错误的解决过程</title>
+			<link>https://cvvz.github.io/post/compile-error/</link>
+			<pubDate>Thu, 01 Nov 2018 20:31:15 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/post/compile-error/</guid>
+			<description>最近开发新的需求需要使用某个外部模块的库文件，该模块在文档中提供了一个demo，但makefile文件编译报错。通过摸索和学习最终把demo</description>
+			<content type="html"><![CDATA[<p>最近开发新的需求需要使用某个外部模块的库文件，该模块在文档中提供了一个demo，但makefile文件编译报错。通过摸索和学习最终把demo编译成功并运行起来，下面记录一下过程中碰到的问题并进行总结。</p>
+<h2 id="so-not-found">so not found</h2>
+<p>使用gcc编译c/c++程序时，编译时用<code>-I</code>指定头文件查找路径，<code>-L</code>指定库文件查找路径，<code>-l</code>具体指定依赖的库。</p>
+<p>如果指定了<code>-L</code>，也使用<code>-l</code>链接了该库，但是报如下告警：</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>warning: libxxx.so, needed by ./libyyy.so, not found <span class="o">(</span>try using -rpath or -rpath-link<span class="o">)</span>
+</code></pre></div><p>说明该so依赖的其他so无法找到。使用<code>ldd</code>命令查看该so依赖的所有其他so，会有类似于</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>/usr/bin/ld: cannot find -lxxx
+</code></pre></div><p>的打印，这时就需要找到被依赖的so所在的绝对路径，添加到<code>/etc/ld.so.conf</code>文件中，并执行<code>ldconfig</code>。</p>
+<p>另一种办法是向环境变量<code>LD_LIBRARY_PATH</code>中添加路径，指定动态库加载路径；对应的静态库加载路径的环境变量名<code>LIBRARY_PATH</code>。</p>
+<blockquote>
+<p>注意: 使用<code>env</code>命令查看系统中若无环境变量<code>LD_LIBRARY_PATH</code>和<code>LIBRARY_PATH</code>，则需要使用<code>export</code>命令将变量变成环境变量，即该变量在子shell进程中也可见。但重新登录时该环境变量会消失。要想环境变量每次登录都存在，可以向<code>/etc/profile</code>文件尾用export添加环境变量。这是因为<strong>每次登录时系统会自动执行/etc/profile脚本</strong>。</p>
+</blockquote>
+<h2 id="file-format-not-recognized">file format not recognized</h2>
+<p>编译时提示错误如：</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>/usr/bin/ld:./libxxx.so: file format not recognized<span class="p">;</span> treating as linker script
+<span class="ln">2</span>/usr/bin/ld:./libxxx.so:2: syntax error
+</code></pre></div><p>意思是这个so文件格式不识别，ld试图将它当作链接文件来看待，但仍然出错。查看发现该so文件大小只有几字节，且附近有一个带后缀.1的文件libxxx.so.1。<strong>原因是该so文件实际是一个软链接文件，链接对象就是libxxx.so.1</strong>；但由于该模块提供的lib压缩包是在windows下解压后通过远程文件系统挂载到linux系统上的，软连接文件被当成普通文件解压了。解决办法是重新创建软连接或直接在linux下解压。</p>
+<blockquote>
+<p>so后面带的.1是版本号为1的意思。这是linux下动态库版本控制的一种方法。具体可以看(动态链接库的版本控制)[]一文。</p>
+</blockquote>
+<h2 id="undefined-reference-to">undefined reference to</h2>
+<p><code>undefined reference to</code> 即未定义的引用，表示某函数被声明了但是却没有找到对应的实现，这种情况是可以编译成功的，但是链接会失败。类似的还有<code>Undeclared references</code>，即未声明的引用，表示找不到函数声明。</p>
+<p>出现这种情况只能考虑是编译时还有必要的库没有链接，对库文件夹中所有的库执行<code>nm</code>命令，过滤该函数名，找到该函数定义(<code>T类</code>)所在的库文件，并将其加入到编译链接库中。</p>
+<blockquote>
+<p><code>nm</code>用于打印库或可执行文件中的符号名：</p>
+<ul>
+<li>T类：是在库中定义的函数，用T表示；</li>
+<li>U类：是在库中被调用，但并没有在库中定义(表明需要其他库支持)，用U表示；</li>
+</ul>
+</blockquote>
+]]></content>
+		</item>
+		
+		<item>
+			<title>动态链接库的版本控制</title>
+			<link>https://cvvz.github.io/post/version-control-of-shared-object/</link>
+			<pubDate>Sat, 20 Oct 2018 21:00:51 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/post/version-control-of-shared-object/</guid>
+			<description>DLL Hell DLL Hell：同一台机器上，运行着A和B两个程序，他们使用了同一个so；程序A在升级时使用新的so直接覆盖老的so，此时可能会造成程序B无</description>
+			<content type="html"><![CDATA[<h2 id="dll-hell">DLL Hell</h2>
+<p><strong><a href="https://en.wikipedia.org/wiki/DLL_Hell">DLL Hell</a></strong>：同一台机器上，运行着A和B两个程序，他们使用了同一个so；程序A在升级时使用新的so<strong>直接覆盖</strong>老的so，此时可能会造成程序B无法正常运行。</p>
+<p>因此需要对动态链接库进行版本控制。</p>
+<h2 id="so-name">so name</h2>
+<p>在介绍版本控制前，需要先了解动态链接库的三种name：<code>real name</code>、<code>soname</code>、<code>link name</code>。</p>
+<ul>
+<li><strong>link name</strong>：<code>libxxx.so</code>称为动态链接库的<code>link name</code>。</li>
+<li><strong>real name</strong>：实际编译出来的动态链接库是具有版本号后缀的，如<code>libxxx.so.x.y.z</code>，称为动态链接库的<code>real name</code>。
+<blockquote>
+<p>其中<code>x</code>代表主版本号，<code>y</code>代表小版本号，<code>z</code>代表duild号。</p>
+</blockquote>
+</li>
+<li><strong>soname</strong>：<code>link name</code>+<code>主版本号</code>，即<code>libxxx.so.1</code>。</li>
+</ul>
+<h2 id="编译动态库">编译动态库</h2>
+<p>编译动态链接库时要带上编译选项<code>-soname</code>以指定soname。例如编译动态库<code>libtest.so.1.0.0</code>时，编译方式如下：</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>gcc -fPIC -o test.o -c test.c
+<span class="ln">2</span>gcc -shared -Wl,-soname,libtest.so.1 -o libtest.so.1.0.0 test.o
+</code></pre></div><p>通过<code>readelf -d</code>查看动态段，可以发现<code>soname</code>信息被记录到了<code>libtest.so.1.0.0</code>的文件头中：</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>readelf -d libtest.so.1.0.0 <span class="p">|</span> grep soname
+<span class="ln">2</span> 0x0000000e <span class="o">(</span>SONAME<span class="o">)</span> Library soname: <span class="o">[</span>libtest.so.1<span class="o">]</span>
+</code></pre></div><p><strong>此时执行<code>ldconfig</code>命令将自动生成<code>libtest.so.1</code>文件，它是一个指向<code>libtest.so.1.0.0</code>的软连接</strong>。</p>
+<p>不难想到：</p>
+<ul>
+<li>如果主版本发生变化，新老版本的soname会发生变化。</li>
+<li>如果小版本发生变化，新老版本的soname应该保持不变。</li>
+</ul>
+<h2 id="编译程序">编译程序</h2>
+<p>以使用上面编译好的<code>libtest.so.1.0.0</code>动态库的程序为例，编译的标准步骤如下：</p>
+<ol>
+<li>创建一个指向real name文件的link name文件，即 <code>ln -s libtest.so.1.0.0 libtest.so</code></li>
+<li>编译程序，通过指定<code>-ltest</code>，编译器会去查找<code>libtest.so</code>文件，但实际参与编译的是<code>libtest.so.1.0.0</code>文件</li>
+<li>编译器发现<code>libtest.so.1.0.0</code>中记录着soname <code>libtest.so.1</code>，告诉程序在运行时应该引用<code>libtest.so.1</code></li>
+<li>而<code>libtest.so.1</code>文件，则是通过执行<code>ldconfig</code>命令生成出来的指向<code>libtest.so.1.0.0</code>的软链接，所以程序实际运行过程中使用的是<code>libtest.so.1.0.0</code></li>
+</ol>
+<h2 id="升级动态库">升级动态库</h2>
+<ol>
+<li>小版本升级，比如从<code>libtest.so.1.0.0</code>升级为<code>libtest.so.1.1.1</code>。这个时候，按照约定它的soname<code>libtest.so.1</code>是不变的，所以使用者可以直接把新版本so丢到机器上，执行<code>ldconfig</code>，新生成的<code>libtest.so.1</code>就变成了指向<code>libtest.so.1.1.1</code>的软连接。小版本升级是后向兼容的，所以这里直接进行升级是没有问题的。</li>
+<li>主版本升级，比如从<code>libtest.so.1.1.1</code>升级为<code>libtest.so.2.0.0</code>。这个时候，按照约定它的soname变成了<code>libtest.so.2</code>，此时<code>ldconfig</code>生成的软连接为<code>libtest.so.2</code>，指向<code>libtest.so.2.0.0</code>。一般主版本升级会有后向兼容性问题，但是由于使用了新的soname，因此对使用老版本so的程序没有影响。</li>
+</ol>
+]]></content>
+		</item>
+		
+		<item>
+			<title>关于进程和线程的一些思考</title>
+			<link>https://cvvz.github.io/post/process-and-thread/</link>
+			<pubDate>Sat, 23 Jun 2018 20:34:56 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/post/process-and-thread/</guid>
+			<description>从“程序”开始 对于UNIX操作系统，程序是存放在磁盘上的ELF文件（可以通过file命令查看文件类型） 对于windows操作系统，程序是存放</description>
+			<content type="html"><![CDATA[<h2 id="从程序开始">从“程序”开始</h2>
+<ul>
+<li>对于UNIX操作系统，程序是存放在磁盘上的<strong>ELF文件</strong>（可以通过<code>file</code>命令查看文件类型）</li>
+<li>对于windows操作系统，程序是存放在磁盘上的<strong>PE文件</strong>，其中最常见的是<code>.exe</code>文件。</li>
+</ul>
+<p>编译器将高级语言编写成的程序编译成机器码，操作系统将ELF文件读入内存后，ELF文件中的<strong>代码段</strong>也就是CPU可以执行的机器码（可以通过<code>readelf</code>命令查看ELF文件的代码段内容），CPU从内存中读取机器码并执行。</p>
+<h2 id="为进程分配资源">为进程分配资源</h2>
+<p>进程产生的标志是：内核为每一个进程都分配了一个<code>task_struct</code>结构体，在<code>task_struct</code>中记录了这个进程所拥有的资源，如全局变量、虚拟内存等，所以说<strong>进程是资源分配的最小单位</strong>。</p>
+<h2 id="调度线程">调度线程</h2>
+<p><strong>线程是CPU调度的最小单位</strong>，也就是说<strong>内核进行调度的对象实际上是线程，而进程是负责为线程提供共享资源的</strong>。</p>
+<p>一个进程中的多个线程共享这个进程的资源，但是<strong>它们虽然共享同一片虚拟内存，自身却拥有这片虚拟内存中的不同的栈空间</strong>；</p>
+<h2 id="通信方式">通信方式</h2>
+<p>由于同一进程中的线程共享资源，所以通信非常方便，直接读写同一块用户态内存即可，但是这必然就涉及到互斥和原子性问题。</p>
+<p>而进程要实现通信则需要借助内核和文件，所有的IPC，都是把内核和文件充当交换信息的桥梁。</p>
+<h2 id="上下文切换">上下文切换</h2>
+<blockquote>
+<p>同一进程中的线程上下文切换，简称<strong>线程上下文切换</strong>。</p>
+<p>不同进程中的线程上下文切换，简称<strong>进程上下文切换</strong>。</p>
+</blockquote>
+<p>不管是线程上下文切换，还是进程上下文切换，都会涉及CPU寄存器和程序计数器的保存和更新。<strong>因此都涉及CPU上下文切换</strong>。</p>
+<p>由于线程共享进程中的虚拟内存空间，所以线程上下文切换时，<strong>不需要更新虚拟内存到物理内存的内存映射表</strong>。而进程上下文切换时，则要更新虚拟内存到物理内存的内存映射表。</p>
+<p>当内核找不到虚拟内存到物理内存的映射关系时，便会产生<code>缺页中断</code>。所以<strong>进程上下文切换后，程序执行更容易产生缺页中断</strong>。</p>
+<h2 id="怎么理解linux中的线程是以进程的方式实现的">怎么理解Linux中的线程是以进程的方式实现的</h2>
+<ul>
+<li>对于支持线程的操作系统而言，如果一个进程中有N个线程，则存在一个进程描述符，依次轮流指向N个线程。这个进程描述符指明共享资源，包括内存空间和打开的文件。而每一个线程描述它们自己独享的资源。也就是说<strong>内核中描述线程的结构体和描述进程的结构体不同</strong>。</li>
+<li>而在Linux中，则有N个<code>task_struct</code>数据结构，只是这些数据结构的某些资源项是共享的，某些是独占的。</li>
+</ul>
+]]></content>
+		</item>
+		
+		<item>
+			<title>Git笔记</title>
+			<link>https://cvvz.github.io/post/usage-of-git/</link>
+			<pubDate>Sat, 02 Jun 2018 23:41:24 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/post/usage-of-git/</guid>
+			<description>整理一下最近学习的git知识，以及平时常用的git功能。 .git 使用git init或clone一个远端仓，会在本地建立一个.git目录。这个目录是</description>
+			<content type="html"><![CDATA[<blockquote>
+<p>整理一下最近学习的git知识，以及平时常用的git功能。</p>
+</blockquote>
+<h2 id="git">.git</h2>
+<p>使用git init或clone一个远端仓，会在本地建立一个.git目录。<strong>这个目录是git仓的全部，把.git拷贝到其他目录下，就能在该目录下建立一个一模一样的git仓</strong>。</p>
+<h2 id="缓存区staged">缓存区（staged）</h2>
+<ul>
+<li>对working derictoy中的文件做的改动，他们的状态是unstaged</li>
+<li>使用 <code>git add</code>/<code>git rm</code>/<code>git mv</code> 将其送入缓存区（staged）</li>
+<li>使用 <code>git commit</code> 提交缓存区中记录的改动。</li>
+<li><code>git diff {filename}</code> 可以查看unstaged和staged中文件的不同</li>
+<li><code>git diff --staged {filename}</code> 可以查看staged中的文件和原文件的不同</li>
+<li>注意staged和<code>stash</code>的区别</li>
+</ul>
+<h2 id="上游分支">上游分支</h2>
+<p><code>git clone</code>可以通过参数 <code>-b</code> 来指定clone远端仓库到本地后拉取哪条分支，不指定则默认拉取<code>master</code>；远端仓库中必须存在同名分支，作为本地分支的上游分支。</p>
+<p>通过<code>git branch -vv</code> 或 <code>git status</code> 命令可以查看本地分支相比上游分支领先/落后多少个commit。</p>
+<p><code>git checkout -b {local_branch} {remote_branch}</code>用来创建并切换分支，并指定该分支的上游分支。</p>
+<h2 id="revert和reset">revert和reset</h2>
+<p><code>git reset</code>把HEAD指针指向到某一个commit id，这次commit之后的所有commit都会被删除。</p>
+<p><code>git revert</code>用来撤销某一次commit带来的变化，不会影响其他commit。revert本身也需要commit。</p>
+<p>非fast-forward形式合并两条分支时，git会自动生成一个合并提交。如果想回退某条分支的merge操作，可以revert这次合并提交的commit，git会让你选择留下这次合并提交的哪一个父分支，另一个父分支所作的改动会被回退。</p>
+<h2 id="如何修改一次历史commit">如何修改一次历史commit</h2>
+<p>执行<code>git rebase -i {commitid}^</code>（commitid是想要修改的那次提交），git会以commitid的前一次提交作为base，采用交互式的方式，重新提交后面的每一次commit，将想要修改的那一次的提交命令设置为edit即可。</p>
 ]]></content>
 		</item>
 		

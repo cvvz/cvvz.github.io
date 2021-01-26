@@ -135,15 +135,6 @@
     </item>
     
     <item>
-      <title>进程和线程</title>
-      <link>https://cvvz.github.io/post/process-and-thread/</link>
-      <pubDate>Sun, 23 Jun 2019 20:34:56 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/process-and-thread/</guid>
-      <description>从“程序”开始 对于UNIX操作系统，程序是存放在磁盘上的ELF文件（可以通过file命令查看文件类型） 对于windows操作系统，程序是存放</description>
-    </item>
-    
-    <item>
       <title>抓包解读smtp和tls协议</title>
       <link>https://cvvz.github.io/post/smtp-with-tls/</link>
       <pubDate>Sat, 22 Jun 2019 23:21:54 +0800</pubDate>
@@ -171,21 +162,30 @@
     </item>
     
     <item>
-      <title>Git笔记</title>
-      <link>https://cvvz.github.io/post/usage-of-git/</link>
-      <pubDate>Sun, 02 Jun 2019 23:41:24 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/usage-of-git/</guid>
-      <description>整理一下最近学习的git知识，以及平时常用的git功能。 .git 使用git init或clone一个远端仓，会在本地建立一个.git目录。这个目录是</description>
-    </item>
-    
-    <item>
       <title>进程间通信</title>
       <link>https://cvvz.github.io/post/ipc/</link>
       <pubDate>Fri, 02 Nov 2018 22:34:20 +0800</pubDate>
       
       <guid>https://cvvz.github.io/post/ipc/</guid>
       <description>进程间通信的六种方式： 管道 共享内存 消息队列 信号量 信号 socket 管道 管道机制和UNIX系统的文件系统密切关联，使用管道和使用文件系统非常类似。实际上使</description>
+    </item>
+    
+    <item>
+      <title>记一次编译错误的解决过程</title>
+      <link>https://cvvz.github.io/post/compile-error/</link>
+      <pubDate>Thu, 01 Nov 2018 20:31:15 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/compile-error/</guid>
+      <description>最近开发新的需求需要使用某个外部模块的库文件，该模块在文档中提供了一个demo，但makefile文件编译报错。通过摸索和学习最终把demo</description>
+    </item>
+    
+    <item>
+      <title>动态链接库的版本控制</title>
+      <link>https://cvvz.github.io/post/version-control-of-shared-object/</link>
+      <pubDate>Sat, 20 Oct 2018 21:00:51 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/version-control-of-shared-object/</guid>
+      <description>DLL Hell DLL Hell：同一台机器上，运行着A和B两个程序，他们使用了同一个so；程序A在升级时使用新的so直接覆盖老的so，此时可能会造成程序B无</description>
     </item>
     
   </channel>

@@ -54,15 +54,6 @@
     </item>
     
     <item>
-      <title>进程和线程</title>
-      <link>https://cvvz.github.io/post/process-and-thread/</link>
-      <pubDate>Sun, 23 Jun 2019 20:34:56 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/process-and-thread/</guid>
-      <description>从“程序”开始 对于UNIX操作系统，程序是存放在磁盘上的ELF文件（可以通过file命令查看文件类型） 对于windows操作系统，程序是存放</description>
-    </item>
-    
-    <item>
       <title>解剖进程虚拟内存空间</title>
       <link>https://cvvz.github.io/post/anatomy-of-a-program-in-memory/</link>
       <pubDate>Fri, 07 Jun 2019 23:14:03 +0800</pubDate>
@@ -78,6 +69,15 @@
       
       <guid>https://cvvz.github.io/post/ipc/</guid>
       <description>进程间通信的六种方式： 管道 共享内存 消息队列 信号量 信号 socket 管道 管道机制和UNIX系统的文件系统密切关联，使用管道和使用文件系统非常类似。实际上使</description>
+    </item>
+    
+    <item>
+      <title>关于进程和线程的一些思考</title>
+      <link>https://cvvz.github.io/post/process-and-thread/</link>
+      <pubDate>Sat, 23 Jun 2018 20:34:56 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/process-and-thread/</guid>
+      <description>从“程序”开始 对于UNIX操作系统，程序是存放在磁盘上的ELF文件（可以通过file命令查看文件类型） 对于windows操作系统，程序是存放</description>
     </item>
     
   </channel>

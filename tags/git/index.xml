@@ -7,11 +7,11 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Sun, 02 Jun 2019 23:41:24 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/git/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 02 Jun 2018 23:41:24 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/git/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Git笔记</title>
       <link>https://cvvz.github.io/post/usage-of-git/</link>
-      <pubDate>Sun, 02 Jun 2019 23:41:24 +0800</pubDate>
+      <pubDate>Sat, 02 Jun 2018 23:41:24 +0800</pubDate>
       
       <guid>https://cvvz.github.io/post/usage-of-git/</guid>
       <description>整理一下最近学习的git知识，以及平时常用的git功能。 .git 使用git init或clone一个远端仓，会在本地建立一个.git目录。这个目录是</description>
