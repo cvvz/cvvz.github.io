@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="google-site-verification" content="Wp3QtEkIlF0ZvtKx90lPmoXyH39d-pmBhiTyTbba9L4" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta itemprop="name" content="system系统调用探秘">
+<meta itemprop="description" content="6月3日更新 新的实验又发现使用/bin/sh和书中行为一致，但使用/bin/bash的行为和本文中的实验一致，看来是不同shell的底层的实">
+<meta itemprop="datePublished" content="2019-05-30T00:28:40+08:00" />
+<meta itemprop="dateModified" content="2021-01-30T04:27:54+08:00" />
+<meta itemprop="wordCount" content="1598">
+
+
+
+<meta itemprop="keywords" content="Linux," />
+<meta property="og:title" content="system系统调用探秘" />
+<meta property="og:description" content="6月3日更新 新的实验又发现使用/bin/sh和书中行为一致，但使用/bin/bash的行为和本文中的实验一致，看来是不同shell的底层的实" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://cvvz.github.io/post/system-and-shell/" />
+<meta property="article:published_time" content="2019-05-30T00:28:40+08:00" />
+<meta property="article:modified_time" content="2021-01-30T04:27:54+08:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="system系统调用探秘"/>
+<meta name="twitter:description" content="6月3日更新 新的实验又发现使用/bin/sh和书中行为一致，但使用/bin/bash的行为和本文中的实验一致，看来是不同shell的底层的实"/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>system系统调用探秘</title>
+	<link rel="stylesheet" href="https://cvvz.github.io/css/style.min.7a1ec200e9f3394f73c6eda58011808507a3b24318de81e1e343f22a2470caef.css">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp faster">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://cvvz.github.io">Vic&#39;s Blog</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					<a href="https://cvvz.github.io/post/">文章</a>
+					<a href="https://cvvz.github.io/about/">关于</a>
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<button id="toc-btn" class="hdr-btn desktop-only-ib" title="目录"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-list"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3" y2="6"></line><line x1="3" y1="12" x2="3" y2="12"></line><line x1="3" y1="18" x2="3" y2="18"></line></svg></button><span class="hdr-social hide-in-mobile"><a href="https://github.com/cvvz" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="mailto:ftdchenwz@gmail.com" target="_blank" rel="noopener me" title="Email"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a></span><button id="menu-btn" class="hdr-btn" title="菜单"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://cvvz.github.io/post/">文章</a></li>
+			<li><a href="https://cvvz.github.io/about/">关于</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<h1>system系统调用探秘</h1>
+			</header>
+			<div class="content">
+				<blockquote>
+<p><strong>6月3日更新</strong></p>
+<p>新的实验又发现使用<code>/bin/sh</code>和书中行为一致，但使用<code>/bin/bash</code>的行为和本文中的实验一致，看来是不同shell的底层的实现方式有差异。<strong>而之所以之前用<code>/bin/sh</code>做的实验和书中行为不一致，是因为在我做实验的机器上，<code>/bin/sh</code>其实是一个指向<code>/bin/bash</code>的软链接</strong>。。。</p>
+<p>不过至少得到一个重要结论，那就是：<strong>对于不同的底层shell，system系统调用的表现会不同</strong>。这一点在编码时需要特别注意。</p>
+</blockquote>
+<h2 id="system实现原理">system实现原理<a href="#system实现原理" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p><code>system</code>这个系统调用的源码在网上已经有很多了，这里就不展示了。简单来说，就是父进程<code>fork</code>后，在子进程中通过执行<code>execl(&quot;/bin/sh&quot;, &quot;sh&quot;, &quot;-c&quot;, cmdstring, (char *)0)</code>，使得<code>/bin/sh</code>成为新的子进程，然后在<code>/bin/sh</code>中执行<code>cmdstring</code>命令；父进程循环执行<code>waitpid</code>，等待子进程退出的信号。</p>
+<h2 id="到底有几个子进程">到底有几个子进程？<a href="#到底有几个子进程" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<h3 id="实验一">实验一<a href="#实验一" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>在学习《UNIX环境高级编程（第3版）》信号一章时，根据图10-27所示，执行 <code>system(&quot;/bin/ed&quot;)</code> 命令后，会分别调用<code>fork</code>/<code>exec</code>系统调用两次：</p>
+<ol>
+<li>第一次发生在调用<code>system</code>时，父进程<code>fork</code>一次，子进程执行<code>execl(&quot;/bin/sh&quot;,&quot;sh&quot;,&quot;-c&quot;,&quot;/bin/ed&quot;,(char *)0)</code>一次，子进程被替换为<code>/bin/sh</code>。</li>
+<li>第二次发生在<code>/bin/sh</code>这个子进程中，<code>/bin/sh</code>会先<code>fork</code>一个子进程，这个子进程执行<code>exec(&quot;/bin/ed&quot;)</code>，用<code>/bin/ed</code>替换<code>/bin/sh</code>。</li>
+</ol>
+<p>但是我在自己做实验时，用<code>strace</code>命令跟踪系统调用的过程，发现<code>system</code>系统调用执行过程中，<strong>只<code>fork</code>了一次，<code>exec</code>了两次，主要的差异在于<code>/bin/sh</code>并没有<code>fork</code>子进程，而是直接执行了<code>exec(&quot;/bin/ed&quot;)</code></strong>。</p>
+<h3 id="实验二">实验二<a href="#实验二" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>我在shell下执行<code>sh -c &quot;sleep 5&quot;&amp;</code>命令，根据书中的示例，执行<code>ps -f</code>后应该可以看到4个进程：</p>
+<ul>
+<li><code>ps -f</code></li>
+<li>当前shell进程</li>
+<li>当前shell的子进程<code>sh</code></li>
+<li><code>sh</code>的子进程<code>sleep 5</code>；</li>
+</ul>
+<p><strong>但实际我只看到三个进程，缺少子进程<code>sh</code>，<code>sleep 5</code>直接成为了当前shell的子进程</strong>：</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>Storage:~ <span class="c1"># sh -c &#34;sleep 5&#34; &amp;</span>
+<span class="ln">2</span><span class="o">[</span>1<span class="o">]</span> <span class="m">101978</span>
+<span class="ln">3</span>Storage:~ <span class="c1"># ps -o pid,ppid,cmd</span>
+<span class="ln">4</span>PID PPID CMD
+<span class="ln">5</span><span class="m">48673</span> <span class="m">48658</span> -bash
+<span class="ln">6</span><span class="m">101978</span> <span class="m">48673</span> sleep <span class="m">5</span>
+<span class="ln">7</span><span class="m">103012</span> <span class="m">48673</span> ps -o pid,ppid,cmd
+</code></pre></div><h2 id="system的返回值到底是多少">system的返回值到底是多少？<a href="#system的返回值到底是多少" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>使用如下程序对system的返回值进行实验：</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="ln"> 1</span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="ln"> 2</span><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span><span class="ln"> 3</span><span class="cp"></span><span class="kt">void</span> <span class="nf">main</span> <span class="p">()</span>
+<span class="ln"> 4</span><span class="p">{</span>
+<span class="ln"> 5</span>    <span class="kt">int</span> <span class="n">iStatus</span><span class="p">;</span>
+<span class="ln"> 6</span>    <span class="n">iStatus</span> <span class="o">=</span> <span class="n">system</span><span class="p">(</span><span class="s">&#34;sleep 5&#34;</span><span class="p">);</span>
+<span class="ln"> 7</span>    <span class="k">if</span> <span class="p">(</span><span class="n">WIFEXITED</span><span class="p">(</span><span class="n">iStatus</span><span class="p">))</span>
+<span class="ln"> 8</span>    <span class="p">{</span>
+<span class="ln"> 9</span>        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;normal exit code %d ,status %x</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">WEXITSTATUS</span><span class="p">(</span><span class="n">iStatus</span><span class="p">),</span><span class="n">iStatus</span><span class="p">);</span>
+<span class="ln">10</span>    <span class="p">}</span>
+<span class="ln">11</span>
+<span class="ln">12</span>    <span class="k">if</span> <span class="p">(</span><span class="n">WIFSIGNALED</span><span class="p">(</span><span class="n">iStatus</span><span class="p">))</span>
+<span class="ln">13</span>    <span class="p">{</span>
+<span class="ln">14</span>        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;signal code %d ,status %x</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">WTERMSIG</span><span class="p">(</span><span class="n">iStatus</span><span class="p">),</span><span class="n">iStatus</span><span class="p">);</span>
+<span class="ln">15</span>    <span class="p">}</span>
+<span class="ln">16</span><span class="p">}</span>
+</code></pre></div><p>在这个实验程序中，通过<code>system</code>系统调用执行<code>sleep 5</code>，sleep期间通过<code>ctrl+C</code>向main进程发送<code>SIGINT</code>信号，观察会打印出什么。</p>
+<p>按照书中的实验结果，是会打印&quot;normal exit&hellip;&ldquo;的，原因分析：</p>
+<ol>
+<li>收到<code>SIGINT</code>信号的是<code>sleep 5</code>进程，<code>sleep 5</code>进程异常退出时，它的退出值为2；</li>
+<li>但<code>sleep 5</code>的父进程是<code>/bin/sh</code>，而<strong>shell会将子进程的退出码（此处为2）+128作为退出值正常退出（低8位全0）</strong>。</li>
+<li>所以父进程<code>main</code>通过<code>waitpid</code>得到<code>/bin/sh</code>的退出码为130，认为是正常执行退出（低8位全0）。</li>
+</ol>
+<p>然而我的实验结果却是打印&quot;signal code 2&rdquo;。原因如下：</p>
+<p>实际上<code>sleep 2</code>是main函数的子进程，所以，它收到信号退出，main函数通过<code>waitpid</code>得到的子进程退出的状态码就是2了。</p>
+<blockquote>
+<p><strong>waitpid得到的状态码</strong>：<strong>低7位代表信号值，第8位代表是否core，高8位代表exit退出码。由此可见信号最多127种，exit最大值为255</strong>。</p>
+<p>通过<code>WIFEXITED</code>宏判断低七位的信号值是否为0，0为正常退出；通过<code>WEXITSTATUS</code>得到高8位的exit值；否则通过<code>WIFSIGNALED</code>得到低七位的信号值。</p>
+</blockquote>
+
+			</div>
+			<hr class="post-end">
+			<footer class="post-info">
+				<p>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/linux">Linux</a></span>
+				</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1598 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/73f17142c13c8fe3b55d5c909c159019686892a9" target="_blank" rel="noopener">73f1714</a> @ 2021-01-30</p>
+			</footer>
+		</article>
+		<aside id="toc" class="show-toc">
+			<div class="toc-title">目录</div>
+			<nav id="TableOfContents">
+  <ul>
+    <li><a href="#system实现原理">system实现原理</a></li>
+    <li><a href="#到底有几个子进程">到底有几个子进程？</a>
+      <ul>
+        <li><a href="#实验一">实验一</a></li>
+        <li><a href="#实验二">实验二</a></li>
+      </ul>
+    </li>
+    <li><a href="#system的返回值到底是多少">system的返回值到底是多少？</a></li>
+  </ul>
+</nav>
+		</aside>
+		<div class="post-nav thin">
+			<a class="next-post" href="https://cvvz.github.io/post/anatomy-of-a-program-in-memory/">
+				<span class="post-nav-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>&nbsp;新</span><br><span>解剖进程虚拟内存空间</span>
+			</a>
+			<a class="prev-post" href="https://cvvz.github.io/post/arm-login-failed/">
+				<span class="post-nav-label">旧&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>【问题定位】串口登录失败</span>
+			</a>
+		</div>
+		<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+		<div id="gitalk-container" class="thin"></div>     
+		<script type="text/javascript">
+			var gitalk = new Gitalk({
+				clientID: '0f8bdcbe6b4973f9b206',
+				clientSecret: '4939e64d59c93fc5eb7eaf74469a746e4535700d',
+				repo: 'cvvz.github.io',
+				owner: 'cvvz',
+				admin: ['cvvz'],
+				id: location.pathname,      
+				distractionFreeMode: true 
+			});
+  			gitalk.render('gitalk-container');
+		</script>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2021 <a href="https://cvvz.github.io">陈维志</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://cvvz.github.io/post/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+	<script src="https://cvvz.github.io/js/main.min.784417f5847151f848c339cf0acb13a06cbb648b1483435a28ed4556c4ead69b.js"></script>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-M8Q3DKDEVL', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

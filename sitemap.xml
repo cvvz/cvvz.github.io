@@ -14,22 +14,22 @@
   
   <url>
     <loc>https://cvvz.github.io/tags/linux/</loc>
-    <lastmod>2021-01-27T00:07:05+08:00</lastmod>
+    <lastmod>2021-01-30T04:27:54+08:00</lastmod>
   </url>
   
   <url>
     <loc>https://cvvz.github.io/post/</loc>
-    <lastmod>2021-01-27T00:28:06+08:00</lastmod>
+    <lastmod>2021-01-30T04:27:54+08:00</lastmod>
   </url>
   
   <url>
     <loc>https://cvvz.github.io/tags/</loc>
-    <lastmod>2021-01-27T00:07:05+08:00</lastmod>
+    <lastmod>2021-01-30T04:27:54+08:00</lastmod>
   </url>
   
   <url>
     <loc>https://cvvz.github.io/</loc>
-    <lastmod>2021-01-27T00:28:06+08:00</lastmod>
+    <lastmod>2021-01-30T04:27:54+08:00</lastmod>
   </url>
   
   <url>
@@ -109,12 +109,12 @@
   
   <url>
     <loc>https://cvvz.github.io/tags/celery/</loc>
-    <lastmod>2020-12-28T11:00:01+08:00</lastmod>
+    <lastmod>2021-01-30T04:27:54+08:00</lastmod>
   </url>
   
   <url>
     <loc>https://cvvz.github.io/post/celery-worker-zombie/</loc>
-    <lastmod>2020-12-28T11:00:01+08:00</lastmod>
+    <lastmod>2021-01-30T04:27:54+08:00</lastmod>
   </url>
   
   <url>
@@ -133,6 +133,11 @@
   </url>
   
   <url>
+    <loc>https://cvvz.github.io/post/coredump/</loc>
+    <lastmod>2021-01-30T04:27:54+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://cvvz.github.io/tags/gdb/</loc>
     <lastmod>2020-12-24T18:33:13+08:00</lastmod>
   </url>
@@ -145,6 +150,21 @@
   <url>
     <loc>https://cvvz.github.io/post/anatomy-of-a-program-in-memory/</loc>
     <lastmod>2020-12-24T18:33:13+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://cvvz.github.io/post/system-and-shell/</loc>
+    <lastmod>2021-01-30T04:27:54+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://cvvz.github.io/post/arm-login-failed/</loc>
+    <lastmod>2021-01-30T04:27:54+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://cvvz.github.io/post/login-permission-denied/</loc>
+    <lastmod>2021-01-30T04:27:54+08:00</lastmod>
   </url>
   
   <url>

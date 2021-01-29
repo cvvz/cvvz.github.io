@@ -1063,7 +1063,7 @@
 		</item>
 		
 		<item>
-			<title>Celery Worker僵尸进程问题定位记录</title>
+			<title>【问题定位】Celery Worker产生僵尸进程</title>
 			<link>https://cvvz.github.io/post/celery-worker-zombie/</link>
 			<pubDate>Mon, 30 Mar 2020 10:36:36 +0800</pubDate>
 			
@@ -1522,6 +1522,35 @@
 		</item>
 		
 		<item>
+			<title>【问题定位】异步回调函数造成踩内存</title>
+			<link>https://cvvz.github.io/post/coredump/</link>
+			<pubDate>Thu, 13 Jun 2019 03:54:36 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/post/coredump/</guid>
+			<description>问题现象 进程概率性coredump 分析过程 分析core文件，堆栈栈顶函数为strncmp，coredump的原因是给strncmp传递的字符</description>
+			<content type="html"><![CDATA[<h2 id="问题现象">问题现象</h2>
+<p>进程概率性coredump</p>
+<h2 id="分析过程">分析过程</h2>
+<ol>
+<li>分析core文件，堆栈栈顶函数为<code>strncmp</code>，coredump的原因是给strncmp传递的字符串指针（char*）为<code>0x01</code>，访问非法内存地址。</li>
+<li>找到该字符串指针原始定义处，是某函数中的局部变量，内存地址正常。</li>
+<li>该字符串生命周期内没有被改写过，但是在某一时刻突变为了<code>0x01</code>。</li>
+<li>因此最大可能性是其所在的栈空间内存被其他线程踩到了。</li>
+<li>通过两个手段来排查这个问题：
+<ol>
+<li>重点关注被踩的内存空间之前被哪些函数使用过。</li>
+<li>一一排查core文件中的所有执行线程，重点关注可能引起踩内存的函数。</li>
+</ol>
+</li>
+</ol>
+<h2 id="原因解析">原因解析</h2>
+<p>这个字符串的内存空间曾经被用作某个函数的局部变量，而这个函数中有一段逻辑是循环调用一个异步查询接口，并给这个异步查询接口提供一个回调函数，而这个回调函数的作用就是去修改这个局部变量。</p>
+<p>问题发生的原因是这个异步回调接口返回的太慢，调用方函数已经运行完毕，此时栈空间已经被操作系统回收并分配给其他函数，这时再执行回调函数修改原先的局部变量，就造成了踩内存。</p>
+<p>这里原先的局部变量是个<code>int</code>类型，回调函数想将其修改为1，结果就成了将一个<code>char*</code>类型的变量值修改为了<code>0x01</code>。</p>
+]]></content>
+		</item>
+		
+		<item>
 			<title>gdb中的多线程和信号处理</title>
 			<link>https://cvvz.github.io/post/gdb-muti-process-and-signal-handle/</link>
 			<pubDate>Mon, 10 Jun 2019 11:44:52 +0800</pubDate>
@@ -1630,6 +1659,124 @@
 <blockquote>
 <p>参考文章：<a href="https://manybutfinite.com/post/anatomy-of-a-program-in-memory/">https://manybutfinite.com/post/anatomy-of-a-program-in-memory/</a></p>
 </blockquote>
+]]></content>
+		</item>
+		
+		<item>
+			<title>system系统调用探秘</title>
+			<link>https://cvvz.github.io/post/system-and-shell/</link>
+			<pubDate>Thu, 30 May 2019 00:28:40 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/post/system-and-shell/</guid>
+			<description>6月3日更新 新的实验又发现使用/bin/sh和书中行为一致，但使用/bin/bash的行为和本文中的实验一致，看来是不同shell的底层的实</description>
+			<content type="html"><![CDATA[<blockquote>
+<p><strong>6月3日更新</strong></p>
+<p>新的实验又发现使用<code>/bin/sh</code>和书中行为一致，但使用<code>/bin/bash</code>的行为和本文中的实验一致，看来是不同shell的底层的实现方式有差异。<strong>而之所以之前用<code>/bin/sh</code>做的实验和书中行为不一致，是因为在我做实验的机器上，<code>/bin/sh</code>其实是一个指向<code>/bin/bash</code>的软链接</strong>。。。</p>
+<p>不过至少得到一个重要结论，那就是：<strong>对于不同的底层shell，system系统调用的表现会不同</strong>。这一点在编码时需要特别注意。</p>
+</blockquote>
+<h2 id="system实现原理">system实现原理</h2>
+<p><code>system</code>这个系统调用的源码在网上已经有很多了，这里就不展示了。简单来说，就是父进程<code>fork</code>后，在子进程中通过执行<code>execl(&quot;/bin/sh&quot;, &quot;sh&quot;, &quot;-c&quot;, cmdstring, (char *)0)</code>，使得<code>/bin/sh</code>成为新的子进程，然后在<code>/bin/sh</code>中执行<code>cmdstring</code>命令；父进程循环执行<code>waitpid</code>，等待子进程退出的信号。</p>
+<h2 id="到底有几个子进程">到底有几个子进程？</h2>
+<h3 id="实验一">实验一</h3>
+<p>在学习《UNIX环境高级编程（第3版）》信号一章时，根据图10-27所示，执行 <code>system(&quot;/bin/ed&quot;)</code> 命令后，会分别调用<code>fork</code>/<code>exec</code>系统调用两次：</p>
+<ol>
+<li>第一次发生在调用<code>system</code>时，父进程<code>fork</code>一次，子进程执行<code>execl(&quot;/bin/sh&quot;,&quot;sh&quot;,&quot;-c&quot;,&quot;/bin/ed&quot;,(char *)0)</code>一次，子进程被替换为<code>/bin/sh</code>。</li>
+<li>第二次发生在<code>/bin/sh</code>这个子进程中，<code>/bin/sh</code>会先<code>fork</code>一个子进程，这个子进程执行<code>exec(&quot;/bin/ed&quot;)</code>，用<code>/bin/ed</code>替换<code>/bin/sh</code>。</li>
+</ol>
+<p>但是我在自己做实验时，用<code>strace</code>命令跟踪系统调用的过程，发现<code>system</code>系统调用执行过程中，<strong>只<code>fork</code>了一次，<code>exec</code>了两次，主要的差异在于<code>/bin/sh</code>并没有<code>fork</code>子进程，而是直接执行了<code>exec(&quot;/bin/ed&quot;)</code></strong>。</p>
+<h3 id="实验二">实验二</h3>
+<p>我在shell下执行<code>sh -c &quot;sleep 5&quot;&amp;</code>命令，根据书中的示例，执行<code>ps -f</code>后应该可以看到4个进程：</p>
+<ul>
+<li><code>ps -f</code></li>
+<li>当前shell进程</li>
+<li>当前shell的子进程<code>sh</code></li>
+<li><code>sh</code>的子进程<code>sleep 5</code>；</li>
+</ul>
+<p><strong>但实际我只看到三个进程，缺少子进程<code>sh</code>，<code>sleep 5</code>直接成为了当前shell的子进程</strong>：</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>Storage:~ <span class="c1"># sh -c &#34;sleep 5&#34; &amp;</span>
+<span class="ln">2</span><span class="o">[</span>1<span class="o">]</span> <span class="m">101978</span>
+<span class="ln">3</span>Storage:~ <span class="c1"># ps -o pid,ppid,cmd</span>
+<span class="ln">4</span>PID PPID CMD
+<span class="ln">5</span><span class="m">48673</span> <span class="m">48658</span> -bash
+<span class="ln">6</span><span class="m">101978</span> <span class="m">48673</span> sleep <span class="m">5</span>
+<span class="ln">7</span><span class="m">103012</span> <span class="m">48673</span> ps -o pid,ppid,cmd
+</code></pre></div><h2 id="system的返回值到底是多少">system的返回值到底是多少？</h2>
+<p>使用如下程序对system的返回值进行实验：</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="ln"> 1</span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="ln"> 2</span><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span><span class="ln"> 3</span><span class="cp"></span><span class="kt">void</span> <span class="nf">main</span> <span class="p">()</span>
+<span class="ln"> 4</span><span class="p">{</span>
+<span class="ln"> 5</span>    <span class="kt">int</span> <span class="n">iStatus</span><span class="p">;</span>
+<span class="ln"> 6</span>    <span class="n">iStatus</span> <span class="o">=</span> <span class="n">system</span><span class="p">(</span><span class="s">&#34;sleep 5&#34;</span><span class="p">);</span>
+<span class="ln"> 7</span>    <span class="k">if</span> <span class="p">(</span><span class="n">WIFEXITED</span><span class="p">(</span><span class="n">iStatus</span><span class="p">))</span>
+<span class="ln"> 8</span>    <span class="p">{</span>
+<span class="ln"> 9</span>        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;normal exit code %d ,status %x</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">WEXITSTATUS</span><span class="p">(</span><span class="n">iStatus</span><span class="p">),</span><span class="n">iStatus</span><span class="p">);</span>
+<span class="ln">10</span>    <span class="p">}</span>
+<span class="ln">11</span>
+<span class="ln">12</span>    <span class="k">if</span> <span class="p">(</span><span class="n">WIFSIGNALED</span><span class="p">(</span><span class="n">iStatus</span><span class="p">))</span>
+<span class="ln">13</span>    <span class="p">{</span>
+<span class="ln">14</span>        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;signal code %d ,status %x</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">WTERMSIG</span><span class="p">(</span><span class="n">iStatus</span><span class="p">),</span><span class="n">iStatus</span><span class="p">);</span>
+<span class="ln">15</span>    <span class="p">}</span>
+<span class="ln">16</span><span class="p">}</span>
+</code></pre></div><p>在这个实验程序中，通过<code>system</code>系统调用执行<code>sleep 5</code>，sleep期间通过<code>ctrl+C</code>向main进程发送<code>SIGINT</code>信号，观察会打印出什么。</p>
+<p>按照书中的实验结果，是会打印&quot;normal exit&hellip;&ldquo;的，原因分析：</p>
+<ol>
+<li>收到<code>SIGINT</code>信号的是<code>sleep 5</code>进程，<code>sleep 5</code>进程异常退出时，它的退出值为2；</li>
+<li>但<code>sleep 5</code>的父进程是<code>/bin/sh</code>，而<strong>shell会将子进程的退出码（此处为2）+128作为退出值正常退出（低8位全0）</strong>。</li>
+<li>所以父进程<code>main</code>通过<code>waitpid</code>得到<code>/bin/sh</code>的退出码为130，认为是正常执行退出（低8位全0）。</li>
+</ol>
+<p>然而我的实验结果却是打印&quot;signal code 2&rdquo;。原因如下：</p>
+<p>实际上<code>sleep 2</code>是main函数的子进程，所以，它收到信号退出，main函数通过<code>waitpid</code>得到的子进程退出的状态码就是2了。</p>
+<blockquote>
+<p><strong>waitpid得到的状态码</strong>：<strong>低7位代表信号值，第8位代表是否core，高8位代表exit退出码。由此可见信号最多127种，exit最大值为255</strong>。</p>
+<p>通过<code>WIFEXITED</code>宏判断低七位的信号值是否为0，0为正常退出；通过<code>WEXITSTATUS</code>得到高8位的exit值；否则通过<code>WIFSIGNALED</code>得到低七位的信号值。</p>
+</blockquote>
+]]></content>
+		</item>
+		
+		<item>
+			<title>【问题定位】串口登录失败</title>
+			<link>https://cvvz.github.io/post/arm-login-failed/</link>
+			<pubDate>Fri, 24 May 2019 02:45:41 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/post/arm-login-failed/</guid>
+			<description>问题现象 通过串口无法正常登录ARM设备，shell闪退。 问题分析 首先梳理一下SSH登录和串口登录两种方式的流程： 两种登录方式首先都要经过PA</description>
+			<content type="html"><![CDATA[<h2 id="问题现象">问题现象</h2>
+<p>通过串口无法正常登录ARM设备，shell闪退。</p>
+<h2 id="问题分析">问题分析</h2>
+<p>首先梳理一下SSH登录和串口登录两种方式的流程：</p>
+<figure>
+    <img src="/linux-login.drawio.svg" width="400px"/> 
+</figure>
+
+<ol>
+<li>两种登录方式首先都要经过PAM插件的处理，SSH登录是由SSHD通过子进程的方式启动shell，串口登录则是拉起/bin/login，由/bin/login启动shell替代自己。</li>
+<li>shell启动后，会去执行<code>/etc/profile</code>中的一系列脚本，配置系统环境。</li>
+</ol>
+<p>这里面可能出问题的环节有：PAM插件、/bin/login进程、/bin/bash和/etc/profile。但这个问题的现象是/bin/bash被拉起后，很快又闪退了，因此问题肯定出在/etc/profile脚本中。最后排查发现脚本中限制了串口登录的终端设备名为<code>ttyS0</code>，否则直接退出。但新的ARM设备的串行终端名称是<code>ttyAMA0</code>。</p>
+]]></content>
+		</item>
+		
+		<item>
+			<title>【问题定位】/bin/bash无权限导致SSH登录失败</title>
+			<link>https://cvvz.github.io/post/login-permission-denied/</link>
+			<pubDate>Thu, 23 May 2019 02:21:56 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/post/login-permission-denied/</guid>
+			<description>问题现象 SSH登录主机失败，提示错误：/bin/bash: Permission denied。 分析过程 Linux处理SSH远程登录的流程如下： SSHD进程后台</description>
+			<content type="html"><![CDATA[<h2 id="问题现象">问题现象</h2>
+<p>SSH登录主机失败，提示错误：<code>/bin/bash: Permission denied</code>。</p>
+<h2 id="分析过程">分析过程</h2>
+<p>Linux处理SSH远程登录的流程如下：</p>
+<ol>
+<li>SSHD进程后台监听SSH连接</li>
+<li>当有连接到达时，启动一个子进程，并打开一个伪终端设备（pts）</li>
+<li>从passwd中获得用户id、组id、shell路径等信息，并为打开的子进程设置进程uid、gid等</li>
+<li>通过<code>exec</code>系统调用将子进程替换为登录shell（这里是<code>/bin/bash</code>），shell的0、1、2文件描述符和伪终端相连</li>
+<li>用户通过伪终端和主机通信</li>
+</ol>
+<p>很明显这里的错误原因是因为设置了登陆用户的uid、gid的子进程没有<code>/bin/bash</code>的执行权限导致的，也就是第4步出错。通过<code>strace</code>跟踪sshd进程的系统调用，也印证了这一点：子进程确实是在执行<code>execve(/bin/bash)</code>时报<code>Permission denied</code>。</p>
+<p>继续实验，发现只有非root组内用户登录才会报该错误。因此将一个已登录的root组内用户修改为非root组内用户后，通过<code>strace</code>跟踪其执行<code>/bin/bash</code>的过程，发现是在<code>open</code>某个动态库权限不足。查看该库文件及路径的权限，发现原本应该是<code>755</code>权限的<code>/usr</code>目录变成了<code>750</code>。通过<code>stat</code>命令查看该文件夹被修改的时间点，定位到是设备上电脚本中的一个bug。</p>
 ]]></content>
 		</item>
 		

@@ -108,7 +108,7 @@
     </item>
     
     <item>
-      <title>Celery Worker僵尸进程问题定位记录</title>
+      <title>【问题定位】Celery Worker产生僵尸进程</title>
       <link>https://cvvz.github.io/post/celery-worker-zombie/</link>
       <pubDate>Mon, 30 Mar 2020 10:36:36 +0800</pubDate>
       
@@ -144,6 +144,15 @@
     </item>
     
     <item>
+      <title>【问题定位】异步回调函数造成踩内存</title>
+      <link>https://cvvz.github.io/post/coredump/</link>
+      <pubDate>Thu, 13 Jun 2019 03:54:36 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/coredump/</guid>
+      <description>问题现象 进程概率性coredump 分析过程 分析core文件，堆栈栈顶函数为strncmp，coredump的原因是给strncmp传递的字符</description>
+    </item>
+    
+    <item>
       <title>gdb中的多线程和信号处理</title>
       <link>https://cvvz.github.io/post/gdb-muti-process-and-signal-handle/</link>
       <pubDate>Mon, 10 Jun 2019 11:44:52 +0800</pubDate>
@@ -162,30 +171,21 @@
     </item>
     
     <item>
-      <title>记一次编译错误的解决过程</title>
-      <link>https://cvvz.github.io/post/compile-error/</link>
-      <pubDate>Thu, 01 Nov 2018 20:31:15 +0800</pubDate>
+      <title>system系统调用探秘</title>
+      <link>https://cvvz.github.io/post/system-and-shell/</link>
+      <pubDate>Thu, 30 May 2019 00:28:40 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/post/compile-error/</guid>
-      <description>最近开发新的需求需要使用某个外部模块的库文件，该模块在文档中提供了一个demo，但makefile文件编译报错。通过摸索和学习最终把demo</description>
+      <guid>https://cvvz.github.io/post/system-and-shell/</guid>
+      <description>6月3日更新 新的实验又发现使用/bin/sh和书中行为一致，但使用/bin/bash的行为和本文中的实验一致，看来是不同shell的底层的实</description>
     </item>
     
     <item>
-      <title>动态链接库的版本控制</title>
-      <link>https://cvvz.github.io/post/version-control-of-shared-object/</link>
-      <pubDate>Sat, 20 Oct 2018 21:00:51 +0800</pubDate>
+      <title>【问题定位】串口登录失败</title>
+      <link>https://cvvz.github.io/post/arm-login-failed/</link>
+      <pubDate>Fri, 24 May 2019 02:45:41 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/post/version-control-of-shared-object/</guid>
-      <description>DLL Hell DLL Hell：同一台机器上，运行着A和B两个程序，他们使用了同一个so；程序A在升级时使用新的so直接覆盖老的so，此时可能会造成程序B无</description>
-    </item>
-    
-    <item>
-      <title>关于进程和线程的一些思考</title>
-      <link>https://cvvz.github.io/post/process-and-thread/</link>
-      <pubDate>Sat, 23 Jun 2018 20:34:56 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/process-and-thread/</guid>
-      <description>从“程序”开始 对于UNIX操作系统，程序是存放在磁盘上的ELF文件（可以通过file命令查看文件类型） 对于windows操作系统，程序是存放</description>
+      <guid>https://cvvz.github.io/post/arm-login-failed/</guid>
+      <description>问题现象 通过串口无法正常登录ARM设备，shell闪退。 问题分析 首先梳理一下SSH登录和串口登录两种方式的流程： 两种登录方式首先都要经过PA</description>
     </item>
     
   </channel>
