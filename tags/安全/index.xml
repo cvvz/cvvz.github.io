@@ -9,12 +9,12 @@
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
     <lastBuildDate>Tue, 01 Dec 2020 07:19:06 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/%E5%AE%89%E5%85%A8/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>以aggregated API server的方式部署admission webhook</title>
+      <title>以aggregated apiserver的方式部署admission webhook</title>
       <link>https://cvvz.github.io/post/why-aggregated-api-server-webhook/</link>
       <pubDate>Tue, 01 Dec 2020 07:19:06 +0800</pubDate>
       
       <guid>https://cvvz.github.io/post/why-aggregated-api-server-webhook/</guid>
-      <description>openshift 的 generic-admission-server库 是用来编写admission webhook的lib库，它声称使用该库可以避免为每一个w</description>
+      <description>热身概念：apiserver认证客户端的方式 apiserver为客户端提供三种认证方式： https双向认证（注意是双向认证，例如kubeco</description>
     </item>
     
     <item>
