@@ -6,18 +6,8 @@
 		<generator>Hugo -- gohugo.io</generator>
 		<language>zh-hans</language>
 		<copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-		<lastBuildDate>Sat, 24 Apr 2021 16:37:23 +0800</lastBuildDate>
+		<lastBuildDate>Fri, 23 Apr 2021 16:52:20 +0800</lastBuildDate>
 		<atom:link href="https://cvvz.github.io/post/index.xml" rel="self" type="application/rss+xml" />
-		
-		<item>
-			<title>k8s apply</title>
-			<link>https://cvvz.github.io/post/k8s-apply/</link>
-			<pubDate>Sat, 24 Apr 2021 16:37:23 +0800</pubDate>
-			
-			<guid>https://cvvz.github.io/post/k8s-apply/</guid>
-			<description></description>
-			<content type="html"><![CDATA[]]></content>
-		</item>
 		
 		<item>
 			<title>容器2</title>
@@ -107,46 +97,6 @@
 <h3 id="user-namespace">user namespace</h3>
 <p>尽管容器中 root 用户的 Linux capabilities 已经减少了很多，但是在没有 User Namespace 的情况下，容器中 root 用户和宿主机上的 root 用户的 uid 是完全相同的，没有隔离。一旦有软件的漏洞，容器中的 root 用户就可以操控整个宿主机。</p>
 <p>为了减少安全风险，业界都是建议在容器中以非 root 用户来运行进程。不过在<a href="https://github.com/kubernetes/enhancements/pull/2101">kubernetes目前还不支持 User Namespace</a> 的情况下，在容器中使用非 root 用户的话，对 uid 的管理和分配就比较麻烦了。</p>
-]]></content>
-		</item>
-		
-		<item>
-			<title>kubernetes 核心数据结构</title>
-			<link>https://cvvz.github.io/post/k8s-datastruct/</link>
-			<pubDate>Sat, 13 Mar 2021 16:41:21 +0800</pubDate>
-			
-			<guid>https://cvvz.github.io/post/k8s-datastruct/</guid>
-			<description>api group、version、kind和resource  核心数据结构 apimachinery库 GVR、GVK等数据结构定义的地方：http</description>
-			<content type="html"><![CDATA[<h2 id="api-groupversionkind和resource">api group、version、kind和resource</h2>
-<p></p>
-<h2 id="核心数据结构">核心数据结构</h2>
-<p>apimachinery库
-GVR、GVK等数据结构定义的地方：https://github.com/kubernetes/apimachinery/pkg/runtime/schema</p>
-<p>selfLink</p>
-<p>TypeMeta,ObjectMeta,APIGroup,APIVersions,APIResource等定义的地方：   <a href="https://github.com/kubernetes/apimachinery/pkg/apis/meta/v1">https://github.com/kubernetes/apimachinery/pkg/apis/meta/v1</a></p>
-<p>TypeMeta和ObjectMeta实现了的方法：apimachinery/pkg/apis/meta/v1/meta.go</p>
-<p>ObjectMeta实现了接口metav1.ObjectMetaAccessor和metav1.Object</p>
-<p>TypeMeta实现了GetObjectKind，所有资源对象都实现了DeepCopyObject。深复制相当于将数据结构克隆一份，不与原始对象共享任何内容。</p>
-<p>runtime.Object类型基石，所有类型的基类：https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/runtime/interfaces.go#L299</p>
-<p>metav1.Object（ObjectMeta），记录了资源对象的基本信息，name，namespace等: <a href="https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/apis/meta/v1/meta.go#L33">https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/apis/meta/v1/meta.go#L33</a></p>
-<p>unstructed非结构化数据，这个是DynamicClient处理CRD数据的关键。因为kubernetes无法预先知道CRD的结构定义，</p>
-<p>内部资源版本对象和外部资源版本对象：
-外部资源版本对象（versioned object）-&gt;内部资源版本对象（__internal）-&gt;外部资源版本对象</p>
-<p>k8s.io/api 外部版本对象定义
-k8s.io/kubernetes/pkg/apis 内部版本对象定义
-k8s.io/kubernetes/pkg/apis/{group}/{version} 外部版本对象的资源转换函数、默认值函数定义</p>
-<h2 id="scheme资源注册表">scheme：资源注册表</h2>
-<p>legacyscheme.Scheme是apiserver的全局资源注册表
-通过 runtime.NewSchemes初始化一个新的Scheme资源注册表。比如apiserver的legacyscheme：https://github.com/kubernetes/kubernetes/blob/master/pkg/api/legacyscheme/scheme.go#L30</p>
-<p>客户端的scheme：https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/client-go/kubernetes/scheme/register.go#L71</p>
-<p>服务端和客户端都需要有scheme，充当go types的编解码器</p>
-<p>install.go  register.go  doc.go</p>
-<p>install中调用AddToScheme把内部版本（__internal标识）和外部版本资源对象都注册到scheme中：https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/apps/install/install.go#L36
-资源首选版本</p>
-<p>外部版本的register中通过addKnownTypes把外部版本资源对象（GVK）注册到scheme中：https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/api/apps/v1/register.go#L46</p>
-<p>外部版本还向scheme中注册了addDefaultingFuncs、addConversionFuncs：https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/apps/v1beta1/register.go#L44</p>
-<p>在资源注册表用于映射GVK和Go types，通过AddKnownTypes：https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/api/apps/v1/register.go#L46</p>
-<p>通过AddToGroupVersion 把 GV 注册到scheme中https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/api/apps/v1/register.go#L58</p>
 ]]></content>
 		</item>
 		

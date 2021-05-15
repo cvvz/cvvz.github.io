@@ -7,16 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Sat, 24 Apr 2021 16:37:23 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>k8s apply</title>
-      <link>https://cvvz.github.io/post/k8s-apply/</link>
-      <pubDate>Sat, 24 Apr 2021 16:37:23 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/k8s-apply/</guid>
-      <description></description>
-    </item>
-    
+    <lastBuildDate>Fri, 23 Apr 2021 16:52:20 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>容器2</title>
       <link>https://cvvz.github.io/post/container2/</link>
@@ -24,15 +15,6 @@
       
       <guid>https://cvvz.github.io/post/container2/</guid>
       <description>进程 单进程模型 容器中的1号进程对于宿主机而言就是一个普通的进程，它的父进程是runC，runC的父进程是containerd-shim。这个</description>
-    </item>
-    
-    <item>
-      <title>kubernetes 核心数据结构</title>
-      <link>https://cvvz.github.io/post/k8s-datastruct/</link>
-      <pubDate>Sat, 13 Mar 2021 16:41:21 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/k8s-datastruct/</guid>
-      <description>api group、version、kind和resource  核心数据结构 apimachinery库 GVR、GVK等数据结构定义的地方：http</description>
     </item>
     
     <item>
@@ -186,6 +168,24 @@
       
       <guid>https://cvvz.github.io/post/gdb-muti-process-and-signal-handle/</guid>
       <description>多线程调试 使用GDB调试多线程时，控制程序的执行模式主要分两种：all-stop 模式和 non-stop 模式。 All-Stop 任何一个线程在断点处hang住时，所有其他线</description>
+    </item>
+    
+    <item>
+      <title>解剖进程虚拟内存空间</title>
+      <link>https://cvvz.github.io/post/anatomy-of-a-program-in-memory/</link>
+      <pubDate>Fri, 07 Jun 2019 23:14:03 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/anatomy-of-a-program-in-memory/</guid>
+      <description>对于32位 x86 Linux操作系统，典型的进程地址空间如下图所示： 每一个进程运行在各自独立的虚拟内存空间中，从0x00000000到0xFFFF</description>
+    </item>
+    
+    <item>
+      <title>system系统调用探秘</title>
+      <link>https://cvvz.github.io/post/system-and-shell/</link>
+      <pubDate>Thu, 30 May 2019 00:28:40 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/system-and-shell/</guid>
+      <description>6月3日更新 新的实验又发现使用/bin/sh和书中行为一致，但使用/bin/bash的行为和本文中的实验一致，看来是不同shell的底层的实</description>
     </item>
     
   </channel>
