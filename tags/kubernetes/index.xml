@@ -7,7 +7,25 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Wed, 30 Dec 2020 15:42:01 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 23 Apr 2021 16:52:20 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>容器2</title>
+      <link>https://cvvz.github.io/post/container2/</link>
+      <pubDate>Fri, 23 Apr 2021 16:52:20 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/container2/</guid>
+      <description>进程 单进程模型 容器中的1号进程对于宿主机而言就是一个普通的进程，它的父进程是runC，runC的父进程是containerd-shim。这个</description>
+    </item>
+    
+    <item>
+      <title>kubernetes 核心数据结构</title>
+      <link>https://cvvz.github.io/post/k8s-datastruct/</link>
+      <pubDate>Sat, 13 Mar 2021 16:41:21 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/k8s-datastruct/</guid>
+      <description>api group、version、kind和resource  核心数据结构 apimachinery库 GVR、GVK等数据结构定义的地方：http</description>
+    </item>
+    
     <item>
       <title>kubernetes网络之service</title>
       <link>https://cvvz.github.io/post/k8s-network-service/</link>
@@ -36,12 +54,12 @@
     </item>
     
     <item>
-      <title>容器相关知识汇总</title>
+      <title>容器</title>
       <link>https://cvvz.github.io/post/container/</link>
       <pubDate>Thu, 24 Dec 2020 10:33:00 +0800</pubDate>
       
       <guid>https://cvvz.github.io/post/container/</guid>
-      <description>容器镜像 容器镜像就是容器的rootfs。通过 Dockerfile 制作容器镜像时，就相当于增加 rootfs 层。通过容器镜像运行一个容器时，操作系统内核先将镜像中的每</description>
+      <description>容器镜像 容器镜像就是容器的rootfs。通过 Dockerfile 制作容器镜像时，就相当于增加 rootfs 层。通过容器镜像运行一个容器时，操作系统内核先将镜像中的每一层联</description>
     </item>
     
     <item>
