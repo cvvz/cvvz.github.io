@@ -93,7 +93,8 @@
 <p>在kubernetes中，如果对内核网络参数有特殊需求，可以通过 <a href="https://kubernetes.io/zh/docs/tasks/administer-cluster/sysctl-cluster/#%E8%AE%BE%E7%BD%AE-pod-%E7%9A%84-sysctl-%E5%8F%82%E6%95%B0">设置Pod的sysctl参数</a>，或者在给init container赋予特权，并通过 sysctl 修改内核网络参数。</p>
 <h2 id="安全">安全</h2>
 <h3 id="capability">capability</h3>
-<p>Linux在kernel 2.2之前，只存在root用户和非root用户之分，在2.2之后，将root用户的特权做了更细粒度的划分，每个特权单元称之为<a href="https://man7.org/linux/man-pages/man7/capabilities.7.html">capability</a>。<code>privileged</code>这个参数的意思就是容器拥有所有capability。容器启动时，缺省只有<a href="https://github.com/opencontainers/runc/blob/v1.0.0-rc92/libcontainer/SPEC.md#security">15个capabilities</a>。</p>
+<p>k8s没有对user namespace进行隔离，所以我们在容器里运行的是root用户。但是由于缺省启动容器时，系统只为1号进程开启了 <a href="https://github.com/opencontainers/runc/blob/v1.0.0-rc92/libcontainer/SPEC.md#security">15个capabilities</a>。而通过<code>kubectl exec -- sh</code>进入到容器里，启动的<code>sh</code>进程（<strong>所有命令的父进程</strong>）和容器的1号进程的 capabilities 相同。</p>
+<p>我们可以通过配置容器的 <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.21/#securitycontext-v1-core">SecurityContext</a> 里的<code>capabilities</code>，或者配置容器为<code>privileged</code>。</p>
 <h3 id="user-namespace">user namespace</h3>
 <p>尽管容器中 root 用户的 Linux capabilities 已经减少了很多，但是在没有 User Namespace 的情况下，容器中 root 用户和宿主机上的 root 用户的 uid 是完全相同的，没有隔离。一旦有软件的漏洞，容器中的 root 用户就可以操控整个宿主机。</p>
 <p>为了减少安全风险，业界都是建议在容器中以非 root 用户来运行进程。不过在<a href="https://github.com/kubernetes/enhancements/pull/2101">kubernetes目前还不支持 User Namespace</a> 的情况下，在容器中使用非 root 用户的话，对 uid 的管理和分配就比较麻烦了。</p>
@@ -1966,17 +1967,13 @@
 <p>由于同一进程中的线程共享资源，所以通信非常方便，直接读写同一块用户态内存即可，但是这必然就涉及到互斥和原子性问题。</p>
 <p>而进程要实现通信则需要借助内核和文件，所有的IPC，都是把内核和文件充当交换信息的桥梁。</p>
 <h2 id="上下文切换">上下文切换</h2>
-<blockquote>
-<p>同一进程中的线程上下文切换，简称<strong>线程上下文切换</strong>。</p>
-<p>不同进程中的线程上下文切换，简称<strong>进程上下文切换</strong>。</p>
-</blockquote>
-<p>不管是线程上下文切换，还是进程上下文切换，都会涉及CPU寄存器和程序计数器的保存和更新。<strong>因此都涉及CPU上下文切换</strong>。</p>
-<p>由于线程共享进程中的虚拟内存空间，所以线程上下文切换时，<strong>不需要更新虚拟内存到物理内存的内存映射表</strong>。而进程上下文切换时，则要更新虚拟内存到物理内存的内存映射表。</p>
-<p>当内核找不到虚拟内存到物理内存的映射关系时，便会产生<code>缺页中断</code>。所以<strong>进程上下文切换后，程序执行更容易产生缺页中断</strong>。</p>
+<p>cpu调度基本的单位是线程，所以在运行不同的线程时，会导致<strong>cpu上下文切换</strong>，即CPU寄存器和程序计数器的保存和更新。而根据被调度的线程是同一个进程里的还是不同进程里的，又分为<strong>线程上下文切换</strong>和<strong>进程上下文切换</strong>。</p>
+<p>CPU上下文切换是需要CPU运行内核代码的，所以过多的cpu上下文切换会导致cpu将大量的时间都用来运行内核代码，导致真正的给用户态线程运行的时间变少。所以一般我们会根据机器的核数来决定进程的线程数量或者子进程数量，避免进行频繁的上下文切换。</p>
+<p>由于线程共享进程中的虚拟内存空间，所以线程上下文切换时，<strong>不需要更新虚拟内存到物理内存的内存映射表</strong>。而进程上下文切换时，由于不同进程虚拟内存的改变，则要更新虚拟内存到物理内存的内存映射表。当内核找不到虚拟内存到物理内存的映射关系时，便会产生<code>缺页中断</code>。所以<strong>进程上下文切换后，程序执行更容易产生缺页中断</strong>，这也就是进程切换比线程切换对性能影响更大的原因。</p>
 <h2 id="怎么理解linux中的线程是以进程的方式实现的">怎么理解Linux中的线程是以进程的方式实现的</h2>
 <ul>
 <li>对于支持线程的操作系统而言，如果一个进程中有N个线程，则存在一个进程描述符，依次轮流指向N个线程。这个进程描述符指明共享资源，包括内存空间和打开的文件。而每一个线程描述它们自己独享的资源。也就是说<strong>内核中描述线程的结构体和描述进程的结构体不同</strong>。</li>
-<li>而在Linux中，则有N个<code>task_struct</code>数据结构，只是这些数据结构的某些资源项是共享的，某些是独占的。</li>
+<li>而在Linux中，则有N个<code>task_struct</code>数据结构，只是这些数据结构的某些资源项是共享的（指向同一片内存），某些是独占的。</li>
 </ul>
 ]]></content>
 		</item>
