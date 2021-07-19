@@ -7,16 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Sun, 18 Jul 2021 20:40:19 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>重学设计模式</title>
-      <link>https://cvvz.github.io/post/design-pattern/</link>
-      <pubDate>Sun, 18 Jul 2021 20:40:19 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/design-pattern/</guid>
-      <description>设计模式和设计原则的合理应用非常依赖个人经验，用不好有时候会适得其反。学生时代时学习设计模式觉得枯燥，是因为没有实践经验。要多实践，然后再温</description>
-    </item>
-    
+    <lastBuildDate>Fri, 23 Apr 2021 16:52:20 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>容器2</title>
       <link>https://cvvz.github.io/post/container2/</link>
@@ -186,6 +177,15 @@
       
       <guid>https://cvvz.github.io/post/anatomy-of-a-program-in-memory/</guid>
       <description>对于32位 x86 Linux操作系统，典型的进程地址空间如下图所示： 每一个进程运行在各自独立的虚拟内存空间中，从0x00000000到0xFFFF</description>
+    </item>
+    
+    <item>
+      <title>system系统调用探秘</title>
+      <link>https://cvvz.github.io/post/system-and-shell/</link>
+      <pubDate>Thu, 30 May 2019 00:28:40 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/system-and-shell/</guid>
+      <description>6月3日更新 新的实验又发现使用/bin/sh和书中行为一致，但使用/bin/bash的行为和本文中的实验一致，看来是不同shell的底层的实</description>
     </item>
     
   </channel>
