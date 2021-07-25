@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Fri, 23 Apr 2021 16:52:20 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 25 Jul 2021 08:58:26 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>分布式数据库上k8s面临的困境</title>
+      <link>https://cvvz.github.io/post/the-difficulty-of-distributed-db-on-cloud/</link>
+      <pubDate>Sun, 25 Jul 2021 08:58:26 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/the-difficulty-of-distributed-db-on-cloud/</guid>
+      <description>说点虚的 云原生数据库、算存分离、shared-nothing&amp;hellip; 这些概念性的东西，网上资料一大把，看完以后感觉懂了，但是尝试用自</description>
+    </item>
+    
     <item>
       <title>容器2</title>
       <link>https://cvvz.github.io/post/container2/</link>

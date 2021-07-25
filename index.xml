@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Sun, 18 Jul 2021 20:40:19 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 25 Jul 2021 08:58:26 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>分布式数据库上k8s面临的困境</title>
+      <link>https://cvvz.github.io/post/the-difficulty-of-distributed-db-on-cloud/</link>
+      <pubDate>Sun, 25 Jul 2021 08:58:26 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/the-difficulty-of-distributed-db-on-cloud/</guid>
+      <description>说点虚的 云原生数据库、算存分离、shared-nothing&amp;hellip; 这些概念性的东西，网上资料一大把，看完以后感觉懂了，但是尝试用自</description>
+    </item>
+    
     <item>
       <title>重学设计模式</title>
       <link>https://cvvz.github.io/post/design-pattern/</link>
@@ -122,7 +131,7 @@
       <pubDate>Thu, 29 Oct 2020 17:29:14 +0800</pubDate>
       
       <guid>https://cvvz.github.io/about/</guid>
-      <description>Chen Weizhi@meituan, diving into cloud native, k8s, container, Linux, and Go :)</description>
+      <description>Chen Weizhi@meituan, focusing on CloudNative, Kubernetes, PaaS, Storage, Linux and Go :)</description>
     </item>
     
     <item>
@@ -177,15 +186,6 @@
       
       <guid>https://cvvz.github.io/post/gdb-muti-process-and-signal-handle/</guid>
       <description>多线程调试 使用GDB调试多线程时，控制程序的执行模式主要分两种：all-stop 模式和 non-stop 模式。 All-Stop 任何一个线程在断点处hang住时，所有其他线</description>
-    </item>
-    
-    <item>
-      <title>解剖进程虚拟内存空间</title>
-      <link>https://cvvz.github.io/post/anatomy-of-a-program-in-memory/</link>
-      <pubDate>Fri, 07 Jun 2019 23:14:03 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/anatomy-of-a-program-in-memory/</guid>
-      <description>对于32位 x86 Linux操作系统，典型的进程地址空间如下图所示： 每一个进程运行在各自独立的虚拟内存空间中，从0x00000000到0xFFFF</description>
     </item>
     
   </channel>
