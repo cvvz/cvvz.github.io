@@ -9,8 +9,8 @@
 <meta itemprop="name" content="分布式数据库上k8s面临的困境">
 <meta itemprop="description" content="说点虚的 云原生数据库、算存分离、shared-nothing&hellip; 这些概念性的东西，网上资料一大把，看完以后感觉懂了，但是尝试用自">
 <meta itemprop="datePublished" content="2021-07-25T08:58:26+08:00" />
-<meta itemprop="dateModified" content="2021-07-25T14:22:41+08:00" />
-<meta itemprop="wordCount" content="2037">
+<meta itemprop="dateModified" content="2021-07-25T14:25:13+08:00" />
+<meta itemprop="wordCount" content="2104">
 
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/the-difficulty-of-distributed-db-on-cloud/" />
 <meta property="article:published_time" content="2021-07-25T08:58:26+08:00" />
-<meta property="article:modified_time" content="2021-07-25T14:22:41+08:00" />
+<meta property="article:modified_time" content="2021-07-25T14:25:13+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="分布式数据库上k8s面临的困境"/>
 <meta name="twitter:description" content="说点虚的 云原生数据库、算存分离、shared-nothing&hellip; 这些概念性的东西，网上资料一大把，看完以后感觉懂了，但是尝试用自"/>
@@ -109,6 +109,9 @@
 <li>
 <p>要保证跨AZ高可用，有时可能要做节点迁移。本地盘在做节点迁移时，非常难受，如果用网盘，则只需要umount和mount两个动作。</p>
 </li>
+<li>
+<p>没法利用k8s的自我修复能力。比如节点挂了，你可以通过起一个新的Pod的方式进行修复。但是如果用了本地盘，这个Pod必须调度到原节点。</p>
+</li>
 </ol>
 <h3 id="网盘">网盘<a href="#网盘" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p>在公有云上，使用网盘最大的问题第一是延迟抖动；第二是性能比本地盘要差很多。如何在软件层面克服这种问题是云原生数据库要攻克的难关。</p>
@@ -120,8 +123,8 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/kubernetes">kubernetes</a></span><span class="tag"><a href="https://cvvz.github.io/tags/storage">storage</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2037 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/4988e6c25bc31993da745451b2eba3cf966e8963" target="_blank" rel="noopener">4988e6c</a> @ 2021-07-25</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2104 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/64143a2ba9d4a9f80224d7ad8f1d95f1ddcd277f" target="_blank" rel="noopener">64143a2</a> @ 2021-07-25</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">
