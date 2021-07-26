@@ -9,7 +9,7 @@
 <meta itemprop="name" content="分布式数据库上k8s面临的困境">
 <meta itemprop="description" content="说点虚的 云原生数据库、shared-nothing、算存分离&hellip; 这些概念性的东西，网上资料一大把，看完以后感觉懂了，但是尝试用自">
 <meta itemprop="datePublished" content="2021-07-25T08:58:26+08:00" />
-<meta itemprop="dateModified" content="2021-07-26T10:27:28+08:00" />
+<meta itemprop="dateModified" content="2021-07-26T10:28:44+08:00" />
 <meta itemprop="wordCount" content="2098">
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/the-difficulty-of-distributed-db-on-cloud/" />
 <meta property="article:published_time" content="2021-07-25T08:58:26+08:00" />
-<meta property="article:modified_time" content="2021-07-26T10:27:28+08:00" />
+<meta property="article:modified_time" content="2021-07-26T10:28:44+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="分布式数据库上k8s面临的困境"/>
 <meta name="twitter:description" content="说点虚的 云原生数据库、shared-nothing、算存分离&hellip; 这些概念性的东西，网上资料一大把，看完以后感觉懂了，但是尝试用自"/>
@@ -94,7 +94,7 @@
 <h2 id="搞点实际的">搞点实际的<a href="#搞点实际的" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>分布式数据库上k8s会遇到哪些问题呢？</p>
 <blockquote>
-<p>由于分布式数据库在设计上就不是云原生的，一般比较适合<code>on-primeses</code>部署，而不是部署到云上。</p>
+<p>由于分布式数据库在设计上就不是云原生的，一般比较适合<code>on-primises</code>部署，而不是部署到云上。</p>
 <p><strong>由于使用本地盘，分布式数据库不适合通过k8s进行部署。但是，随着基础设施硬件的不断发展，池化后的资源不会再成为性能瓶颈，所以云原生数据库一定是数据库的未来，现在的分布式数据库也在往云原生数据库的方向演进，到那一天，有状态应用就可以在k8s上发挥它最大的威力</strong>。</p>
 </blockquote>
 <h3 id="本地盘">本地盘<a href="#本地盘" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
@@ -126,7 +126,7 @@
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/kubernetes">kubernetes</a></span><span class="tag"><a href="https://cvvz.github.io/tags/storage">storage</a></span>
 				</p>
 				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2098 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/5e2265e7fb5bcfc238b396fc8c3f1aa2c5afc064" target="_blank" rel="noopener">5e2265e</a> @ 2021-07-26</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/ffbc727d2ebf7a25909afac36578a68732f50695" target="_blank" rel="noopener">ffbc727</a> @ 2021-07-26</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">
