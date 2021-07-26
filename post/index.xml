@@ -15,9 +15,9 @@
 			<pubDate>Sun, 25 Jul 2021 08:58:26 +0800</pubDate>
 			
 			<guid>https://cvvz.github.io/post/the-difficulty-of-distributed-db-on-cloud/</guid>
-			<description>说点虚的 云原生数据库、算存分离、shared-nothing&amp;hellip; 这些概念性的东西，网上资料一大把，看完以后感觉懂了，但是尝试用自</description>
+			<description>说点虚的 云原生数据库、shared-nothing、算存分离&amp;hellip; 这些概念性的东西，网上资料一大把，看完以后感觉懂了，但是尝试用自</description>
 			<content type="html"><![CDATA[<h2 id="说点虚的">说点虚的</h2>
-<p><code>云原生数据库</code>、<code>算存分离</code>、<code>shared-nothing</code>&hellip; 这些概念性的东西，网上资料一大把，看完以后感觉懂了，但是尝试用自己的话复述出来时，又感觉没懂。</p>
+<p><code>云原生数据库</code>、<code>shared-nothing</code>、<code>算存分离</code>&hellip; 这些概念性的东西，网上资料一大把，看完以后感觉懂了，但是尝试用自己的话复述出来时，又感觉没懂。</p>
 <blockquote>
 <p><strong>为什么会有这种感觉呢？我觉得原因在于看完了网上的资料，我知道了what；但是很多资料并没有解释why，所以我无法把知识转变成自己的，也就无法用自己的语言把这些概念解释一遍。只有搞清楚为什么会出现这种设计，才能够消化知识，只知道what的话，只能靠死记硬背才能“掌握”知识。</strong></p>
 </blockquote>
@@ -41,7 +41,7 @@
 <h2 id="搞点实际的">搞点实际的</h2>
 <p>分布式数据库上k8s会遇到哪些问题呢？</p>
 <blockquote>
-<p>由于分布式数据库在设计上就不是云原生的，一般比较适合以<code>on-primeses</code>方式部署在本地，而不是部署到云上。</p>
+<p>由于分布式数据库在设计上就不是云原生的，一般比较适合<code>on-primeses</code>部署，而不是部署到云上。</p>
 <p><strong>由于使用本地盘，分布式数据库不适合通过k8s进行部署。但是，随着基础设施硬件的不断发展，池化后的资源不会再成为性能瓶颈，所以云原生数据库一定是数据库的未来，现在的分布式数据库也在往云原生数据库的方向演进，到那一天，有状态应用就可以在k8s上发挥它最大的威力</strong>。</p>
 </blockquote>
 <h3 id="本地盘">本地盘</h3>
