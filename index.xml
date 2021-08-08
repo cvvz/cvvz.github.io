@@ -18,6 +18,15 @@
     </item>
     
     <item>
+      <title>重学数据结构和算法</title>
+      <link>https://cvvz.github.io/post/data-structure-and-algorithm/</link>
+      <pubDate>Sun, 18 Jul 2021 21:14:55 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/data-structure-and-algorithm/</guid>
+      <description>常见数据结构 数组 C数组访问越界会造成“踩内存”。 很多高级语言都基于基础的数组提供了“容器类”，比如 Java 中的 ArrayList、C++ STL 中的 ve</description>
+    </item>
+    
+    <item>
       <title>重学设计模式</title>
       <link>https://cvvz.github.io/post/design-pattern/</link>
       <pubDate>Sun, 18 Jul 2021 20:40:19 +0800</pubDate>
@@ -177,15 +186,6 @@
       
       <guid>https://cvvz.github.io/post/coredump/</guid>
       <description>问题现象 进程概率性coredump 分析过程 分析core文件，堆栈栈顶函数为strncmp，coredump的原因是给strncmp传递的字符</description>
-    </item>
-    
-    <item>
-      <title>gdb中的多线程和信号处理</title>
-      <link>https://cvvz.github.io/post/gdb-muti-process-and-signal-handle/</link>
-      <pubDate>Mon, 10 Jun 2019 11:44:52 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/gdb-muti-process-and-signal-handle/</guid>
-      <description>多线程调试 使用GDB调试多线程时，控制程序的执行模式主要分两种：all-stop 模式和 non-stop 模式。 All-Stop 任何一个线程在断点处hang住时，所有其他线</description>
     </item>
     
   </channel>

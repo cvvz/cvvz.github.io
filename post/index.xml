@@ -69,6 +69,111 @@
 		</item>
 		
 		<item>
+			<title>重学数据结构和算法</title>
+			<link>https://cvvz.github.io/post/data-structure-and-algorithm/</link>
+			<pubDate>Sun, 18 Jul 2021 21:14:55 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/post/data-structure-and-algorithm/</guid>
+			<description>常见数据结构 数组 C数组访问越界会造成“踩内存”。 很多高级语言都基于基础的数组提供了“容器类”，比如 Java 中的 ArrayList、C++ STL 中的 ve</description>
+			<content type="html"><![CDATA[<h2 id="常见数据结构">常见数据结构</h2>
+<h3 id="数组">数组</h3>
+<p>C数组访问越界会造成“踩内存”。</p>
+<p>很多高级语言都基于基础的数组提供了“容器类”，比如 Java 中的 ArrayList、C++ STL 中的 vector、golang中的slice，“容器类”的优势在于可以动态扩容、插入和删除元素时自动搬移数据，用起来心智负担很低，<strong>在实现算法时更加handy</strong>。</p>
+<h3 id="链表">链表</h3>
+<p><strong>单链表、双链表、循环链表</strong></p>
+<p>技巧：<strong>使用哨兵节点（带头链表）</strong>。这样在插入第一个节点和删除最后一个节点时，就不需要做特殊判断，可以简化实现逻辑</p>
+<blockquote>
+<p>所有高级数据结构都是在数组和链表的基础上衍生出来的。</p>
+</blockquote>
+<h3 id="栈和队列">栈和队列</h3>
+<p>“操作受限”的线性表，只支持两种基本操作：push, pop。</p>
+<p>递归的算法都可以用栈来实现。</p>
+<h3 id="hash表map和hash算法">hash表（map）和hash算法</h3>
+<blockquote>
+<p>一般我们在实现算法时，直接使用了高级语言内置的散列表，比如Java 中的 HashMap，golang中的map数据类型，从而<strong>不需要自己去实现一个散列表（设计散列函数，将key映射为数组的下标，解决散列冲突）</strong>。</p>
+</blockquote>
+<ol>
+<li>
+<p>hash表来源于<strong>数组</strong>，借助<strong>散列函数</strong>对数组这种数据结构进行扩展，也就是将key映射为数组下标index。</p>
+</li>
+<li>
+<p>将key转化为数组下标的方法称为<strong>散列函数</strong>，散列函数的计算结果称为<strong>hash值</strong>。然后将数据存储在<strong>hash值</strong>对应的<strong>数组下标</strong>位置。</p>
+</li>
+</ol>
+<p>实现hash表所使用的哈希算法要求执行<strong>速度快</strong>，并不是很在乎<strong>安全性</strong>（是否能反向推导出原始数据）。所以不会使用业界著名的MD5、SHA256等<strong>用于加密的哈希算法</strong>。</p>
+<h3 id="树">树</h3>
+<h4 id="二叉树">二叉树</h4>
+<blockquote>
+<p><strong>前序遍历、中序遍历、后序遍历</strong>：前中后指的是当前节点和左右子树谁先打印。</p>
+</blockquote>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> 完全二叉树和满二叉树可以用<strong>数组存储</strong></li>
+<li>二叉查找树：二叉查找树在频繁的动态更新过程中，可能会出现树的高度远大于 log2n 的情况，从而导致各个操作的效率下降。<strong>极端情况下，二叉树会退化为链表</strong>，时间复杂度会退化到 O(n)。所以又发明了<strong>平衡二叉查找树</strong>。
+<blockquote>
+<p>“平衡”的意思，其实就是让整棵树左右看起来比较“对称”、比较“平衡”，不要出现左子树很高、右子树很矮的情况。这样就能让整棵树的高度相对来说低一些，相应的插入、删除、查找等操作的效率高一些。</p>
+</blockquote>
+</li>
+<li>红黑树</li>
+</ul>
+<h4 id="堆优先级队列httpsleetcode-cncomtagheap-priority-queueproblemset"><a href="https://leetcode-cn.com/tag/heap-priority-queue/problemset/">堆（优先级队列）</a></h4>
+<p>堆就是一种完全二叉树，<strong>最常用的存储方式是数组</strong>。堆可以看作<strong>优先级队列</strong>。</p>
+<h3 id="图">图</h3>
+<p><strong>度（degree）</strong>：in-degree、out-degree</p>
+<p><strong>数据结构（存储方法）</strong>：</p>
+<ul>
+<li>邻接矩阵</li>
+<li>邻接表</li>
+</ul>
+<blockquote>
+<p><strong>面试的时候更多的是把二叉树和图结合起来考察，所以会用二叉树（链表）来表示图</strong></p>
+</blockquote>
+<p><strong>图的搜索算法</strong>：BFS、DFS</p>
+<h2 id="常见算法">常见算法</h2>
+<h3 id="排序">排序</h3>
+<p><strong>冒泡排序、插入排序、选择排序</strong>：这三种排序算法，实现代码都非常简单，对于<strong>小规模数据的排序</strong>，用起来非常高效。但是在<strong>大规模数据排序</strong>的时候，更倾向于用时间复杂度为 O(nlogn) 的排序算法。</p>
+<p><strong>归并排序</strong>和<strong>快速排序</strong>：归并排序和快速排序都用到了<strong>分治思想</strong>，非常巧妙。我们可以借鉴这个思想，来解决非排序的问题，比如：<a href="https://leetcode-cn.com/problems/kth-largest-element-in-an-array/">如何在 O(n) 的时间复杂度内查找一个无序数组中的第 K 大元素？</a></p>
+<p><strong>堆排序</strong>：<a href="https://time.geekbang.org/column/article/70187">假设现在有一个包含 10 亿个搜索关键词的日志文件，如何快速获取到 Top 10 最热门的搜索关键词？</a></p>
+<blockquote>
+<p>10亿个单词无法直接放进内存。这个问题涉及到哈希表、哈希算法、分治、堆排序等要素。</p>
+</blockquote>
+<h3 id="搜索">搜索</h3>
+<blockquote>
+<p>算法是作用于具体数据结构之上的，深度优先搜索算法和广度优先搜索算法都是基于“图”这种数据结构的</p>
+</blockquote>
+<h4 id="广度优先搜索">广度优先搜索</h4>
+<p>通俗的理解就是，地毯式层层推进，从起始顶点开始，依次往外遍历。广度优先搜索需要借助<strong>队列</strong>来实现，遍历得到的路径就是，起始顶点到终止顶点的最短路径。</p>
+<h4 id="深度优先搜索">深度优先搜索</h4>
+<p>用的是回溯思想，非常适合用递归实现。换种说法，深度优先搜索是借助<strong>栈</strong>来实现的。</p>
+<h3 id="二分查找">二分查找</h3>
+<p>二分查找的<strong>三个容易出错的地方</strong>：</p>
+<ul>
+<li>循环退出条件</li>
+<li>mid 的取值可能越界</li>
+<li>low 和 high 的更新。</li>
+</ul>
+<p>二分查找可以用递归实现。</p>
+<h2 id="基本算法思想">基本算法思想</h2>
+<h3 id="贪心httpsleetcode-cncomtaggreedyproblemset"><a href="https://leetcode-cn.com/tag/greedy/problemset/">贪心</a></h3>
+<blockquote>
+<p>严格地证明贪心算法的正确性，是非常复杂的，需要涉及比较多的数学推理。而且，从实践的角度来说，大部分能用贪心算法解决的问题，贪心算法的正确性都是显而易见的，也不需要严格的数学推导证明。</p>
+</blockquote>
+<h3 id="分治httpsleetcode-cncomtagdivide-and-conquerproblemset"><a href="https://leetcode-cn.com/tag/divide-and-conquer/problemset/">分治</a></h3>
+<blockquote>
+<p>分治经常用在海量数据处理的场景下，内存无法直接装载全部数据，就将数据分批装载进内存处理，再将结果进行合并。（给1TB的订单排序）</p>
+<p>要判断清楚数据规模是不是可以直接装载进内存，比如：10亿个整数 = 80亿Byte( int=64bit ) ≈（不足）8GB，这个时候要考虑单机的实际可用内存大小是否可以直接装载8GB。</p>
+</blockquote>
+<h3 id="动态规划httpsleetcode-cncomtagdynamic-programmingproblemset"><a href="https://leetcode-cn.com/tag/dynamic-programming/problemset/">动态规划</a></h3>
+<blockquote>
+<p>DP的主要学习难点跟递归类似，那就是，求解问题的过程不太符合人类常规的思维方式。</p>
+</blockquote>
+<h3 id="回溯httpsleetcode-cncomtagbacktrackingproblemset"><a href="https://leetcode-cn.com/tag/backtracking/problemset/">回溯</a></h3>
+<blockquote>
+<p>DFS利用的就是回溯算法思想。</p>
+</blockquote>
+]]></content>
+		</item>
+		
+		<item>
 			<title>重学设计模式</title>
 			<link>https://cvvz.github.io/post/design-pattern/</link>
 			<pubDate>Sun, 18 Jul 2021 20:40:19 +0800</pubDate>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="google-site-verification" content="Wp3QtEkIlF0ZvtKx90lPmoXyH39d-pmBhiTyTbba9L4" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta itemprop="name" content="重学数据结构和算法">
+<meta itemprop="description" content="常见数据结构 数组 C数组访问越界会造成“踩内存”。 很多高级语言都基于基础的数组提供了“容器类”，比如 Java 中的 ArrayList、C&#43;&#43; STL 中的 ve">
+<meta itemprop="datePublished" content="2021-07-18T21:14:55+08:00" />
+<meta itemprop="dateModified" content="2021-08-08T11:37:43+08:00" />
+<meta itemprop="wordCount" content="1783">
+
+
+
+<meta itemprop="keywords" content="coding,golang," />
+<meta property="og:title" content="重学数据结构和算法" />
+<meta property="og:description" content="常见数据结构 数组 C数组访问越界会造成“踩内存”。 很多高级语言都基于基础的数组提供了“容器类”，比如 Java 中的 ArrayList、C&#43;&#43; STL 中的 ve" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://cvvz.github.io/post/data-structure-and-algorithm/" />
+<meta property="article:published_time" content="2021-07-18T21:14:55+08:00" />
+<meta property="article:modified_time" content="2021-08-08T11:37:43+08:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="重学数据结构和算法"/>
+<meta name="twitter:description" content="常见数据结构 数组 C数组访问越界会造成“踩内存”。 很多高级语言都基于基础的数组提供了“容器类”，比如 Java 中的 ArrayList、C&#43;&#43; STL 中的 ve"/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>重学数据结构和算法</title>
+	<link rel="stylesheet" href="https://cvvz.github.io/css/style.min.7a1ec200e9f3394f73c6eda58011808507a3b24318de81e1e343f22a2470caef.css">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp faster">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://cvvz.github.io">Vic&#39;s Blog</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					<a href="https://cvvz.github.io/post/">文章</a>
+					<a href="https://cvvz.github.io/about/">关于</a>
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<button id="toc-btn" class="hdr-btn desktop-only-ib" title="目录"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-list"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3" y2="6"></line><line x1="3" y1="12" x2="3" y2="12"></line><line x1="3" y1="18" x2="3" y2="18"></line></svg></button><span class="hdr-social hide-in-mobile"><a href="https://github.com/cvvz" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="mailto:ftdchenwz@gmail.com" target="_blank" rel="noopener me" title="Email"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a></span><button id="menu-btn" class="hdr-btn" title="菜单"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://cvvz.github.io/post/">文章</a></li>
+			<li><a href="https://cvvz.github.io/about/">关于</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<h1>重学数据结构和算法</h1>
+			</header>
+			<div class="content">
+				<h2 id="常见数据结构">常见数据结构<a href="#常见数据结构" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<h3 id="数组">数组<a href="#数组" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>C数组访问越界会造成“踩内存”。</p>
+<p>很多高级语言都基于基础的数组提供了“容器类”，比如 Java 中的 ArrayList、C++ STL 中的 vector、golang中的slice，“容器类”的优势在于可以动态扩容、插入和删除元素时自动搬移数据，用起来心智负担很低，<strong>在实现算法时更加handy</strong>。</p>
+<h3 id="链表">链表<a href="#链表" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p><strong>单链表、双链表、循环链表</strong></p>
+<p>技巧：<strong>使用哨兵节点（带头链表）</strong>。这样在插入第一个节点和删除最后一个节点时，就不需要做特殊判断，可以简化实现逻辑</p>
+<blockquote>
+<p>所有高级数据结构都是在数组和链表的基础上衍生出来的。</p>
+</blockquote>
+<h3 id="栈和队列">栈和队列<a href="#栈和队列" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>“操作受限”的线性表，只支持两种基本操作：push, pop。</p>
+<p>递归的算法都可以用栈来实现。</p>
+<h3 id="hash表map和hash算法">hash表（map）和hash算法<a href="#hash表map和hash算法" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<blockquote>
+<p>一般我们在实现算法时，直接使用了高级语言内置的散列表，比如Java 中的 HashMap，golang中的map数据类型，从而<strong>不需要自己去实现一个散列表（设计散列函数，将key映射为数组的下标，解决散列冲突）</strong>。</p>
+</blockquote>
+<ol>
+<li>
+<p>hash表来源于<strong>数组</strong>，借助<strong>散列函数</strong>对数组这种数据结构进行扩展，也就是将key映射为数组下标index。</p>
+</li>
+<li>
+<p>将key转化为数组下标的方法称为<strong>散列函数</strong>，散列函数的计算结果称为<strong>hash值</strong>。然后将数据存储在<strong>hash值</strong>对应的<strong>数组下标</strong>位置。</p>
+</li>
+</ol>
+<p>实现hash表所使用的哈希算法要求执行<strong>速度快</strong>，并不是很在乎<strong>安全性</strong>（是否能反向推导出原始数据）。所以不会使用业界著名的MD5、SHA256等<strong>用于加密的哈希算法</strong>。</p>
+<h3 id="树">树<a href="#树" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<h4 id="二叉树">二叉树<a href="#二叉树" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
+<blockquote>
+<p><strong>前序遍历、中序遍历、后序遍历</strong>：前中后指的是当前节点和左右子树谁先打印。</p>
+</blockquote>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> 完全二叉树和满二叉树可以用<strong>数组存储</strong></li>
+<li>二叉查找树：二叉查找树在频繁的动态更新过程中，可能会出现树的高度远大于 log2n 的情况，从而导致各个操作的效率下降。<strong>极端情况下，二叉树会退化为链表</strong>，时间复杂度会退化到 O(n)。所以又发明了<strong>平衡二叉查找树</strong>。
+<blockquote>
+<p>“平衡”的意思，其实就是让整棵树左右看起来比较“对称”、比较“平衡”，不要出现左子树很高、右子树很矮的情况。这样就能让整棵树的高度相对来说低一些，相应的插入、删除、查找等操作的效率高一些。</p>
+</blockquote>
+</li>
+<li>红黑树</li>
+</ul>
+<h4 id="堆优先级队列httpsleetcode-cncomtagheap-priority-queueproblemset"><a href="https://leetcode-cn.com/tag/heap-priority-queue/problemset/">堆（优先级队列）</a><a href="#堆优先级队列httpsleetcode-cncomtagheap-priority-queueproblemset" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
+<p>堆就是一种完全二叉树，<strong>最常用的存储方式是数组</strong>。堆可以看作<strong>优先级队列</strong>。</p>
+<h3 id="图">图<a href="#图" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p><strong>度（degree）</strong>：in-degree、out-degree</p>
+<p><strong>数据结构（存储方法）</strong>：</p>
+<ul>
+<li>邻接矩阵</li>
+<li>邻接表</li>
+</ul>
+<blockquote>
+<p><strong>面试的时候更多的是把二叉树和图结合起来考察，所以会用二叉树（链表）来表示图</strong></p>
+</blockquote>
+<p><strong>图的搜索算法</strong>：BFS、DFS</p>
+<h2 id="常见算法">常见算法<a href="#常见算法" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<h3 id="排序">排序<a href="#排序" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p><strong>冒泡排序、插入排序、选择排序</strong>：这三种排序算法，实现代码都非常简单，对于<strong>小规模数据的排序</strong>，用起来非常高效。但是在<strong>大规模数据排序</strong>的时候，更倾向于用时间复杂度为 O(nlogn) 的排序算法。</p>
+<p><strong>归并排序</strong>和<strong>快速排序</strong>：归并排序和快速排序都用到了<strong>分治思想</strong>，非常巧妙。我们可以借鉴这个思想，来解决非排序的问题，比如：<a href="https://leetcode-cn.com/problems/kth-largest-element-in-an-array/">如何在 O(n) 的时间复杂度内查找一个无序数组中的第 K 大元素？</a></p>
+<p><strong>堆排序</strong>：<a href="https://time.geekbang.org/column/article/70187">假设现在有一个包含 10 亿个搜索关键词的日志文件，如何快速获取到 Top 10 最热门的搜索关键词？</a></p>
+<blockquote>
+<p>10亿个单词无法直接放进内存。这个问题涉及到哈希表、哈希算法、分治、堆排序等要素。</p>
+</blockquote>
+<h3 id="搜索">搜索<a href="#搜索" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<blockquote>
+<p>算法是作用于具体数据结构之上的，深度优先搜索算法和广度优先搜索算法都是基于“图”这种数据结构的</p>
+</blockquote>
+<h4 id="广度优先搜索">广度优先搜索<a href="#广度优先搜索" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
+<p>通俗的理解就是，地毯式层层推进，从起始顶点开始，依次往外遍历。广度优先搜索需要借助<strong>队列</strong>来实现，遍历得到的路径就是，起始顶点到终止顶点的最短路径。</p>
+<h4 id="深度优先搜索">深度优先搜索<a href="#深度优先搜索" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
+<p>用的是回溯思想，非常适合用递归实现。换种说法，深度优先搜索是借助<strong>栈</strong>来实现的。</p>
+<h3 id="二分查找">二分查找<a href="#二分查找" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>二分查找的<strong>三个容易出错的地方</strong>：</p>
+<ul>
+<li>循环退出条件</li>
+<li>mid 的取值可能越界</li>
+<li>low 和 high 的更新。</li>
+</ul>
+<p>二分查找可以用递归实现。</p>
+<h2 id="基本算法思想">基本算法思想<a href="#基本算法思想" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<h3 id="贪心httpsleetcode-cncomtaggreedyproblemset"><a href="https://leetcode-cn.com/tag/greedy/problemset/">贪心</a><a href="#贪心httpsleetcode-cncomtaggreedyproblemset" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<blockquote>
+<p>严格地证明贪心算法的正确性，是非常复杂的，需要涉及比较多的数学推理。而且，从实践的角度来说，大部分能用贪心算法解决的问题，贪心算法的正确性都是显而易见的，也不需要严格的数学推导证明。</p>
+</blockquote>
+<h3 id="分治httpsleetcode-cncomtagdivide-and-conquerproblemset"><a href="https://leetcode-cn.com/tag/divide-and-conquer/problemset/">分治</a><a href="#分治httpsleetcode-cncomtagdivide-and-conquerproblemset" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<blockquote>
+<p>分治经常用在海量数据处理的场景下，内存无法直接装载全部数据，就将数据分批装载进内存处理，再将结果进行合并。（给1TB的订单排序）</p>
+<p>要判断清楚数据规模是不是可以直接装载进内存，比如：10亿个整数 = 80亿Byte( int=64bit ) ≈（不足）8GB，这个时候要考虑单机的实际可用内存大小是否可以直接装载8GB。</p>
+</blockquote>
+<h3 id="动态规划httpsleetcode-cncomtagdynamic-programmingproblemset"><a href="https://leetcode-cn.com/tag/dynamic-programming/problemset/">动态规划</a><a href="#动态规划httpsleetcode-cncomtagdynamic-programmingproblemset" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<blockquote>
+<p>DP的主要学习难点跟递归类似，那就是，求解问题的过程不太符合人类常规的思维方式。</p>
+</blockquote>
+<h3 id="回溯httpsleetcode-cncomtagbacktrackingproblemset"><a href="https://leetcode-cn.com/tag/backtracking/problemset/">回溯</a><a href="#回溯httpsleetcode-cncomtagbacktrackingproblemset" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<blockquote>
+<p>DFS利用的就是回溯算法思想。</p>
+</blockquote>
+
+			</div>
+			<hr class="post-end">
+			<footer class="post-info">
+				<p>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/coding">coding</a></span><span class="tag"><a href="https://cvvz.github.io/tags/golang">golang</a></span>
+				</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1783 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/a8a65c57a4c3c5d4fdfa641ed29ef6bcfeddf41d" target="_blank" rel="noopener">a8a65c5</a> @ 2021-08-08</p>
+			</footer>
+		</article>
+		<aside id="toc" class="show-toc">
+			<div class="toc-title">目录</div>
+			<nav id="TableOfContents">
+  <ul>
+    <li><a href="#常见数据结构">常见数据结构</a>
+      <ul>
+        <li><a href="#数组">数组</a></li>
+        <li><a href="#链表">链表</a></li>
+        <li><a href="#栈和队列">栈和队列</a></li>
+        <li><a href="#hash表map和hash算法">hash表（map）和hash算法</a></li>
+        <li><a href="#树">树</a></li>
+        <li><a href="#图">图</a></li>
+      </ul>
+    </li>
+    <li><a href="#常见算法">常见算法</a>
+      <ul>
+        <li><a href="#排序">排序</a></li>
+        <li><a href="#搜索">搜索</a></li>
+        <li><a href="#二分查找">二分查找</a></li>
+      </ul>
+    </li>
+    <li><a href="#基本算法思想">基本算法思想</a>
+      <ul>
+        <li><a href="#贪心httpsleetcode-cncomtaggreedyproblemset"><a href="https://leetcode-cn.com/tag/greedy/problemset/">贪心</a></a></li>
+        <li><a href="#分治httpsleetcode-cncomtagdivide-and-conquerproblemset"><a href="https://leetcode-cn.com/tag/divide-and-conquer/problemset/">分治</a></a></li>
+        <li><a href="#动态规划httpsleetcode-cncomtagdynamic-programmingproblemset"><a href="https://leetcode-cn.com/tag/dynamic-programming/problemset/">动态规划</a></a></li>
+        <li><a href="#回溯httpsleetcode-cncomtagbacktrackingproblemset"><a href="https://leetcode-cn.com/tag/backtracking/problemset/">回溯</a></a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+		</aside>
+		<div class="post-nav thin">
+			<a class="next-post" href="https://cvvz.github.io/post/the-difficulty-of-distributed-db-on-cloud/">
+				<span class="post-nav-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>&nbsp;新</span><br><span>分布式数据库上k8s面临的困境</span>
+			</a>
+			<a class="prev-post" href="https://cvvz.github.io/post/design-pattern/">
+				<span class="post-nav-label">旧&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>重学设计模式</span>
+			</a>
+		</div>
+		<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+		<div id="gitalk-container" class="thin"></div>     
+		<script type="text/javascript">
+			var gitalk = new Gitalk({
+				clientID: '0f8bdcbe6b4973f9b206',
+				clientSecret: '4939e64d59c93fc5eb7eaf74469a746e4535700d',
+				repo: 'cvvz.github.io',
+				owner: 'cvvz',
+				admin: ['cvvz'],
+				id: location.pathname,      
+				distractionFreeMode: true 
+			});
+  			gitalk.render('gitalk-container');
+		</script>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2021 <a href="https://cvvz.github.io">陈维志</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://cvvz.github.io/post/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+	<script src="https://cvvz.github.io/js/main.min.784417f5847151f848c339cf0acb13a06cbb648b1483435a28ed4556c4ead69b.js"></script>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-M8Q3DKDEVL', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>
