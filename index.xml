@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Sun, 25 Jul 2021 08:58:26 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 15 Sep 2021 19:58:55 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>okr工作法</title>
+      <link>https://cvvz.github.io/read/okr/</link>
+      <pubDate>Wed, 15 Sep 2021 19:58:55 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/read/okr/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>分布式数据库上k8s面临的困境</title>
       <link>https://cvvz.github.io/post/the-difficulty-of-distributed-db-on-cloud/</link>
@@ -140,7 +149,7 @@
       <pubDate>Thu, 29 Oct 2020 17:29:14 +0800</pubDate>
       
       <guid>https://cvvz.github.io/about/</guid>
-      <description>Chen Weizhi@meituan, focusing on CloudNative, Kubernetes, PaaS, Storage, Linux and Go :)</description>
+      <description>hi，欢迎！我叫陈维志，这里是我写技术日志和读书笔记的地方，有什么问题欢迎你在文章下面留言，或者加我微信一起讨论：</description>
     </item>
     
     <item>
@@ -177,15 +186,6 @@
       
       <guid>https://cvvz.github.io/post/smtp-with-tls/</guid>
       <description>背景：某进程调用 libcurl 提供的 curl_easy_perform 接口与邮箱服务器进行smtp通信时，服务端返回56(CURLE_RECV_ERROR)错误。由于服务端日志信息不足</description>
-    </item>
-    
-    <item>
-      <title>【问题定位】异步回调函数造成踩内存</title>
-      <link>https://cvvz.github.io/post/coredump/</link>
-      <pubDate>Thu, 13 Jun 2019 03:54:36 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/coredump/</guid>
-      <description>问题现象 进程概率性coredump 分析过程 分析core文件，堆栈栈顶函数为strncmp，coredump的原因是给strncmp传递的字符</description>
     </item>
     
   </channel>
