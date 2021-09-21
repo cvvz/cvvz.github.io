@@ -127,18 +127,27 @@
 </li>
 <li>红黑树</li>
 </ul>
-<h4 id="堆优先级队列httpsleetcode-cncomtagheap-priority-queueproblemset"><a href="https://leetcode-cn.com/tag/heap-priority-queue/problemset/">堆（优先级队列）</a></h4>
-<p>堆的核心操作：</p>
+<h4 id="堆httpsleetcode-cncomtagheap-priority-queueproblemset"><a href="https://leetcode-cn.com/tag/heap-priority-queue/problemset/">堆</a></h4>
+<p><strong>堆的核心操作：</strong></p>
 <ol>
 <li>往堆尾部插入一个元素（<strong>从下往上</strong>堆化（heapify））</li>
 <li>删除堆顶元素，并重新堆化（<strong>从上往下</strong>）</li>
 </ol>
 <p><a href="https://time.geekbang.org/column/article/70187"><strong>堆的应用</strong></a>:</p>
 <ol>
+<li>优先级队列
+<ol>
 <li>合并有序小文件</li>
 <li>定时器</li>
-<li><a href="https://leetcode-cn.com/problems/find-median-from-data-stream/">数据流的中位数</a>、99线</li>
-<li>TopK问题</li>
+</ol>
+</li>
+<li><a href="https://leetcode-cn.com/problems/find-median-from-data-stream/">数据流的中位数</a>、99线问题</li>
+<li>TopK问题
+<ol>
+<li><a href="https://leetcode-cn.com/problems/kth-largest-element-in-an-array/">静态topK</a></li>
+<li><a href="https://leetcode-cn.com/problems/kth-largest-element-in-a-stream/">动态topK</a></li>
+</ol>
+</li>
 </ol>
 <h3 id="图">图</h3>
 <p><strong>度（degree）</strong>：in-degree、out-degree</p>
