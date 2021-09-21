@@ -129,9 +129,21 @@
 </ul>
 <h4 id="堆httpsleetcode-cncomtagheap-priority-queueproblemset"><a href="https://leetcode-cn.com/tag/heap-priority-queue/problemset/">堆</a></h4>
 <p><strong>堆的核心操作：</strong></p>
+<ol start="0">
+<li>核心中的核心：堆化（heapify）
 <ol>
-<li>往堆尾部插入一个元素（<strong>从下往上</strong>堆化（heapify））</li>
-<li>删除堆顶元素，并重新堆化（<strong>从上往下</strong>）</li>
+<li><strong>从上往下</strong></li>
+<li><strong>从下往上</strong></li>
+</ol>
+</li>
+<li>交换堆顶和堆尾，并进行从上往下堆化</li>
+<li>插入堆尾，并进行从下往上堆化</li>
+<li>建堆
+<ol>
+<li>从上往下堆化</li>
+<li>从下往上堆化</li>
+</ol>
+</li>
 </ol>
 <p><a href="https://time.geekbang.org/column/article/70187"><strong>堆的应用</strong></a>:</p>
 <ol>
@@ -166,9 +178,17 @@
 <p><strong>归并排序</strong>和<strong>快速排序</strong>：<strong>分治</strong>。我们可以借鉴快排的思想，来解决非排序的问题，比如<a href="https://leetcode-cn.com/problems/kth-largest-element-in-an-array/">静态topK</a>问题。</p>
 <p><strong>堆排序</strong>：步骤分为</p>
 <ol>
-<li>建堆：堆化</li>
-<li>排序：不断删除堆顶元素 + 重新堆化</li>
+<li>建堆：堆化
+<ol>
+<li>方法一：<strong>从第一个非叶子结点开始</strong>，依次执行从上往下堆化</li>
+<li>方法二：不断插入尾部，并对新插入节点执行从下往上堆化</li>
 </ol>
+</li>
+<li>调整：不断交换堆顶和堆尾元素 + 重新堆化</li>
+</ol>
+<blockquote>
+<p><strong>注意，在做堆排序时，由于调整这一步是从上往下堆化，所以建堆时最好用方法一，这样heapify函数才能复用。</strong></p>
+</blockquote>
 <h3 id="搜索">搜索</h3>
 <blockquote>
 <p>算法是作用于具体数据结构之上的，深度优先搜索算法和广度优先搜索算法都是基于“图”这种数据结构的</p>
