@@ -88,27 +88,39 @@
 <h3 id="栈和队列">栈和队列</h3>
 <p>“操作受限”的线性表，只支持两种基本操作：push, pop。</p>
 <p>递归的算法都可以用栈来实现。</p>
-<h3 id="hash表map和hash算法">hash表（map）和hash算法</h3>
+<h3 id="hash表">hash表</h3>
 <blockquote>
-<p>一般我们在实现算法时，直接使用了高级语言内置的散列表，比如Java 中的 HashMap，golang中的map数据类型，从而<strong>不需要自己去实现一个散列表（设计散列函数，将key映射为数组的下标，解决散列冲突）</strong>。</p>
+<p>高级语言内置了hash表，比如Java 中的 HashMap，golang中的map数据类型。</p>
 </blockquote>
 <ol>
 <li>
 <p>hash表来源于<strong>数组</strong>，借助<strong>散列函数</strong>对数组这种数据结构进行扩展，也就是将key映射为数组下标index。</p>
 </li>
 <li>
-<p>将key转化为数组下标的方法称为<strong>散列函数</strong>，散列函数的计算结果称为<strong>hash值</strong>。然后将数据存储在<strong>hash值</strong>对应的<strong>数组下标</strong>位置。</p>
+<p>将key转化为数组下标的方法称为<strong>散列函数</strong>，散列函数的计算结果称为<strong>hash值</strong>。数据存储在<strong>hash值</strong>对应的<strong>数组下标</strong>位置。</p>
 </li>
 </ol>
-<p>实现hash表所使用的哈希算法要求执行<strong>速度快</strong>，并不是很在乎<strong>安全性</strong>（是否能反向推导出原始数据）。所以不会使用业界著名的MD5、SHA256等<strong>用于加密的哈希算法</strong>。</p>
+<blockquote>
+<p>实现hash表所使用的hash算法要求执行<strong>速度快</strong>，值是否能<strong>平均分布</strong>在各个槽中（比如简单的取模算法）。并不是很在乎<strong>安全性</strong>（是否能反向解密出原始数据）和<strong>hash冲突</strong>（哈希值相同）。所以不会使用复杂的哈希算法（比如MD5、SHA256等<strong>用于加密的哈希算法</strong>）。</p>
+</blockquote>
+<h3 id="hash算法">hash算法</h3>
+<p><strong>hash算法在hash表中的应用就是散列函数。</strong></p>
+<p><a href="https://time.geekbang.org/column/article/67388">在分布式系统中的应用</a>：</p>
+<ol>
+<li>负载均衡</li>
+<li>数据分片</li>
+<li>分布式存储（<strong>一致性哈希</strong>）</li>
+</ol>
+<blockquote>
+<p>取模似乎是用的最多的一种哈希算法。MD5、SHA256等哈希算法，一般会用在把一个大的二进制文件转换为一个唯一的二进制数值。</p>
+</blockquote>
 <h3 id="树">树</h3>
 <h4 id="二叉树">二叉树</h4>
-<blockquote>
-<p><strong>前序遍历、中序遍历、后序遍历</strong>：前中后指的是当前节点和左右子树谁先打印。</p>
-</blockquote>
 <ul>
-<li><input checked="" disabled="" type="checkbox"> 完全二叉树和满二叉树可以用<strong>数组存储</strong></li>
-<li>二叉查找树：二叉查找树在频繁的动态更新过程中，可能会出现树的高度远大于 log2n 的情况，从而导致各个操作的效率下降。<strong>极端情况下，二叉树会退化为链表</strong>，时间复杂度会退化到 O(n)。所以又发明了<strong>平衡二叉查找树</strong>。
+<li>二叉树的遍历：<strong>前中后指的是当前节点和左右子树谁先打印</strong></li>
+<li>完全二叉树和满二叉树：可以用<strong>数组存储</strong></li>
+<li>二叉查找树：<strong>和有序数组的二分查找类比记忆</strong></li>
+<li>平衡二叉查找树：二叉查找树在频繁的动态更新过程中，可能会出现树的高度远大于 log2n 的情况，从而导致各个操作的效率下降。<strong>极端情况下，二叉树会退化为链表</strong>，时间复杂度会退化到 O(n)。所以又发明了<strong>平衡二叉查找树</strong>。
 <blockquote>
 <p>“平衡”的意思，其实就是让整棵树左右看起来比较“对称”、比较“平衡”，不要出现左子树很高、右子树很矮的情况。这样就能让整棵树的高度相对来说低一些，相应的插入、删除、查找等操作的效率高一些。</p>
 </blockquote>
@@ -116,7 +128,14 @@
 <li>红黑树</li>
 </ul>
 <h4 id="堆优先级队列httpsleetcode-cncomtagheap-priority-queueproblemset"><a href="https://leetcode-cn.com/tag/heap-priority-queue/problemset/">堆（优先级队列）</a></h4>
-<p>堆就是一种完全二叉树，<strong>最常用的存储方式是数组</strong>。堆可以看作<strong>优先级队列</strong>。</p>
+<p>堆就是一种<strong>完全二叉树</strong>，<strong>最常用的存储方式是数组</strong>。堆可以看作<strong>优先级队列</strong>。</p>
+<p><a href="https://time.geekbang.org/column/article/70187"><strong>堆的应用</strong></a>:</p>
+<ol>
+<li>合并有序小文件</li>
+<li>高性能定时器</li>
+<li>利用堆求中位数、99线</li>
+<li>TopK问题</li>
+</ol>
 <h3 id="图">图</h3>
 <p><strong>度（degree）</strong>：in-degree、out-degree</p>
 <p><strong>数据结构（存储方法）</strong>：</p>
@@ -132,10 +151,7 @@
 <h3 id="排序">排序</h3>
 <p><strong>冒泡排序、插入排序、选择排序</strong>：这三种排序算法，实现代码都非常简单，对于<strong>小规模数据的排序</strong>，用起来非常高效。但是在<strong>大规模数据排序</strong>的时候，更倾向于用时间复杂度为 O(nlogn) 的排序算法。</p>
 <p><strong>归并排序</strong>和<strong>快速排序</strong>：归并排序和快速排序都用到了<strong>分治思想</strong>，非常巧妙。我们可以借鉴这个思想，来解决非排序的问题，比如：<a href="https://leetcode-cn.com/problems/kth-largest-element-in-an-array/">如何在 O(n) 的时间复杂度内查找一个无序数组中的第 K 大元素？</a></p>
-<p><strong>堆排序</strong>：<a href="https://time.geekbang.org/column/article/70187">假设现在有一个包含 10 亿个搜索关键词的日志文件，如何快速获取到 Top 10 最热门的搜索关键词？</a></p>
-<blockquote>
-<p>10亿个单词无法直接放进内存。这个问题涉及到哈希表、哈希算法、分治、堆排序等要素。</p>
-</blockquote>
+<p><strong>堆排序</strong></p>
 <h3 id="搜索">搜索</h3>
 <blockquote>
 <p>算法是作用于具体数据结构之上的，深度优先搜索算法和广度优先搜索算法都是基于“图”这种数据结构的</p>
