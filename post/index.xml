@@ -162,8 +162,8 @@
 <p><strong>图的搜索算法</strong>：BFS、DFS</p>
 <h2 id="常见算法">常见算法</h2>
 <h3 id="排序">排序</h3>
-<p><strong>冒泡排序、插入排序、选择排序</strong>：这三种排序算法，实现代码都非常简单，对于<strong>小规模数据的排序</strong>，用起来非常高效。但是在<strong>大规模数据排序</strong>的时候，更倾向于用时间复杂度为 O(nlogn) 的排序算法。</p>
-<p><strong>归并排序</strong>和<strong>快速排序</strong>：归并排序和快速排序都用到了<strong>分治思想</strong>，非常巧妙。我们可以借鉴这个思想，来解决非排序的问题，比如：<a href="https://leetcode-cn.com/problems/kth-largest-element-in-an-array/">如何在 O(n) 的时间复杂度内查找一个无序数组中的第 K 大元素？</a></p>
+<p><strong>冒泡排序、插入排序、选择排序</strong>：三种O(n2)的简单算法。</p>
+<p><strong>归并排序</strong>和<strong>快速排序</strong>：<strong>分治</strong>。我们可以借鉴快排的思想，来解决非排序的问题，比如<a href="https://leetcode-cn.com/problems/kth-largest-element-in-an-array/">静态topK</a>问题。</p>
 <p><strong>堆排序</strong>：步骤分为</p>
 <ol>
 <li>建堆：堆化</li>
