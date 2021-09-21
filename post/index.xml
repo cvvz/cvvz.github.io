@@ -156,8 +156,8 @@
 <li><a href="https://leetcode-cn.com/problems/find-median-from-data-stream/">数据流的中位数</a>、99线问题</li>
 <li>TopK问题
 <ol>
-<li><a href="https://leetcode-cn.com/problems/kth-largest-element-in-an-array/">静态topK</a></li>
-<li><a href="https://leetcode-cn.com/problems/kth-largest-element-in-a-stream/">动态topK</a></li>
+<li><a href="https://leetcode-cn.com/problems/kth-largest-element-in-an-array/">静态topK</a>（从上往下堆化）</li>
+<li><a href="https://leetcode-cn.com/problems/kth-largest-element-in-a-stream/">动态topK</a>（从下往上堆化）</li>
 </ol>
 </li>
 </ol>
