@@ -89,7 +89,7 @@
 <p>“操作受限”的线性表，只支持两种基本操作：push, pop。</p>
 <p>递归的算法都可以用栈来实现。</p>
 <blockquote>
-<p>高性能定时器，除了可以用堆实现，还可以用环形队列，详见 <a href="https://zhuanlan.zhihu.com/p/65835110">时间轮算法 HashedWheelTimer</a></p>
+<p>高性能定时器，除了可以用堆实现（<strong>比如golang的timer就是用最小四叉堆</strong>），还可以用<strong>环形队列</strong>，详见 <a href="https://zhuanlan.zhihu.com/p/65835110">时间轮算法 HashedWheelTimer</a></p>
 </blockquote>
 <h3 id="hash表">hash表</h3>
 <blockquote>
