@@ -6,8 +6,23 @@
 		<generator>Hugo -- gohugo.io</generator>
 		<language>zh-hans</language>
 		<copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-		<lastBuildDate>Wed, 15 Sep 2021 19:58:55 +0800</lastBuildDate>
+		<lastBuildDate>Sun, 10 Oct 2021 23:19:02 +0800</lastBuildDate>
 		<atom:link href="https://cvvz.github.io/read/index.xml" rel="self" type="application/rss+xml" />
+		
+		<item>
+			<title>Learn More Study Less</title>
+			<link>https://cvvz.github.io/read/learn-more-study-less/</link>
+			<pubDate>Sun, 10 Oct 2021 23:19:02 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/read/learn-more-study-less/</guid>
+			<description>这本书介绍了整体性学习法的概念和实践技巧</description>
+			<content type="html"><![CDATA[<p>这本书介绍了整体性学习法的概念和实践技巧</p>
+<figure>
+    <img src="/%e6%95%b4%e4%bd%93%e6%80%a7%e5%ad%a6%e4%b9%a0.png" width="1150px"/> 
+</figure>
+
+]]></content>
+		</item>
 		
 		<item>
 			<title>okr工作法</title>
@@ -15,8 +30,9 @@
 			<pubDate>Wed, 15 Sep 2021 19:58:55 +0800</pubDate>
 			
 			<guid>https://cvvz.github.io/read/okr/</guid>
-			<description></description>
-			<content type="html"><![CDATA[<figure>
+			<description>OKR工作法最重要的三点：专注在最核心的目标上、任务拆解具体可实施、持续追踪和复盘</description>
+			<content type="html"><![CDATA[<p>OKR工作法最重要的三点：专注在最核心的目标上、任务拆解具体可实施、持续追踪和复盘</p>
+<figure>
     <img src="/okr.png" width="1150px"/> 
 </figure>
 

@@ -7,14 +7,23 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Wed, 15 Sep 2021 19:58:55 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 10 Oct 2021 23:19:02 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Learn More Study Less</title>
+      <link>https://cvvz.github.io/read/learn-more-study-less/</link>
+      <pubDate>Sun, 10 Oct 2021 23:19:02 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/read/learn-more-study-less/</guid>
+      <description>这本书介绍了整体性学习法的概念和实践技巧</description>
+    </item>
+    
     <item>
       <title>okr工作法</title>
       <link>https://cvvz.github.io/read/okr/</link>
       <pubDate>Wed, 15 Sep 2021 19:58:55 +0800</pubDate>
       
       <guid>https://cvvz.github.io/read/okr/</guid>
-      <description></description>
+      <description>OKR工作法最重要的三点：专注在最核心的目标上、任务拆解具体可实施、持续追踪和复盘</description>
     </item>
     
     <item>
@@ -177,15 +186,6 @@
       
       <guid>https://cvvz.github.io/post/about-computer-security/</guid>
       <description>加解密算法 对称加密： 用同一个秘钥进行加密和解密，代表算法有AES/DES/RC2/RC5等； 非对称加密： 一次产生公钥和私钥两个秘钥，任意一个</description>
-    </item>
-    
-    <item>
-      <title>抓包解读smtp和tls协议</title>
-      <link>https://cvvz.github.io/post/smtp-with-tls/</link>
-      <pubDate>Sat, 22 Jun 2019 23:21:54 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/smtp-with-tls/</guid>
-      <description>背景：某进程调用 libcurl 提供的 curl_easy_perform 接口与邮箱服务器进行smtp通信时，服务端返回56(CURLE_RECV_ERROR)错误。由于服务端日志信息不足</description>
     </item>
     
   </channel>
