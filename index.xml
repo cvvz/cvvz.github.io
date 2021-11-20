@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Sun, 10 Oct 2021 23:19:02 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 20 Nov 2021 14:17:23 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>怎么让controller周期性的reconcile</title>
+      <link>https://cvvz.github.io/post/controller-reconcile/</link>
+      <pubDate>Sat, 20 Nov 2021 14:17:23 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/controller-reconcile/</guid>
+      <description>问题 怎么让controller每隔1分钟进行一次reconcile，而不需要借助任何外部事件触发？ 虽然解决的方法看似很简单，但是知其然还要知</description>
+    </item>
+    
     <item>
       <title>Learn More Study Less</title>
       <link>https://cvvz.github.io/read/learn-more-study-less/</link>
@@ -177,15 +186,6 @@
       
       <guid>https://cvvz.github.io/post/call-stack/</guid>
       <description>理解本篇文章需要具备一些GDB、汇编、寄存器的基础知识。可以在阅读的过程中碰到不理解的地方再针对性的学习。 寄存器 分析函数调用栈涉及到的几个特</description>
-    </item>
-    
-    <item>
-      <title>安全知识总结</title>
-      <link>https://cvvz.github.io/post/about-computer-security/</link>
-      <pubDate>Thu, 22 Aug 2019 12:38:04 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/about-computer-security/</guid>
-      <description>加解密算法 对称加密： 用同一个秘钥进行加密和解密，代表算法有AES/DES/RC2/RC5等； 非对称加密： 一次产生公钥和私钥两个秘钥，任意一个</description>
     </item>
     
   </channel>
