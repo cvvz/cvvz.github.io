@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>golang on Vic&#39;s Blog</title>
-    <link>https://cvvz.github.io/tags/golang/</link>
-    <description>Recent content in golang on Vic&#39;s Blog</description>
+    <title>code on Vic&#39;s Blog</title>
+    <link>https://cvvz.github.io/tags/code/</link>
+    <description>Recent content in code on Vic&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Mon, 29 Nov 2021 15:37:20 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/golang/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 29 Nov 2021 15:37:20 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/code/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>读锁有什么用？</title>
       <link>https://cvvz.github.io/post/what-is-rlock-used-for/</link>
@@ -24,15 +24,6 @@
       
       <guid>https://cvvz.github.io/post/data-structure-and-algorithm/</guid>
       <description>常见数据结构 数组 C数组访问越界会造成“踩内存”。 很多高级语言都基于基础的数组提供了“容器类”，比如 Java 中的 ArrayList、C++ STL 中的 ve</description>
-    </item>
-    
-    <item>
-      <title>重学设计模式</title>
-      <link>https://cvvz.github.io/post/design-pattern/</link>
-      <pubDate>Sun, 18 Jul 2021 20:40:19 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/design-pattern/</guid>
-      <description>设计模式和设计原则的合理应用非常依赖个人经验，用不好有时候会适得其反。学生时代时学习设计模式觉得枯燥，是因为没有实践经验。要多实践，然后再温</description>
     </item>
     
   </channel>

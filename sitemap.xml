@@ -3,13 +3,33 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://cvvz.github.io/tags/code/</loc>
+    <lastmod>2021-11-29T18:00:24+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://cvvz.github.io/tags/golang/</loc>
+    <lastmod>2021-11-29T18:00:24+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://cvvz.github.io/post/</loc>
-    <lastmod>2021-11-25T10:43:47+08:00</lastmod>
+    <lastmod>2021-11-29T18:00:24+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://cvvz.github.io/tags/</loc>
+    <lastmod>2021-11-29T18:00:24+08:00</lastmod>
   </url>
   
   <url>
     <loc>https://cvvz.github.io/</loc>
-    <lastmod>2021-11-25T10:43:47+08:00</lastmod>
+    <lastmod>2021-11-29T18:00:24+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://cvvz.github.io/post/what-is-rlock-used-for/</loc>
+    <lastmod>2021-11-29T18:00:24+08:00</lastmod>
   </url>
   
   <url>
@@ -43,28 +63,18 @@
   </url>
   
   <url>
-    <loc>https://cvvz.github.io/tags/</loc>
-    <lastmod>2021-11-25T10:43:47+08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://cvvz.github.io/post/the-difficulty-of-distributed-db-on-cloud/</loc>
     <lastmod>2021-11-25T10:43:47+08:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cvvz.github.io/tags/coding/</loc>
-    <lastmod>2021-11-20T15:01:07+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://cvvz.github.io/tags/golang/</loc>
-    <lastmod>2021-11-20T15:01:07+08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://cvvz.github.io/post/data-structure-and-algorithm/</loc>
-    <lastmod>2021-11-20T15:01:07+08:00</lastmod>
+    <lastmod>2021-11-29T18:00:24+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://cvvz.github.io/tags/coding/</loc>
+    <lastmod>2021-07-18T20:59:49+08:00</lastmod>
   </url>
   
   <url>
