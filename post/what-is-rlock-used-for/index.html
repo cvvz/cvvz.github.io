@@ -9,8 +9,8 @@
 <meta itemprop="name" content="读锁有什么用？">
 <meta itemprop="description" content="问这个问题的起因是我在进行code review时，对一个读map前加读锁的代码留下了如下comment： 这里从map中读出脏数据不会有什么问">
 <meta itemprop="datePublished" content="2021-11-29T15:37:20+08:00" />
-<meta itemprop="dateModified" content="2021-11-29T18:00:24+08:00" />
-<meta itemprop="wordCount" content="1417">
+<meta itemprop="dateModified" content="2021-11-29T21:12:28+08:00" />
+<meta itemprop="wordCount" content="1498">
 
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/what-is-rlock-used-for/" />
 <meta property="article:published_time" content="2021-11-29T15:37:20+08:00" />
-<meta property="article:modified_time" content="2021-11-29T18:00:24+08:00" />
+<meta property="article:modified_time" content="2021-11-29T21:12:28+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="读锁有什么用？"/>
 <meta name="twitter:description" content="问这个问题的起因是我在进行code review时，对一个读map前加读锁的代码留下了如下comment： 这里从map中读出脏数据不会有什么问"/>
@@ -81,21 +81,21 @@
 <p>之所以会犯这个“初学者”错误，原因在于我<strong>搞混了几种线程安全/数据竞争发生的维度</strong>。虽然锁都是为了解决线程安全/数据竞争的问题的，但是线程安全问题可以出现在如下几个维度，造成的问题也不尽相同，所以引入锁要解决的问题也就不相同。</p>
 <h3 id="应用维度">应用维度<a href="#应用维度" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p>最常见的就是数据库的隔离级别，RC就是为了防止脏读，通过加写锁，避免执行事务写数据期间被读到脏数据；RR就是在读之前加读锁，这样就能保证一次事务中，多次读读到的数据是相同的，而不会读脏数据。</p>
-<p><strong>我在code review中犯的错误，是因为我以为给map加锁就是为了避免脏读，然而又因为业务逻辑中并不涉及事务，所以我认为没必要加读锁，只是读数据的时候加一下锁也避免不了脏读。</strong></p>
-<h3 id="语言运行时的维度">语言运行时的维度<a href="#语言运行时的维度" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p><strong>我在code review中犯的错误，是因为我以为给map加锁就是为了避免脏读。然而又因为业务逻辑中并不涉及事务操作，所以我认为没必要加读锁，而且仅仅在读数据的时候加一下锁也避免不了脏读，因为不是一把事务锁。</strong></p>
+<h3 id="语言运行时维度">语言运行时维度<a href="#语言运行时维度" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <ol>
 <li>
 <p>golang的slice在append时，如果没有超出cap大小，那么是不会重新分配内存的，这时数据是直接append到底层的数组中的。如果两个线程并发的append同一个slice，那么就可能写同一片内存，这样可能会导致append后的总数不符合预期（变少）。这种情况我们也要用锁，这是语言运行时实现层面对程序员的约束。</p>
 </li>
 <li>
-<p>golang的map被设计为非并发安全的（<a href="https://go.dev/doc/faq#atomic_maps">原因</a>），在运行时层面如果并发时不加读锁或者写锁，就可能会报错，<code>fatal error: concurrent map read and map write</code>。我们可以通过golang race detector进行检查。</p>
+<p>golang的map被设计为非并发安全的（<a href="https://go.dev/doc/faq#atomic_maps">原因</a>），在应用层如果并发时不加读锁或者写锁，就可能会报错，<code>fatal error: concurrent map read and map write</code>。我们可以通过golang race detector进行检查。那为什么map的读写需要加锁呢（不管是由应用程序加，还是由语言特性加）？原因在于map类型的一次读写不是原子性的（需要进行哈希计算、解决哈希冲突等等）。<strong>注意这里所说的原子性，不是指上面说的应用层的原子性；而是语言运行时实现层面对程序员的约束。</strong></p>
 </li>
 <li>
 <p>还有一种是在语言实现时就设计为并非原子性赋值的，可以看看这篇文章中的<a href="https://cloud.tencent.com/developer/article/1810536">讨论</a>，典型的有复数类型。</p>
 </li>
 </ol>
 <h3 id="操作系统维度">操作系统维度<a href="#操作系统维度" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
-<p>map读写需要加锁的真正原因是一次读和写不一定是原子的。<strong>这个原子指的是汇编/操作系统层面的原子性，而不是类似于数据库应用事务的那种原子性</strong>！这是造成我认知混淆主要的原因。</p>
+<p><strong>这个原子指的是编译器/操作系统层面的原子性，而不是上述两种原子性</strong>！</p>
 <p>这里又分为两种情形：</p>
 <ol>
 <li>
@@ -107,8 +107,8 @@
 </ol>
 <h3 id="golang中的cow">golang中的COW<a href="#golang中的cow" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p>虽然加锁很快，并且在大多数场景下我们都不会碰到锁性能问题。但是在某些极端场景下，如果对map频繁的加读写锁，还是会带来一些性能损失。我们可以采取copy-on-write的方式避免对map加锁，从而提高性能。</p>
-<p>方法就是对map的写操作变成整个map的替换，由于map替换是指针赋值，而指针赋值在golang中是原子性的，所以不会存在<strong>汇编级别的</strong>并发问题。</p>
-<p>典型代码可以查看<a href="https://github.com/Terry-Mao">煎架</a>的<a href="https://github.com/Terry-Mao/gopush-cluster/blob/master/rpc/rand_lb.go#L221-L232">这段代码</a></p>
+<p>方法就是对map的写操作变成整个map的替换，由于map替换是指针赋值，而指针赋值在golang中是原子性的，所以就不会存在map并发问题。</p>
+<p>典型代码可以查看<a href="https://github.com/Terry-Mao">煎鱼</a>的<a href="https://github.com/Terry-Mao/gopush-cluster/blob/master/rpc/rand_lb.go#L221-L232">这段代码</a></p>
 <blockquote>
 <p>不过这段代码也引起了一些<a href="https://github.com/Terry-Mao/gopush-cluster/issues/44">争议</a>，主要争议在于golang的指针赋值到底是不是原子的。关于这个问题，可以看看<a href="https://stackoverflow.com/questions/21447463/is-assigning-a-pointer-atomic-in-go">这个问答</a>，简单来说就是，除了 <code>sync.atomic</code> 中的操作以外，其他任何操作都不建议看作是原子性的。因为即使当前版本golang中的实现是原子的，不代表以后某一天不会被改成非原子的 :)</p>
 </blockquote>
@@ -119,8 +119,8 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/code">code</a></span><span class="tag"><a href="https://cvvz.github.io/tags/golang">golang</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1417 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/ce7af097d8eb9d8f9f73cb2537b792be93999df4" target="_blank" rel="noopener">ce7af09</a> @ 2021-11-29</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1498 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/08ce831e0307a2def66c2429d1ac082388a3d87c" target="_blank" rel="noopener">08ce831</a> @ 2021-11-29</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">
@@ -130,7 +130,7 @@
     <li>
       <ul>
         <li><a href="#应用维度">应用维度</a></li>
-        <li><a href="#语言运行时的维度">语言运行时的维度</a></li>
+        <li><a href="#语言运行时维度">语言运行时维度</a></li>
         <li><a href="#操作系统维度">操作系统维度</a></li>
         <li><a href="#golang中的cow">golang中的COW</a></li>
       </ul>
