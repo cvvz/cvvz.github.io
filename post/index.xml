@@ -288,7 +288,7 @@
 </blockquote>
 <h3 id="hash表">hash表</h3>
 <blockquote>
-<p>高级语言内置了hash表，比如Java 中的 HashMap，golang中的map数据类型。</p>
+<p>高级语言内置了hash表，比如Java 中的 HashMap，golang中的map数据类型（Go 只提供了最基础的 hash map）。</p>
 </blockquote>
 <ol>
 <li>
