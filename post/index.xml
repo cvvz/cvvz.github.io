@@ -287,8 +287,9 @@
 <p>高性能定时器，除了可以用堆实现（<strong>比如golang的timer就是用最小四叉堆</strong>），还可以用<strong>环形队列</strong>，详见 <a href="https://zhuanlan.zhihu.com/p/65835110">时间轮算法 HashedWheelTimer</a></p>
 </blockquote>
 <h3 id="hash表">hash表</h3>
+<p>高级语言内置了hash表，比如Java 中的 HashMap，golang中的map数据类型。</p>
 <blockquote>
-<p>高级语言内置了hash表，比如Java 中的 HashMap，golang中的map数据类型（Go 只提供了最基础的 hash map）。</p>
+<p>Java 中还有 SortedMap（用的比较多是 TreeMap）和 LinkedHashMap ，前者是可以按 key 进行排序的，后者则可以保持键值对的插入顺序，而这两者都是 JDK 自带的，任何一个 Javaer 应该都使用过。但是在 Go 语言的“简约设计”面前，这些都是不存在的——Go 只提供了最基础的 hash map。并且，在借助 range 关键字对 Go 的 map 进行遍历访问的时候，会对 map 的 key 的顺序做随机化处理，也就是说即使是同一个 map 在同一个程序里进行两次相同的遍历，前后两轮访问 key 的顺序也是随机化的。(可以在<a href="https://go.dev/play/p/LYJSbQBjWa6">这里</a>进行验证)</p>
 </blockquote>
 <ol>
 <li>
