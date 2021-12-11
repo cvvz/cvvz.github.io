@@ -9,8 +9,8 @@
 <meta itemprop="name" content="重学数据结构和算法">
 <meta itemprop="description" content="常见数据结构 数组 C数组访问越界会造成“踩内存”。 很多高级语言都基于基础的数组提供了“容器类”，比如 Java 中的 ArrayList、C&#43;&#43; STL 中的 ve">
 <meta itemprop="datePublished" content="2021-07-18T21:14:55+08:00" />
-<meta itemprop="dateModified" content="2021-12-11T09:41:23+08:00" />
-<meta itemprop="wordCount" content="2842">
+<meta itemprop="dateModified" content="2021-12-11T10:04:03+08:00" />
+<meta itemprop="wordCount" content="2860">
 
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/data-structure-and-algorithm/" />
 <meta property="article:published_time" content="2021-07-18T21:14:55+08:00" />
-<meta property="article:modified_time" content="2021-12-11T09:41:23+08:00" />
+<meta property="article:modified_time" content="2021-12-11T10:04:03+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="重学数据结构和算法"/>
 <meta name="twitter:description" content="常见数据结构 数组 C数组访问越界会造成“踩内存”。 很多高级语言都基于基础的数组提供了“容器类”，比如 Java 中的 ArrayList、C&#43;&#43; STL 中的 ve"/>
@@ -90,7 +90,9 @@
 <h3 id="hash表">hash表<a href="#hash表" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p>高级语言内置了hash表，比如Java 中的 HashMap，golang中的map数据类型。</p>
 <blockquote>
-<p>Java 中还有 SortedMap（用的比较多是 TreeMap）和 LinkedHashMap ，前者是可以按 key 进行排序的，后者则可以保持键值对的插入顺序，而这两者都是 JDK 自带的，任何一个 Javaer 应该都使用过。但是在 Go 语言的“简约设计”面前，这些都是不存在的——Go 只提供了最基础的 hash map。并且，在借助 range 关键字对 Go 的 map 进行遍历访问的时候，会对 map 的 key 的顺序做随机化处理，也就是说即使是同一个 map 在同一个程序里进行两次相同的遍历，前后两轮访问 key 的顺序也是随机化的。(可以在<a href="https://go.dev/play/p/LYJSbQBjWa6">这里</a>进行验证)</p>
+<p><strong>Java JDK 中自带 TreeMap</strong>，可以按 key 进行排序，任何一个 Javaer 应该都使用过。</p>
+<p>但是在 Go 语言的“简约设计”面前，这些都是不存在的——Go 只提供了最基础的 hash map。并且，在借助 range 关键字对 Go 的 map 进行遍历访问的时候，会对 map 的 key 的顺序做随机化处理，也就是说即使是同一个 map 在同一个程序里进行两次相同的遍历，前后两轮访问 key 的顺序也是随机化的。(可以在<a href="https://go.dev/play/p/LYJSbQBjWa6">这里</a>进行验证)。</p>
+<p>我们可以自己实现，或者借助其他开源解决方案，比如<a href="https://github.com/emirpasic/gods">emirpasic/gods</a>。</p>
 </blockquote>
 <ol>
 <li>
@@ -126,7 +128,7 @@
 <p>“平衡”的意思，其实就是让整棵树左右看起来比较“对称”、比较“平衡”，不要出现左子树很高、右子树很矮的情况。这样就能让整棵树的高度相对来说低一些，相应的插入、删除、查找等操作的效率高一些。</p>
 </blockquote>
 </li>
-<li>红黑树是一种平衡二叉查找树。它是为了解决普通二叉查找树在数据更新的过程中，复杂度退化的问题而产生的。</li>
+<li>红黑树是一种平衡二叉查找树。它是为了解决普通二叉查找树在数据更新的过程中，复杂度退化的问题而产生的。<strong>红黑树在Java中的实现&ndash;TreeMap</strong>。</li>
 </ul>
 <h4 id="堆httpsleetcode-cncomtagheap-priority-queueproblemset"><a href="https://leetcode-cn.com/tag/heap-priority-queue/problemset/">堆</a><a href="#堆httpsleetcode-cncomtagheap-priority-queueproblemset" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
 <p><strong>堆的核心操作：</strong></p>
@@ -244,8 +246,8 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/code">code</a></span><span class="tag"><a href="https://cvvz.github.io/tags/golang">golang</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2842 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/0145a4e9e31acaa94adbfadaf03599910e8cb62b" target="_blank" rel="noopener">0145a4e</a> @ 2021-12-11</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2860 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/cc9fca5f7fa79f57131897861a0a16592f2de1fe" target="_blank" rel="noopener">cc9fca5</a> @ 2021-12-11</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">
