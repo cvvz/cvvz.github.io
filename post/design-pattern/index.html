@@ -9,8 +9,8 @@
 <meta itemprop="name" content="重学设计模式">
 <meta itemprop="description" content="设计模式和设计原则的合理应用非常依赖个人经验，用不好有时候会适得其反。学生时代时学习设计模式觉得枯燥，是因为没有实践经验。要多实践，然后再温">
 <meta itemprop="datePublished" content="2021-07-18T20:40:19+08:00" />
-<meta itemprop="dateModified" content="2021-07-18T20:59:49+08:00" />
-<meta itemprop="wordCount" content="2683">
+<meta itemprop="dateModified" content="2021-12-18T13:23:18+08:00" />
+<meta itemprop="wordCount" content="2674">
 
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/design-pattern/" />
 <meta property="article:published_time" content="2021-07-18T20:40:19+08:00" />
-<meta property="article:modified_time" content="2021-07-18T20:59:49+08:00" />
+<meta property="article:modified_time" content="2021-12-18T13:23:18+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="重学设计模式"/>
 <meta name="twitter:description" content="设计模式和设计原则的合理应用非常依赖个人经验，用不好有时候会适得其反。学生时代时学习设计模式觉得枯燥，是因为没有实践经验。要多实践，然后再温"/>
@@ -84,7 +84,7 @@
 </li>
 <li>有能力去做<strong>持续重构</strong>。初级工程师在维护代码，高级工程师在设计代码，资深工程师在重构代码</li>
 </ol>
-<h2 id="面向对象">面向对象<a href="#面向对象" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<h2 id="面向对象和golang">面向对象和golang<a href="#面向对象和golang" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <blockquote>
 <p><strong>面向对象分析、设计</strong>：程序被拆解为哪些类、类里面有哪些方法（<strong>golang的interface</strong>）和属性（<strong>golang的struct</strong>）、类和类之间如何交互（<strong>golang里应该使用接口进行交互</strong>）。</p>
 <p><strong>面向对象编程</strong>：把设计翻译成代码。</p>
@@ -93,16 +93,16 @@
 <p>封装也叫作<strong>信息隐藏</strong>或者<strong>数据访问保护</strong>：仅<strong>暴露有限的方法，并且限制类中的部分属性的访问权限。</strong></p>
 <p>比如将属性设置为private，避免直接修改对象属性；只提供部分属性的get、set方法，对于不可变更的属性，如id，不提供任何访问或修改方法。</p>
 <blockquote>
-<p>golang中没有对struct中的字段做访问限制，那么最好是使用接口，通过接口方法进行交互，而不要直接使用具体的struct。</p>
+<p><strong>golang中，struct中大写字母开头的字段相当于public，小写字母开头的字段相当于private。</strong></p>
 </blockquote>
 <h3 id="抽象abstraction">抽象（Abstraction）<a href="#抽象abstraction" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p>封装的主要目的是隐藏数据，而抽象的目的是<strong>隐藏方法的具体实现</strong>。</p>
-<p>抽象是一个非常通用的设计思想，并非面向对象设计特有。<strong>所以抽象有的时候会被排除在面向对象的四大特性之外。</strong></p>
-<p>任何接口/函数都可以看成是抽象的实现方式。也就是说<strong>使用者无需关注底层实现，只需要通过注释、文档等知道这个接口/函数是干啥的、怎么用就行了。其实就是帮助大脑过滤非必要信息，让我们只关注功能点</strong>。</p>
+<p>函数就可以看成是一种抽象，即使用者无需关注底层实现，只需要通过注释、文档等知道这个接口/函数是干啥的、怎么用就行了。其实就是帮助大脑过滤非必要信息，让我们只关注功能点。</p>
+<p>可以看出来抽象是一个非常通用的设计思想，并非面向对象设计特有。<strong>所以抽象有的时候会被排除在面向对象的四大特性之外。</strong></p>
 <h3 id="继承inheritance">继承（Inheritance）<a href="#继承inheritance" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p><strong>继承最大的好处是代码复用。</strong></p>
 <blockquote>
-<p>代码复用的问题也可以利用组合来解决。golang就是利用组合而不是继承来实现代码复用。</p>
+<p>代码复用的问题也可以利用组合来解决。<strong>golang就是利用组合而不是继承来实现代码复用</strong>。</p>
 <p>通过组合匿名接口或者匿名struct，还可以进行“覆盖”（其实不是真正意义上的覆盖）。</p>
 </blockquote>
 <h3 id="多态polymorphism">多态（Polymorphism）<a href="#多态polymorphism" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
@@ -195,8 +195,8 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/golang">golang</a></span><span class="tag"><a href="https://cvvz.github.io/tags/coding">coding</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2683 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/2708ff332dfe8a4a701be47d1dc97e3e09cb703b" target="_blank" rel="noopener">2708ff3</a> @ 2021-07-18</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2674 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/1b51f4c3c8e7b2d300d80697251881f1484a82ce" target="_blank" rel="noopener">1b51f4c</a> @ 2021-12-18</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">
@@ -204,7 +204,7 @@
 			<nav id="TableOfContents">
   <ul>
     <li><a href="#为什么要学设计模式设计原则">为什么要学设计模式/设计原则？</a></li>
-    <li><a href="#面向对象">面向对象</a>
+    <li><a href="#面向对象和golang">面向对象和golang</a>
       <ul>
         <li><a href="#封装encapsulation">封装（Encapsulation）</a></li>
         <li><a href="#抽象abstraction">抽象（Abstraction）</a></li>
