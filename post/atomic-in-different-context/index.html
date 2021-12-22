@@ -9,8 +9,8 @@
 <meta itemprop="name" content="不同上下文中的原子性问题">
 <meta itemprop="description" content="问这个问题的起因是我在进行code review时，对一个读map前加读锁的代码留下了如下comment： 这里从map中读出脏数据不会有什么问">
 <meta itemprop="datePublished" content="2021-11-29T15:37:20+08:00" />
-<meta itemprop="dateModified" content="2021-12-22T11:15:30+08:00" />
-<meta itemprop="wordCount" content="1803">
+<meta itemprop="dateModified" content="2021-12-22T12:08:13+08:00" />
+<meta itemprop="wordCount" content="1823">
 
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/atomic-in-different-context/" />
 <meta property="article:published_time" content="2021-11-29T15:37:20+08:00" />
-<meta property="article:modified_time" content="2021-12-22T11:15:30+08:00" />
+<meta property="article:modified_time" content="2021-12-22T12:08:13+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="不同上下文中的原子性问题"/>
 <meta name="twitter:description" content="问这个问题的起因是我在进行code review时，对一个读map前加读锁的代码留下了如下comment： 这里从map中读出脏数据不会有什么问"/>
@@ -78,7 +78,7 @@
 </ol>
 <p>但随后自己隐约觉得哪里不对，查了一下在golang里map就是不允许并发读写的，其实对map加读写锁就跟 <code>if err != nil</code> 一样常见。自己犯了一个小白错误。</p>
 <p>回过头来也庆幸自己会犯这种错误，不然我可能永远只记得 <strong>map是非线程安全的，使用时要加锁</strong> 这个结论，以及使用前map加锁的肌肉记忆，却并不会停下来想一想为什么要这么做。</p>
-<p>之所以会犯这个“初学者”错误，原因在于我<strong>搞混了几种线程安全/数据竞争发生的维度，虽然锁都是为了解决原子性问题，但是在不同的上下文中，“原子性”的含义是不同的</strong>。</p>
+<p>之所以会犯这个“初学者”错误，原因在于我搞混了几种线程安全/数据竞争发生的维度。<strong>虽然传统的锁（或者golang更推荐的CSP）都是为了解决原子性问题，但是在不同的上下文中，“原子性”的含义是不同的</strong>。</p>
 <h3 id="应用层">应用层<a href="#应用层" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p>最常见的就是数据库的隔离级别。<strong>假设我们都只考虑简单的悲观锁的情况</strong>，那么RC就是为了防止脏读，通过加写锁，避免执行事务写数据期间被读到脏数据；RR就是在读之前加读锁，这样就能保证一次事务中，多次读到的数据是相同的。</p>
 <p><strong>我在code review中犯的错误，是因为我以为给map加读锁就是为了避免数据不一致。然而又因为业务逻辑中并不涉及事务操作，所以我认为没必要加读锁，而且仅仅在读数据的时候加一下锁也避免不了脏读，因为不是一把事务锁。</strong></p>
@@ -125,8 +125,8 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/code">code</a></span><span class="tag"><a href="https://cvvz.github.io/tags/golang">golang</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1803 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/9a8e7edbe3d3aa7bb3e544556daa5144d54f5e7a" target="_blank" rel="noopener">9a8e7ed</a> @ 2021-12-22</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1823 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/95338df43fe98dc3635050e151f5c6ddebfca424" target="_blank" rel="noopener">95338df</a> @ 2021-12-22</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">
