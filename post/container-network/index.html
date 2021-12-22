@@ -9,8 +9,8 @@
 <meta itemprop="name" content="浅谈单机容器网络">
 <meta itemprop="description" content="容器网络环境隔离怎么理解？ 容器的网络环境是隔离的，这个隔离就体现在不共用内核网络协议栈，即不共用网络协议栈要用到的数据和设备了： 传输层：端口">
 <meta itemprop="datePublished" content="2020-12-03T00:16:18+08:00" />
-<meta itemprop="dateModified" content="2020-12-30T11:20:42+08:00" />
-<meta itemprop="wordCount" content="1361">
+<meta itemprop="dateModified" content="2021-12-22T11:39:56+08:00" />
+<meta itemprop="wordCount" content="1360">
 
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/container-network/" />
 <meta property="article:published_time" content="2020-12-03T00:16:18+08:00" />
-<meta property="article:modified_time" content="2020-12-30T11:20:42+08:00" />
+<meta property="article:modified_time" content="2021-12-22T11:39:56+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="浅谈单机容器网络"/>
 <meta name="twitter:description" content="容器网络环境隔离怎么理解？ 容器的网络环境是隔离的，这个隔离就体现在不共用内核网络协议栈，即不共用网络协议栈要用到的数据和设备了： 传输层：端口"/>
@@ -85,7 +85,7 @@
 <p>以Docker为例，在bridge模式下：</p>
 <ul>
 <li>Docker Daemon第一次启动时会创建<code>docker0</code>网桥；</li>
-<li>在创建容器时，会创建一个veth pair，即veth设备对。</li>
+<li>在创建容器时，会创建一个veth pair，即veth设备对。</li>
 </ul>
 <p>veth pair有两个端点：</p>
 <ul>
@@ -141,8 +141,8 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/%E5%AE%B9%E5%99%A8">容器</a></span><span class="tag"><a href="https://cvvz.github.io/tags/linux">Linux</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1361 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/1763726a8753ce1c18c2c25d26dd0c836b6e815f" target="_blank" rel="noopener">1763726</a> @ 2020-12-30</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1360 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/e3763633dde2d52632cbdb90a743d2513368ea9d" target="_blank" rel="noopener">e376363</a> @ 2021-12-22</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">

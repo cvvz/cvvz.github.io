@@ -7,23 +7,23 @@
 	<meta name="google-site-verification" content="Wp3QtEkIlF0ZvtKx90lPmoXyH39d-pmBhiTyTbba9L4" />
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 <meta itemprop="name" content="【问题定位】/bin/bash无权限导致SSH登录失败">
-<meta itemprop="description" content="问题现象 SSH登录主机失败，提示错误：/bin/bash: Permission denied。 分析过程 Linux处理SSH远程登录的流程如下： SSHD进程后台">
+<meta itemprop="description" content="问题现象 SSH登录主机失败，提示错误：/bin/bash: Permission denied。 分析过程 Linux处理SSH远程登录的流程如下： SSHD进程后台监">
 <meta itemprop="datePublished" content="2019-05-23T02:21:56+08:00" />
-<meta itemprop="dateModified" content="2021-01-30T04:27:54+08:00" />
-<meta itemprop="wordCount" content="549">
+<meta itemprop="dateModified" content="2021-12-22T11:39:56+08:00" />
+<meta itemprop="wordCount" content="547">
 
 
 
 <meta itemprop="keywords" content="Linux," />
 <meta property="og:title" content="【问题定位】/bin/bash无权限导致SSH登录失败" />
-<meta property="og:description" content="问题现象 SSH登录主机失败，提示错误：/bin/bash: Permission denied。 分析过程 Linux处理SSH远程登录的流程如下： SSHD进程后台" />
+<meta property="og:description" content="问题现象 SSH登录主机失败，提示错误：/bin/bash: Permission denied。 分析过程 Linux处理SSH远程登录的流程如下： SSHD进程后台监" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/login-permission-denied/" />
 <meta property="article:published_time" content="2019-05-23T02:21:56+08:00" />
-<meta property="article:modified_time" content="2021-01-30T04:27:54+08:00" />
+<meta property="article:modified_time" content="2021-12-22T11:39:56+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="【问题定位】/bin/bash无权限导致SSH登录失败"/>
-<meta name="twitter:description" content="问题现象 SSH登录主机失败，提示错误：/bin/bash: Permission denied。 分析过程 Linux处理SSH远程登录的流程如下： SSHD进程后台"/>
+<meta name="twitter:description" content="问题现象 SSH登录主机失败，提示错误：/bin/bash: Permission denied。 分析过程 Linux处理SSH远程登录的流程如下： SSHD进程后台监"/>
 
 	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -72,7 +72,7 @@
 			</header>
 			<div class="content">
 				<h2 id="问题现象">问题现象<a href="#问题现象" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
-<p>SSH登录主机失败，提示错误：<code>/bin/bash: Permission denied</code>。</p>
+<p>SSH登录主机失败，提示错误：<code>/bin/bash: Permission denied</code>。</p>
 <h2 id="分析过程">分析过程<a href="#分析过程" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>Linux处理SSH远程登录的流程如下：</p>
 <ol>
@@ -82,7 +82,7 @@
 <li>通过<code>exec</code>系统调用将子进程替换为登录shell（这里是<code>/bin/bash</code>），shell的0、1、2文件描述符和伪终端相连</li>
 <li>用户通过伪终端和主机通信</li>
 </ol>
-<p>很明显这里的错误原因是因为设置了登陆用户的uid、gid的子进程没有<code>/bin/bash</code>的执行权限导致的，也就是第4步出错。通过<code>strace</code>跟踪sshd进程的系统调用，也印证了这一点：子进程确实是在执行<code>execve(/bin/bash)</code>时报<code>Permission denied</code>。</p>
+<p>很明显这里的错误原因是因为设置了登陆用户的uid、gid的子进程没有<code>/bin/bash</code>的执行权限导致的，也就是第4步出错。通过<code>strace</code>跟踪sshd进程的系统调用，也印证了这一点：子进程确实是在执行<code>execve(/bin/bash)</code>时报<code>Permission denied</code>。</p>
 <p>继续实验，发现只有非root组内用户登录才会报该错误。因此将一个已登录的root组内用户修改为非root组内用户后，通过<code>strace</code>跟踪其执行<code>/bin/bash</code>的过程，发现是在<code>open</code>某个动态库权限不足。查看该库文件及路径的权限，发现原本应该是<code>755</code>权限的<code>/usr</code>目录变成了<code>750</code>。通过<code>stat</code>命令查看该文件夹被修改的时间点，定位到是设备上电脚本中的一个bug。</p>
 
 			</div>
@@ -91,8 +91,8 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/linux">Linux</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>549 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/73f17142c13c8fe3b55d5c909c159019686892a9" target="_blank" rel="noopener">73f1714</a> @ 2021-01-30</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>547 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/e3763633dde2d52632cbdb90a743d2513368ea9d" target="_blank" rel="noopener">e376363</a> @ 2021-12-22</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">

@@ -9,8 +9,8 @@
 <meta itemprop="name" content="关于进程和线程的一些思考">
 <meta itemprop="description" content="从“程序”开始 对于UNIX操作系统，程序是存放在磁盘上的ELF文件（可以通过file命令查看文件类型） 对于windows操作系统，程序是存放">
 <meta itemprop="datePublished" content="2018-06-23T20:34:56+08:00" />
-<meta itemprop="dateModified" content="2021-10-12T14:09:08+08:00" />
-<meta itemprop="wordCount" content="1127">
+<meta itemprop="dateModified" content="2021-12-22T11:39:56+08:00" />
+<meta itemprop="wordCount" content="1126">
 
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/process-and-thread/" />
 <meta property="article:published_time" content="2018-06-23T20:34:56+08:00" />
-<meta property="article:modified_time" content="2021-10-12T14:09:08+08:00" />
+<meta property="article:modified_time" content="2021-12-22T11:39:56+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="关于进程和线程的一些思考"/>
 <meta name="twitter:description" content="从“程序”开始 对于UNIX操作系统，程序是存放在磁盘上的ELF文件（可以通过file命令查看文件类型） 对于windows操作系统，程序是存放"/>
@@ -84,7 +84,7 @@
 <p>一个进程中的多个线程共享这个进程的资源，但是<strong>它们虽然共享同一片虚拟内存，自身却拥有这片虚拟内存中的不同的栈空间</strong>；</p>
 <h2 id="通信方式">通信方式<a href="#通信方式" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>由于同一进程中的线程共享资源，所以通信非常方便，直接读写同一块用户态内存即可，但是这必然就涉及到互斥和原子性问题。</p>
-<p>而进程要实现通信则需要借助内核和文件，所有的IPC，都是把内核和文件充当交换信息的桥梁。</p>
+<p>而进程要实现通信则需要借助内核和文件，所有的IPC，都是把内核和文件充当交换信息的桥梁。</p>
 <h2 id="上下文切换">上下文切换<a href="#上下文切换" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>cpu调度基本的单位是线程，所以在运行不同的线程时，会导致<strong>cpu上下文切换</strong>，即CPU寄存器和程序计数器的保存和更新。而根据被调度的线程是同一个进程里的还是不同进程里的，又分为<strong>线程上下文切换</strong>和<strong>进程上下文切换</strong>。</p>
 <p>CPU上下文切换是需要CPU运行内核代码的，所以过多的cpu上下文切换会导致cpu将大量的时间都用来运行内核代码，导致真正的给用户态线程运行的时间变少。所以一般我们会根据机器的核数来决定进程的线程数量或者子进程数量，避免进行频繁的上下文切换。</p>
@@ -105,8 +105,8 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/linux">Linux</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1127 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/00a22a7c7e5da0cf4705cf50886f1d5a3cc8f64f" target="_blank" rel="noopener">00a22a7</a> @ 2021-10-12</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1126 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/e3763633dde2d52632cbdb90a743d2513368ea9d" target="_blank" rel="noopener">e376363</a> @ 2021-12-22</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">

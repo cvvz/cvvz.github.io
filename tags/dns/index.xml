@@ -14,7 +14,7 @@
       <pubDate>Wed, 30 Dec 2020 09:41:51 +0800</pubDate>
       
       <guid>https://cvvz.github.io/post/k8s-network-dns/</guid>
-      <description>默认DNS策略 Pod默认的dns策略是 ClusterFirst，意思是先通过kubernetes的权威DNS服务器（如CoreDNS）直接</description>
+      <description>默认DNS策略 Pod默认的dns策略是 ClusterFirst，意思是先通过kubernetes的权威DNS服务器（如CoreDNS）直接解</description>
     </item>
     
   </channel>

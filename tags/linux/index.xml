@@ -86,7 +86,7 @@
       <pubDate>Thu, 23 May 2019 02:21:56 +0800</pubDate>
       
       <guid>https://cvvz.github.io/post/login-permission-denied/</guid>
-      <description>问题现象 SSH登录主机失败，提示错误：/bin/bash: Permission denied。 分析过程 Linux处理SSH远程登录的流程如下： SSHD进程后台</description>
+      <description>问题现象 SSH登录主机失败，提示错误：/bin/bash: Permission denied。 分析过程 Linux处理SSH远程登录的流程如下： SSHD进程后台监</description>
     </item>
     
     <item>

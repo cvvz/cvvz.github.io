@@ -9,8 +9,8 @@
 <meta itemprop="name" content="【问题定位】异步回调函数造成踩内存">
 <meta itemprop="description" content="问题现象 进程概率性coredump 分析过程 分析core文件，堆栈栈顶函数为strncmp，coredump的原因是给strncmp传递的字符">
 <meta itemprop="datePublished" content="2019-06-13T03:54:36+08:00" />
-<meta itemprop="dateModified" content="2021-01-30T04:27:54+08:00" />
-<meta itemprop="wordCount" content="492">
+<meta itemprop="dateModified" content="2021-12-22T11:39:56+08:00" />
+<meta itemprop="wordCount" content="491">
 
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/coredump/" />
 <meta property="article:published_time" content="2019-06-13T03:54:36+08:00" />
-<meta property="article:modified_time" content="2021-01-30T04:27:54+08:00" />
+<meta property="article:modified_time" content="2021-12-22T11:39:56+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="【问题定位】异步回调函数造成踩内存"/>
 <meta name="twitter:description" content="问题现象 进程概率性coredump 分析过程 分析core文件，堆栈栈顶函数为strncmp，coredump的原因是给strncmp传递的字符"/>
@@ -89,13 +89,13 @@
 <h2 id="原因解析">原因解析<a href="#原因解析" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>这个字符串的内存空间曾经被用作某个函数的局部变量，而这个函数中有一段逻辑是循环调用一个异步查询接口，并给这个异步查询接口提供一个回调函数，而这个回调函数的作用就是去修改这个局部变量。</p>
 <p>问题发生的原因是这个异步回调接口返回的太慢，调用方函数已经运行完毕，此时栈空间已经被操作系统回收并分配给其他函数，这时再执行回调函数修改原先的局部变量，就造成了踩内存。</p>
-<p>这里原先的局部变量是个<code>int</code>类型，回调函数想将其修改为1，结果就成了将一个<code>char*</code>类型的变量值修改为了<code>0x01</code>。</p>
+<p>这里原先的局部变量是个<code>int</code>类型，回调函数想将其修改为1，结果就成了将一个<code>char*</code>类型的变量值修改为了<code>0x01</code>。</p>
 
 			</div>
 			<hr class="post-end">
 			<footer class="post-info">
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>492 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/73f17142c13c8fe3b55d5c909c159019686892a9" target="_blank" rel="noopener">73f1714</a> @ 2021-01-30</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>491 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/e3763633dde2d52632cbdb90a743d2513368ea9d" target="_blank" rel="noopener">e376363</a> @ 2021-12-22</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">

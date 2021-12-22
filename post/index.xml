@@ -683,7 +683,7 @@
 <span class="ln">6</span>kubernetes   10.20.126.169:6443,10.28.116.8:6443,10.28.126.199:6443   348d
 </code></pre></div><ol>
 <li>首先数据包从容器中被路由到cni网桥，出现在宿主机网络栈中。</li>
-<li>Netfilter在<code>PREROUTING</code>链中处理该数据包，最终会将其转到<code>KUBE-SERVICES</code>链上进行处理：</li>
+<li>Netfilter在<code>PREROUTING</code>链中处理该数据包，最终会将其转到<code>KUBE-SERVICES</code>链上进行处理：</li>
 </ol>
 <div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>-A PREROUTING -m comment --comment <span class="s2">&#34;kubernetes service portals&#34;</span> -j KUBE-SERVICES
 </code></pre></div><ol start="3">
@@ -691,7 +691,7 @@
 </ol>
 <div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>-A KUBE-SERVICES -d 192.168.0.1/32 -p tcp -m comment --comment <span class="s2">&#34;default/kubernetes:https cluster IP&#34;</span> -m tcp --dport <span class="m">443</span> -j KUBE-SVC-NPX46M4PTMTKRN6Y
 </code></pre></div><ol start="4">
-<li><code>KUBE-SVC-NPX46M4PTMTKRN6Y</code>链以<strong>相等概率</strong>将数据包跳转到<code>KUBE-SEP-A66XJ5Q22M6AZV5X</code>、<code>KUBE-SEP-TYGT5TFZZ2W5DK4V</code>或<code>KUBE-SEP-KQD4HGXQYU3ORDNS</code>链进行处理：</li>
+<li><code>KUBE-SVC-NPX46M4PTMTKRN6Y</code>链以<strong>相等概率</strong>将数据包跳转到<code>KUBE-SEP-A66XJ5Q22M6AZV5X</code>、<code>KUBE-SEP-TYGT5TFZZ2W5DK4V</code>或<code>KUBE-SEP-KQD4HGXQYU3ORDNS</code>链进行处理：</li>
 </ol>
 <div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>-A KUBE-SVC-NPX46M4PTMTKRN6Y -m statistic --mode random --probability 0.33332999982 -j KUBE-SEP-A66XJ5Q22M6AZV5X
 <span class="ln">2</span>-A KUBE-SVC-NPX46M4PTMTKRN6Y -m statistic --mode random --probability 0.50000000000 -j KUBE-SEP-TYGT5TFZZ2W5DK4V
@@ -721,7 +721,7 @@
 </ol>
 <div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>-A KUBE-SERVICES -m comment --comment <span class="s2">&#34;kubernetes service nodeports; NOTE: this must be the last rule in this chain&#34;</span> -m addrtype --dst-type LOCAL -j KUBE-NODEPORTS
 </code></pre></div><ol start="3">
-<li>先跳到<code>KUBE-MARK-MASQ</code>链打上<strong>特殊记号<code>0x4000/0x4000</code></strong>，这个特殊记号<strong>后续在<code>POSTROUTING</code>链中进行SNAT时用到</strong>。</li>
+<li>先跳到<code>KUBE-MARK-MASQ</code>链打上<strong>特殊记号<code>0x4000/0x4000</code></strong>，这个特殊记号<strong>后续在<code>POSTROUTING</code>链中进行SNAT时用到</strong>。</li>
 </ol>
 <div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>-A KUBE-NODEPORTS -p tcp -m comment --comment <span class="s2">&#34;default/webapp:&#34;</span> -m tcp --dport <span class="m">31849</span> -j KUBE-MARK-MASQ
 <span class="ln">2</span>
@@ -735,7 +735,7 @@
 <li>如果目的Pod IP地址就在本节点，则路由给cni网桥转发；如果目的Pod IP在其他节点，则需要进行容器跨节点通信。<strong>注意，这种情形下，本节点相当于网关的角色，在将源数据包转发出去之前，需要进行SNAT，将源数据包的源IP地址，转换为网关（本节点）的IP地址，这样，数据包才可能原路返回，即从目的节点经过本节点返回到实际的k8s集群外部的客户端</strong>：</li>
 </ol>
 <div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>-A KUBE-POSTROUTING -m comment --comment <span class="s2">&#34;kubernetes service traffic requiring SNAT&#34;</span> -m mark --mark 0x4000/0x4000 -j MASQUERADE
-</code></pre></div><p>这条规则的意思就是：带有<code>0x4000/0x4000</code>这个特殊标记的数据包在离开节点之前，在<code>POSTROUTING</code>链上进行一次SNAT，即<code>MASQUERADE</code>。而这个特殊标记，如前所述，是在外部客户端数据流入节点时打上去的。</p>
+</code></pre></div><p>这条规则的意思就是：带有<code>0x4000/0x4000</code>这个特殊标记的数据包在离开节点之前，在<code>POSTROUTING</code>链上进行一次SNAT，即<code>MASQUERADE</code>。而这个特殊标记，如前所述，是在外部客户端数据流入节点时打上去的。</p>
 <h2 id="总结">总结</h2>
 <p>从上面的分析中，可以看出来，kube-proxy iptables模式中，最重要的是下面这五条链：</p>
 <ul>
@@ -756,7 +756,7 @@
 <span class="ln">6</span>
 <span class="ln">7</span>-A KUBE-FIREWALL -m comment --comment <span class="s2">&#34;kubernetes firewall for dropping marked packets&#34;</span> -m mark --mark 0x8000/0x8000 -j DROP
 </code></pre></div><h2 id="kube-proxy的ipvs模式">kube-proxy的IPVS模式</h2>
-<p>上述流程描述的是kube-proxy的iptables模式的工作流程，这个模式最大的问题在于：</p>
+<p>上述流程描述的是kube-proxy的iptables模式的工作流程，这个模式最大的问题在于：</p>
 <ul>
 <li>kube-proxy需要为service配置大量的iptables规则，并且刷新这些规则以确保正确性；</li>
 <li>iptables的规则是以链表的形式保存的，对iptables的刷新需要遍历链表</li>
@@ -797,7 +797,7 @@
 <h3 id="underlay和overlay">underlay和overlay</h3>
 <p>所谓underlay，也就是没有在宿主机网络上的虚拟层，容器和宿主机处于同一个网络层面上。</p>
 <blockquote>
-<p>在这种情形下，Kubernetes 内外网络是互通的，运行在kubernetes中的容器可以很方便的和公司内部已有的非云原生基础设施进行联动，比如DNS、负载均衡、配置中心等，而不需要借助kubernetes内部的DNS、ingress和service做服务发现和负载均衡。</p>
+<p>在这种情形下，Kubernetes 内外网络是互通的，运行在kubernetes中的容器可以很方便的和公司内部已有的非云原生基础设施进行联动，比如DNS、负载均衡、配置中心等，而不需要借助kubernetes内部的DNS、ingress和service做服务发现和负载均衡。</p>
 </blockquote>
 <p>所谓overlay，其实就是在容器的IP包外面附加额外的数据包头，然后<strong>整体作为宿主机网络报文中的数据进行传输</strong>。容器的IP包加上额外的数据包头就用于跨主机的容器之间通信，<strong>容器网络就相当于覆盖(overlay)在宿主机网络上的一层虚拟网络</strong>。如下图所示：</p>
 <figure>
@@ -822,14 +822,14 @@
 <h3 id="flannel-vxlan模式">Flannel VXLAN模式</h3>
 <p>Flannel VXLAN模式的原理和UDP模式差不多，区别在于：</p>
 <ol>
-<li>UDP模式创建的是TUN设备(flannel0)，VXLAN模式创建的是VTEP设备（flannel.1）。</li>
+<li>UDP模式创建的是TUN设备(flannel0)，VXLAN模式创建的是VTEP设备（flannel.1）。</li>
 <li>VTEP设备全程工作在内核态，性能比UDP模式更好。</li>
 </ol>
 <p>VXLAN模式的工作流程：</p>
 <ol>
 <li>container-1根据默认路由规则，将IP包发往cni网桥，出现在宿主机的网络栈上；</li>
 <li>flanneld预先在宿主机上创建好了路由规则，数据包到达cni网桥后，随即被转发给了flannel.1，flannel.1是一个VTEP设备，<strong>它既有 IP 地址，也有 MAC 地址</strong>；</li>
-<li><strong>在node2上的目的VTEP设备启动时，node1上的flanneld会将目的VTEP设备的IP地址和MAC地址分别写到node1上的路由表和ARP缓存表中</strong>。</li>
+<li><strong>在node2上的目的VTEP设备启动时，node1上的flanneld会将目的VTEP设备的IP地址和MAC地址分别写到node1上的路由表和ARP缓存表中</strong>。</li>
 <li>因此，node1上的flannel.1通过查询路由表，知道要发往目的容器，需要经过10.1.16.0这个网关。<strong>其实这个网关，就是目的VTEP设备的ip地址</strong>。</li>
 </ol>
 <div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>$ route -n
@@ -838,7 +838,7 @@
 <span class="ln">4</span>...
 <span class="ln">5</span>10.1.16.0       10.1.16.0       255.255.255.0   UG    <span class="m">0</span>      <span class="m">0</span>        <span class="m">0</span> flannel.1
 </code></pre></div><ol start="5">
-<li>又由于<strong>这个网关的MAC地址，事先已经被flanneld写到了ARP缓存表中</strong>，所以内核直接把目的VTEP设备的MAC地址封装到链路层的帧头即可：
+<li>又由于<strong>这个网关的MAC地址，事先已经被flanneld写到了ARP缓存表中</strong>，所以内核直接把目的VTEP设备的MAC地址封装到链路层的帧头即可：
 <figure>
     <img src="/flannel-vxlan-frame.jpg" width="500px"/> 
 </figure>
@@ -861,9 +861,9 @@
 			<pubDate>Wed, 30 Dec 2020 09:41:51 +0800</pubDate>
 			
 			<guid>https://cvvz.github.io/post/k8s-network-dns/</guid>
-			<description>默认DNS策略 Pod默认的dns策略是 ClusterFirst，意思是先通过kubernetes的权威DNS服务器（如CoreDNS）直接</description>
+			<description>默认DNS策略 Pod默认的dns策略是 ClusterFirst，意思是先通过kubernetes的权威DNS服务器（如CoreDNS）直接解</description>
 			<content type="html"><![CDATA[<h2 id="默认dns策略">默认DNS策略</h2>
-<p>Pod默认的<a href="https://kubernetes.io/zh/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy">dns策略</a>是 <code>ClusterFirst</code>，意思是先通过kubernetes的<strong>权威DNS服务器</strong>（如CoreDNS）直接解析出A记录或CNAME记录；如果解析失败，再根据配置，将其转发给<strong>上游DNS服务器</strong>。以CoreDNS为例，它的配置文件Corefile如下所示：</p>
+<p>Pod默认的<a href="https://kubernetes.io/zh/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy">dns策略</a>是 <code>ClusterFirst</code>，意思是先通过kubernetes的<strong>权威DNS服务器</strong>（如CoreDNS）直接解析出A记录或CNAME记录；如果解析失败，再根据配置，将其转发给<strong>上游DNS服务器</strong>。以CoreDNS为例，它的配置文件Corefile如下所示：</p>
 <div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln"> 1</span>➜  ~ kubectl get cm -n kube-system coredns -o yaml
 <span class="ln"> 2</span>apiVersion: v1
 <span class="ln"> 3</span>data:
@@ -938,7 +938,7 @@
 <span class="ln">4</span>
 <span class="ln">5</span>Name:	kubernetes.default.svc.cluster.local
 <span class="ln">6</span>Address: 192.168.0.1
-</code></pre></div><p>Headless Service的域名解析稍微复杂一点。</p>
+</code></pre></div><p>Headless Service的域名解析稍微复杂一点。</p>
 <blockquote>
 <p>ClusterIP可以看作是Service的头，而Headless Service，顾名思义也就是指定他的ClusterIP为None的Service。</p>
 </blockquote>
@@ -1071,7 +1071,7 @@
 <p>cpu cgroup能限制cpu的使用率，但是cpu cgroup并没有办法解决平均负载升高的问题。</p>
 <p>我们可以做的是，在生产环境中监控容器的宿主机节点里 D 状态的进程数量，然后对 D 状态进程数目异常的节点进行分析，比如磁盘硬件出现问题引起 D 状态进程数目增加，这时就需要更换硬盘。</p>
 <h3 id="cpuset-cgroup">cpuset cgroup</h3>
-<p>cpuset cgroup用于进程绑核，主要通过设置<code>cpuset.cpus</code>和<code>cpuset.mems</code>两个字段来实现。</p>
+<p>cpuset cgroup用于进程绑核，主要通过设置<code>cpuset.cpus</code>和<code>cpuset.mems</code>两个字段来实现。</p>
 <p>在kubernetes中，当 Pod 属于 Guaranteed QoS 类型，并且 requests 值与 limits 被设置为同一个相等的<strong>整数值</strong>就相当于声明Pod中的容器要进行绑核。</p>
 <h3 id="memory-cgroup">memory cgroup</h3>
 <ul>
@@ -1089,7 +1089,7 @@
 <p>Q：当执行 <code>kubectl exec</code> 时，创建的进程会加入到容器的cgroup控制组吗？</p>
 <p>A：会。以cpu cgroup为例，查看<code>/sys/fs/cgroup/cpu/kubepods.slice/kubepods-pod{$uid}.slice/docker-{$containerID}.scope/tasks</code>文件就能发现新创建的进程被加入到容器的cgroup控制组了。</p>
 <p>Q：执行 <code>kubectl top</code> 命令获取到的pod指标是从哪里来的？</p>
-<p>A：整个执行路径是：<code>kubectl -&gt; apiserver -&gt; aggregated-apiserver -&gt; metric-server -&gt; kubelet(cAdvisor) -&gt; cgroup</code>。最终来源就是cgroup。而Linux <code>top</code>命令的指标数据的来源是<code>/proc</code>文件系统。</p>
+<p>A：整个执行路径是：<code>kubectl -&gt; apiserver -&gt; aggregated-apiserver -&gt; metric-server -&gt; kubelet(cAdvisor) -&gt; cgroup</code>。最终来源就是cgroup。而Linux <code>top</code>命令的指标数据的来源是<code>/proc</code>文件系统。</p>
 </blockquote>
 <h2 id="kubeletdockercrioci">kubelet、Docker、CRI、OCI</h2>
 <p>docker 架构图如下图所示：</p>
@@ -1104,12 +1104,12 @@
 
 <p>从这两幅图就能看出来，当前在kubernetes中，创建一个容器的调用链为：</p>
 <p><code>kubelet -&gt; dockershim -&gt; docker daemon -&gt; containerd -&gt; containerd-shim -&gt; runc -&gt; container</code></p>
-<p>dockershim实现了<a href="https://github.com/kubernetes/kubernetes/blob/8327e433590f9e867b1e31a4dc32316685695729/pkg/kubelet/apis/cri/services.go">CRI</a>定义的gRPC接口，实现方式就是充当docker daemon的客户端，向docker daemon发送命令。实际上dockershim和docker daemon都可以被干掉，<a href="https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.20.md#deprecation">kubernetes在v1.20也的确这么做了</a>。docker从kubernetes中被移除后，我们可以直接使用<a href="https://github.com/containerd/containerd">containerd</a>或<a href="https://github.com/cri-o/cri-o">CRI-O</a>作为CRI。</p>
+<p>dockershim实现了<a href="https://github.com/kubernetes/kubernetes/blob/8327e433590f9e867b1e31a4dc32316685695729/pkg/kubelet/apis/cri/services.go">CRI</a>定义的gRPC接口，实现方式就是充当docker daemon的客户端，向docker daemon发送命令。实际上dockershim和docker daemon都可以被干掉，<a href="https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.20.md#deprecation">kubernetes在v1.20也的确这么做了</a>。docker从kubernetes中被移除后，我们可以直接使用<a href="https://github.com/containerd/containerd">containerd</a>或<a href="https://github.com/cri-o/cri-o">CRI-O</a>作为CRI。</p>
 <p><a href="https://github.com/opencontainers/runc">runC</a>则是一个<a href="https://github.com/opencontainers/runtime-spec">OCI</a>的参考实现，底层通过Linux系统调用为容器设置 namespaces 和 cgroups, 挂载 rootfs。当然kubernetes其实不关心OCI的底层是怎么实现的，只要能保证遵循OCI文档里的标准，就能自己实现一个OCI。<a href="https://github.com/kata-containers/kata-containers">Kata</a>就是遵循了OCI标准实现的安全容器。它的底层是用虚拟机实现的资源强隔离，而不是namespace。</p>
 <p>Kata中的VM可以和Pod做一个类比：</p>
 <ul>
 <li>kubelet调用CRI的<code>RunPodSandbox</code>接口时，如果是runC实现的OCI，则会去创建<code>infra</code>容器，并执行<code>/pause</code>将容器挂起；如果是Kata，则会去创建一个虚拟机。</li>
-<li>接着kubelet调用<code>CreateContainer</code>去创建容器，对于runC，就是创建容器进程并将他们的namespace加入<code>infra</code>容器中去；对于Kata，则是往VM中添加容器。</li>
+<li>接着kubelet调用<code>CreateContainer</code>去创建容器，对于runC，就是创建容器进程并将他们的namespace加入<code>infra</code>容器中去；对于Kata，则是往VM中添加容器。</li>
 </ul>
 ]]></content>
 		</item>
@@ -1120,13 +1120,13 @@
 			<pubDate>Sun, 13 Dec 2020 19:26:15 +0800</pubDate>
 			
 			<guid>https://cvvz.github.io/post/k8s-3-deletion-webhook/</guid>
-			<description>最近在玩admission webhook时，发现一个奇怪的现象：我配置了validatingWebhookConfiguration使其监</description>
-			<content type="html"><![CDATA[<p>最近在玩admission webhook时，发现一个奇怪的现象：我配置了validatingWebhookConfiguration使其监听pod的删除操作，结果发现每次删除Pod的时候，webhook会收到三次delete请求：</p>
+			<description>最近在玩admission webhook时，发现一个奇怪的现象：我配置了validatingWebhookConfiguration使其监听</description>
+			<content type="html"><![CDATA[<p>最近在玩admission webhook时，发现一个奇怪的现象：我配置了validatingWebhookConfiguration使其监听pod的删除操作，结果发现每次删除Pod的时候，webhook会收到三次delete请求：</p>
 <figure>
     <img src="/3-delete.png" width="1000px"/> 
 </figure>
 
-<p>从日志打印上可以分析出，第一次删除请求来自于kubectl客户端，后面两次来自于pod所在的node节点。为什么会收到三次delete请求呢？</p>
+<p>从日志打印上可以分析出，第一次删除请求来自于kubectl客户端，后面两次来自于pod所在的node节点。为什么会收到三次delete请求呢？</p>
 <h2 id="删除一个pod的过程">删除一个Pod的过程</h2>
 <p>通过阅读kube-apiserver和kubelet源码，我把一个pod的删除过程总结成如下这幅流程图，三个红色加粗的请求即为webhook收到的三次delete请求。
 <figure>
@@ -1269,7 +1269,7 @@
 <span class="ln">48</span><span class="p">}</span>  
 </code></pre></div><p>这个方法就是先调用prestop hook，然后在通过<code>runtimeService.StopContainer</code>方法杀掉容器进程，整个过程总时长不能超过<code>DeletionGracePeriodSeconds</code>。注意，prestop hook是不会进行重试的，失败了kubelet也不管，容器还是照杀不误。</p>
 <h3 id="statusmanager发送删除请求">statusManager发送删除请求</h3>
-<p>kubelet以goroutine的方式运行着一个<code>statusManager</code>，它的作用就是周期性的监听Pod的状态变化，然后执行<code>func (m *manager) syncPod(uid types.UID, status versionedPodStatus) {</code>。在<code>syncPod</code>中，注意到有如下的逻辑：</p>
+<p>kubelet以goroutine的方式运行着一个<code>statusManager</code>，它的作用就是周期性的监听Pod的状态变化，然后执行<code>func (m *manager) syncPod(uid types.UID, status versionedPodStatus) {</code>。在<code>syncPod</code>中，注意到有如下的逻辑：</p>
 <div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln"> 1</span><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">manager</span><span class="p">)</span> <span class="nf">syncPod</span><span class="p">(</span><span class="nx">uid</span> <span class="nx">types</span><span class="p">.</span><span class="nx">UID</span><span class="p">,</span> <span class="nx">status</span> <span class="nx">versionedPodStatus</span><span class="p">)</span> <span class="p">{</span>
 <span class="ln"> 2</span>    <span class="o">...</span>
 <span class="ln"> 3</span>
@@ -1374,7 +1374,7 @@
 <p>调用 <code>pivot_root</code> 或 <code>chroot</code>，改变容器进程的根目录。至此，容器再也看不到宿主机的文件系统目录了。</p>
 </li>
 </ol>
-<h2 id="kubelet挂载卷的过程">kubelet挂载卷的过程</h2>
+<h2 id="kubelet挂载卷的过程">kubelet挂载卷的过程</h2>
 <p>当一个Pod被调度到一个节点上之后，kubelet首先为这个Pod在宿主机上创建一个Volume目录：</p>
 <p><strong>/var/lib/kubelet/pods/&lt;Pod的ID&gt;/volumes/kubernetes.io~&lt;Volume类型&gt;/&lt;Volume名字&gt;</strong>。</p>
 <p>在kubernetes中，卷<code>volumes</code>是Pod的一个属性，而不是容器的。kubelet先以Pod为单位，在宿主机这个Volume目录中准备好Pod需要的卷。接着启动容器，容器启动时，根据<code>volumeMounts</code>的定义将主机的这个目录下的部分卷资源挂载进来。挂载的过程如前所述，相当于为每个容器执行了命令：</p>
@@ -1407,8 +1407,8 @@
 </blockquote>
 <h2 id="pvcpv和storageclass">PVC、PV和StorageClass</h2>
 <p>在Pod中，如果想使用持久化的存储，如上面提到的远程块存储、NFS存储，或是本地块存储（非hostPath），则在volumes字段中，定义<code>persistentVolumeClaim</code>，即PVC。</p>
-<p>PVC和PV进行绑定的过程，由<code>Volume Controller</code>中的<code>PersistentVolumeController</code>这个控制循环负责。所谓“绑定”，也就是填写PVC中的<code>spec.volumeName</code>字段而已。<code>PersistentVolumeController</code>只会将StorageClass相同的PVC和PV绑定起来。</p>
-<p>StorageClass主要用来动态分配存储(Dynamic Provisioning)。StorageClass中的<code>provisioner</code>字段用于指定使用哪种<a href="https://kubernetes.io/docs/concepts/storage/storage-classes/#provisioner">存储插件</a>进行动态分配，当然，前提是你要在kubernetes中装好对应的存储插件。<code>parameters</code>字段就是生成出来的PV的参数。</p>
+<p>PVC和PV进行绑定的过程，由<code>Volume Controller</code>中的<code>PersistentVolumeController</code>这个控制循环负责。所谓“绑定”，也就是填写PVC中的<code>spec.volumeName</code>字段而已。<code>PersistentVolumeController</code>只会将StorageClass相同的PVC和PV绑定起来。</p>
+<p>StorageClass主要用来动态分配存储(Dynamic Provisioning)。StorageClass中的<code>provisioner</code>字段用于指定使用哪种<a href="https://kubernetes.io/docs/concepts/storage/storage-classes/#provisioner">存储插件</a>进行动态分配，当然，前提是你要在kubernetes中装好对应的存储插件。<code>parameters</code>字段就是生成出来的PV的参数。</p>
 <blockquote>
 <p><code>PersistentVolumeController</code>只是在找不到对应的PV资源和PVC进行绑定时，借助StorageClass生成了一个PV这个API对象。具体这个PV是怎么成为主机volume目录下的一个子目录的，则是靠前面所述的Attach + Mount两阶段处理后的结果。当然如果是NFS或本地持久化卷，就不需要<code>Volume Controller</code>进行Attach操作了。</p>
 </blockquote>
@@ -1425,7 +1425,7 @@
 <p>Q：hostPath可以是挂载在宿主机上的一块磁盘，而不是宿主机的主目录，这种情况使用hostPath作为持久化存储不会导致宿主机宕机。那是不是可以使用hostPath代替PVC/PV作为本地持久化卷？</p>
 <p>A：不可以。这种玩法失去了<code>PersistentVolumeController</code>对PVC和PV进行自动绑定、解绑的灵活性。也失去了通过<code>local-static-provisioner</code>对PV进行自动管理的灵活性。最关键的是失去了<strong>延迟绑定</strong>的特性，调度器进行调度的时候，无法参考节点存储的使用情况。</p>
 <p>Q：删除一个被Pod使用中的PVC/PV时，kubectl会卡住，为什么？</p>
-<p>A：PVC和PV中定义了<code>kubernetes.io/pvc-protection</code>、<code>kubernetes.io/pv-protection</code>这个finalizer字段，删除时，资源不会被apiserver立即删除，要等到<code>volume controller</code>进行<strong>pre-delete</strong>操作后，将finalizer字段删掉，才会被实际删除。而<code>volume controller</code>的<strong>pre-delete</strong>操作实际上就是检查PVC/PV有没有被Pod使用。</p>
+<p>A：PVC和PV中定义了<code>kubernetes.io/pvc-protection</code>、<code>kubernetes.io/pv-protection</code>这个finalizer字段，删除时，资源不会被apiserver立即删除，要等到<code>volume controller</code>进行<strong>pre-delete</strong>操作后，将finalizer字段删掉，才会被实际删除。而<code>volume controller</code>的<strong>pre-delete</strong>操作实际上就是检查PVC/PV有没有被Pod使用。</p>
 </blockquote>
 ]]></content>
 		</item>
@@ -1451,7 +1451,7 @@
 <p>以Docker为例，在bridge模式下：</p>
 <ul>
 <li>Docker Daemon第一次启动时会创建<code>docker0</code>网桥；</li>
-<li>在创建容器时，会创建一个veth pair，即veth设备对。</li>
+<li>在创建容器时，会创建一个veth pair，即veth设备对。</li>
 </ul>
 <p>veth pair有两个端点：</p>
 <ul>
@@ -1514,22 +1514,22 @@
 <p>apiserver为客户端提供三种认证方式：</p>
 <ol>
 <li>https<strong>双向</strong>认证（注意是双向认证，例如kubeconfig文件中既要配置客户端证书和私钥，又要配置CA证书）</li>
-<li>http token认证（例如serviceaccount对应的secret中，包含token文件、ca证书，容器就是通过这两个文件和apiserver进行http token认证的）</li>
+<li>http token认证（例如serviceaccount对应的secret中，包含token文件、ca证书，容器就是通过这两个文件和apiserver进行http token认证的）</li>
 <li>http base认证（用户名+密码）</li>
 </ol>
 <h2 id="admission-webhook和扩展apiserver">admission webhook和扩展apiserver</h2>
-<p>对于这两种情形，<strong>apiserver是作为客户端</strong>，admission webhook和扩展apiserver作为服务端。</p>
+<p>对于这两种情形，<strong>apiserver是作为客户端</strong>，admission webhook和扩展apiserver作为服务端。</p>
 <h3 id="apiserver通过https连接admission-webhook">apiserver通过HTTPS连接admission webhook</h3>
-<p>当apiserver作为客户端连接admission webhook时，要求admission webhook必须提供https安全认证，但是默认是<strong>单向</strong>认证即可。<strong>也就是admission webhook负责提供服务端证书供apiserver进行验证，但webhook默认可以不验证apiserver</strong>。apiserver所需要的CA证书在webhookconfiguration文件中的<code>caBundle</code>字段中进行配置。如果不配置，则默认使用apiserver自己的CA证书。</p>
+<p>当apiserver作为客户端连接admission webhook时，要求admission webhook必须提供https安全认证，但是默认是<strong>单向</strong>认证即可。<strong>也就是admission webhook负责提供服务端证书供apiserver进行验证，但webhook默认可以不验证apiserver</strong>。apiserver所需要的CA证书在webhookconfiguration文件中的<code>caBundle</code>字段中进行配置。如果不配置，则默认使用apiserver自己的CA证书。</p>
 <p>我们可以自己签发webhook的证书，如<code>istio</code>项目中使用的<a href="https://github.com/istio/istio/blob/release-0.7/install/kubernetes/webhook-create-signed-cert.sh">脚本</a>，或者像<code>openkruise</code>项目一样<a href="https://github.com/openkruise/kruise/blob/master/pkg/webhook/util/controller/webhook_controller.go#L262">在controller中生成证书</a>，当然也可以使用cert-manager自动生成和管理证书。</p>
 <h3 id="admission-webhook验证apiserver">admission webhook验证apiserver</h3>
-<p>如果你的admission webhook想要验证客户端（也就是apiserver），那么就需要额外给apiserver提供一个配置文件，这个配置文件的内容和kubeconfig很像，可以指定apisever使用http base认证、http token或者证书来向webhook提供身份证明，具体过程详见<a href="https://kubernetes.io/zh/docs/reference/access-authn-authz/extensible-admission-controllers/#authenticate-apiservers">官方文档</a>。</p>
-<p>简单来讲就是：在启动 apiserver时，通过<code>--admission-control-config-file</code> 这个参数指定了客户端认证的配置文件，这个文件的格式和用 kubectl 连接 apiserver 时用到的 <code>kubeconfig</code> 格式几乎一样。只不过这里，客户端是apiserver，服务端是admission webhook。</p>
+<p>如果你的admission webhook想要验证客户端（也就是apiserver），那么就需要额外给apiserver提供一个配置文件，这个配置文件的内容和kubeconfig很像，可以指定apisever使用http base认证、http token或者证书来向webhook提供身份证明，具体过程详见<a href="https://kubernetes.io/zh/docs/reference/access-authn-authz/extensible-admission-controllers/#authenticate-apiservers">官方文档</a>。</p>
+<p>简单来讲就是：在启动 apiserver时，通过<code>--admission-control-config-file</code> 这个参数指定了客户端认证的配置文件，这个文件的格式和用 kubectl 连接 apiserver 时用到的 <code>kubeconfig</code> 格式几乎一样。只不过这里，客户端是apiserver，服务端是admission webhook。</p>
 <p>通过这种方式验证客户端，最麻烦的地方是需要手工维护kubeconfig，且对于每个webhook都需要维护一个。</p>
 <h3 id="apiserver通过https双向连接扩展apiserver">apiserver通过HTTPS（双向）连接扩展apiserver</h3>
 <p>aggregated apiserver在设计之初就解决了客户端认证的问题，具体实现过程详见<a href="https://kubernetes.io/zh/docs/tasks/extend-kubernetes/configure-aggregation-layer/#kubernetes-apiserver-%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%AE%A4%E8%AF%81">官方文档</a>。</p>
 <h2 id="以扩展apiserver的方式部署admission-webhook">以扩展apiserver的方式部署admission webhook</h2>
-<p>openshift 的 <a href="https://github.com/openshift/generic-admission-server#generic-admission-server">generic-admission-server库</a> 是一种用来编写admission webhook的lib库，它声称<strong>使用它可以避免apiserver为每一个admission webhook维护一个kubeconfig。（不过我觉得它最大的好处是可以不部署服务端证书，这是通过正常方式部署admission webhook时所办不到的）</strong>。我们来看下它是如何实现的。</p>
+<p>openshift 的 <a href="https://github.com/openshift/generic-admission-server#generic-admission-server">generic-admission-server库</a> 是一种用来编写admission webhook的lib库，它声称<strong>使用它可以避免apiserver为每一个admission webhook维护一个kubeconfig。（不过我觉得它最大的好处是可以不部署服务端证书，这是通过正常方式部署admission webhook时所办不到的）</strong>。我们来看下它是如何实现的。</p>
 <ol>
 <li>
 <p>在(Validating/Mutating)WebhookConfiguration中，配置admission webhook为kubernetes服务：</p>
@@ -1562,7 +1562,7 @@
 <p>apiserver过滤指定的请求，<strong>将它发到自己的路径下</strong>。</p>
 </li>
 <li>
-<p>由aggregator转发到扩展apiserver，也就是真正的admission webhook进行处理。</p>
+<p>由aggregator转发到扩展apiserver，也就是真正的admission webhook进行处理。</p>
 </li>
 </ol>
 <p>这样就省去了为apiserver配置和维护kubeconfig文件的步骤。</p>
@@ -1632,7 +1632,7 @@
 			<content type="html"><![CDATA[<h2 id="监控和指标">监控和指标</h2>
 <h3 id="理解监控">理解监控</h3>
 <p>我们可以把监控系统划分为：采集指标、存储、展示和告警四个部分。</p>
-<p>存储使用时序数据库TSDB、前端展示使用grafana、告警系统也有多种开源实现。我重点介绍一下和指标采集相关的内容。</p>
+<p>存储使用时序数据库TSDB、前端展示使用grafana、告警系统也有多种开源实现。我重点介绍一下和指标采集相关的内容。</p>
 <h3 id="理解指标">理解指标</h3>
 <blockquote>
 <p><strong>我们所采集的指标 (metrics)，追根溯源，要么来自于操作系统，要么来自于应用进程自身</strong>。</p>
@@ -1774,7 +1774,7 @@
 <span class="ln">3</span>child pid  <span class="m">78217</span>
 <span class="ln">4</span>pid  <span class="m">78217</span>
 </code></pre></div><p>从这个结果我们可以看出，<strong>fork出来的子进程虽然和父进程不共享堆栈（子进程获得父进程堆栈的副本），但是他们共享正文段</strong>，所以他们都执行了程序的最后一行，各自输出了自己的pid。</p>
-<p>接着来分析上述worker的代码，在<code>execute()</code>中，通过两次fork，最终使得<code>do_execute()</code>运行在一个孤儿进程中，如果正常运行，最终会执行<code>os._exit(0)</code>正常退出。然而，如果运行过程中抛出异常又会发生什么呢？根据父子进程共享正文段这一结论，我们可以知道这个孤儿进程抛出的异常会被第32行的<code>except</code>捕获到，并继续向上抛出异常，然后会被第9行<code>worker()</code>中的<code>except</code>捕获，并执行<code>on_failure()</code>。<strong>也就是说，这个孤儿进程最终执行到了worker的代码里去了，而worker本身是一个死循环，因此这个孤儿进程就不会退出了。理论上来说，最终它会运行到第4行，成为一个“worker副本”，等待接收任务</strong>。</p>
+<p>接着来分析上述worker的代码，在<code>execute()</code>中，通过两次fork，最终使得<code>do_execute()</code>运行在一个孤儿进程中，如果正常运行，最终会执行<code>os._exit(0)</code>正常退出。然而，如果运行过程中抛出异常又会发生什么呢？根据父子进程共享正文段这一结论，我们可以知道这个孤儿进程抛出的异常会被第32行的<code>except</code>捕获到，并继续向上抛出异常，然后会被第9行<code>worker()</code>中的<code>except</code>捕获，并执行<code>on_failure()</code>。<strong>也就是说，这个孤儿进程最终执行到了worker的代码里去了，而worker本身是一个死循环，因此这个孤儿进程就不会退出了。理论上来说，最终它会运行到第4行，成为一个“worker副本”，等待接收任务</strong>。</p>
 <p>至于为什么kill worker的父进程会导致worker变僵尸进程，需要深入研究一下celery源码中的信号处理方法。猜测是父进程在退出前，会先保证所有worker子进程已经退出，而它误以为这个“worker副本”也是自己的子进程，但是却没办法通过向子进程发送信号的方式使其退出，于是就阻塞住了自己的退出流程。而其他已经正常退出的worker就会一直处于僵尸状态。</p>
 ]]></content>
 		</item>
@@ -1935,7 +1935,7 @@
 <span class="ln">28</span>   0x000104d4 &lt;+52&gt;: pop {r11, pc}
 <span class="ln">29</span>
 <span class="ln">30</span>End of assembler dump.
-</code></pre></div><p>查看此时栈帧指针和栈顶指针的值：</p>
+</code></pre></div><p>查看此时栈帧指针和栈顶指针的值：</p>
 <div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback"><span class="ln">1</span>(gdb) i r r11 sp
 <span class="ln">2</span>r11            0x7efffaec 2130705132
 <span class="ln">3</span>sp             0x7efffae0 0x7efffae0
@@ -1944,7 +1944,7 @@
 <span class="ln">6</span>(gdb) info symbol 0x76e8f678
 <span class="ln">7</span>__libc_start_main + 276 in section .text of /lib/arm-linux-gnueabihf/libc.so.6
 </code></pre></div><p>可以看到，栈帧指针指向的返回地址是<code>__libc_start_main + 276</code>，即<strong>main函数是由__libc_start_main调用的</strong>。</p>
-<p>由前面分析得知，栈帧指针-4地址处存放的是上一个函数的栈帧指针，于是我们继续向上追溯<code>__libc_start_main</code>的调用者地址，可以发现其值为0：</p>
+<p>由前面分析得知，栈帧指针-4地址处存放的是上一个函数的栈帧指针，于是我们继续向上追溯<code>__libc_start_main</code>的调用者地址，可以发现其值为0：</p>
 <div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback"><span class="ln">1</span>(gdb) x /xw 0x7efffaec-4
 <span class="ln">2</span>0x7efffae8: 0x00000000
 </code></pre></div><p><strong>因此可以认为<code>__libc_start_main</code>是所有进程真正的起点。</strong></p>
@@ -2150,7 +2150,7 @@
 <p>从第二次抓包得到的信息，可以看出连接断开的根因是smtp服务器返回了<code>502 VRFY disallowed</code>。</p>
 <p>接下来网上搜索<code>smtp VRFY disallowed</code>相关内容就能找到答案了：原来<code>libcurl</code>从7.34.0版本开始，要求SMTP客户端显式的设置 <code>CURLOPT_UPLOAD</code> 选项，否则libcurl将发送<code>VRFY</code>命令。而一般服务器出于安全性的考虑，会禁止执行VRFY命令。（参考<a href="https://issues.dlang.org/show_bug.cgi?id=13042">https://issues.dlang.org/show_bug.cgi?id=13042</a> ）</p>
 <blockquote>
-<p>通过抓包还证实了，不进行加密通信的应用层数据是明文传输的，smtp协议中的用户名密码被一览无余。</p>
+<p>通过抓包还证实了，不进行加密通信的应用层数据是明文传输的，smtp协议中的用户名密码被一览无余。</p>
 </blockquote>
 ]]></content>
 		</item>
@@ -2180,7 +2180,7 @@
 <h2 id="原因解析">原因解析</h2>
 <p>这个字符串的内存空间曾经被用作某个函数的局部变量，而这个函数中有一段逻辑是循环调用一个异步查询接口，并给这个异步查询接口提供一个回调函数，而这个回调函数的作用就是去修改这个局部变量。</p>
 <p>问题发生的原因是这个异步回调接口返回的太慢，调用方函数已经运行完毕，此时栈空间已经被操作系统回收并分配给其他函数，这时再执行回调函数修改原先的局部变量，就造成了踩内存。</p>
-<p>这里原先的局部变量是个<code>int</code>类型，回调函数想将其修改为1，结果就成了将一个<code>char*</code>类型的变量值修改为了<code>0x01</code>。</p>
+<p>这里原先的局部变量是个<code>int</code>类型，回调函数想将其修改为1，结果就成了将一个<code>char*</code>类型的变量值修改为了<code>0x01</code>。</p>
 ]]></content>
 		</item>
 		
@@ -2315,11 +2315,11 @@
 <p>在学习《UNIX环境高级编程（第3版）》信号一章时，根据图10-27所示，执行 <code>system(&quot;/bin/ed&quot;)</code> 命令后，会分别调用<code>fork</code>/<code>exec</code>系统调用两次：</p>
 <ol>
 <li>第一次发生在调用<code>system</code>时，父进程<code>fork</code>一次，子进程执行<code>execl(&quot;/bin/sh&quot;,&quot;sh&quot;,&quot;-c&quot;,&quot;/bin/ed&quot;,(char *)0)</code>一次，子进程被替换为<code>/bin/sh</code>。</li>
-<li>第二次发生在<code>/bin/sh</code>这个子进程中，<code>/bin/sh</code>会先<code>fork</code>一个子进程，这个子进程执行<code>exec(&quot;/bin/ed&quot;)</code>，用<code>/bin/ed</code>替换<code>/bin/sh</code>。</li>
+<li>第二次发生在<code>/bin/sh</code>这个子进程中，<code>/bin/sh</code>会先<code>fork</code>一个子进程，这个子进程执行<code>exec(&quot;/bin/ed&quot;)</code>，用<code>/bin/ed</code>替换<code>/bin/sh</code>。</li>
 </ol>
 <p>但是我在自己做实验时，用<code>strace</code>命令跟踪系统调用的过程，发现<code>system</code>系统调用执行过程中，<strong>只<code>fork</code>了一次，<code>exec</code>了两次，主要的差异在于<code>/bin/sh</code>并没有<code>fork</code>子进程，而是直接执行了<code>exec(&quot;/bin/ed&quot;)</code></strong>。</p>
 <h3 id="实验二">实验二</h3>
-<p>我在shell下执行<code>sh -c &quot;sleep 5&quot;&amp;</code>命令，根据书中的示例，执行<code>ps -f</code>后应该可以看到4个进程：</p>
+<p>我在shell下执行<code>sh -c &quot;sleep 5&quot;&amp;</code>命令，根据书中的示例，执行<code>ps -f</code>后应该可以看到4个进程：</p>
 <ul>
 <li><code>ps -f</code></li>
 <li>当前shell进程</li>
@@ -2334,7 +2334,7 @@
 <span class="ln">5</span><span class="m">48673</span> <span class="m">48658</span> -bash
 <span class="ln">6</span><span class="m">101978</span> <span class="m">48673</span> sleep <span class="m">5</span>
 <span class="ln">7</span><span class="m">103012</span> <span class="m">48673</span> ps -o pid,ppid,cmd
-</code></pre></div><h2 id="system的返回值到底是多少">system的返回值到底是多少？</h2>
+</code></pre></div><h2 id="system的返回值到底是多少">system的返回值到底是多少？</h2>
 <p>使用如下程序对system的返回值进行实验：</p>
 <div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="ln"> 1</span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
 </span><span class="ln"> 2</span><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
@@ -2387,7 +2387,7 @@
 <li>两种登录方式首先都要经过PAM插件的处理，SSH登录是由SSHD通过子进程的方式启动shell，串口登录则是拉起/bin/login，由/bin/login启动shell替代自己。</li>
 <li>shell启动后，会去执行<code>/etc/profile</code>中的一系列脚本，配置系统环境。</li>
 </ol>
-<p>这里面可能出问题的环节有：PAM插件、/bin/login进程、/bin/bash和/etc/profile。但这个问题的现象是/bin/bash被拉起后，很快又闪退了，因此问题肯定出在/etc/profile脚本中。最后排查发现脚本中限制了串口登录的终端设备名为<code>ttyS0</code>，否则直接退出。但新的ARM设备的串行终端名称是<code>ttyAMA0</code>。</p>
+<p>这里面可能出问题的环节有：PAM插件、/bin/login进程、/bin/bash和/etc/profile。但这个问题的现象是/bin/bash被拉起后，很快又闪退了，因此问题肯定出在/etc/profile脚本中。最后排查发现脚本中限制了串口登录的终端设备名为<code>ttyS0</code>，否则直接退出。但新的ARM设备的串行终端名称是<code>ttyAMA0</code>。</p>
 ]]></content>
 		</item>
 		
@@ -2397,9 +2397,9 @@
 			<pubDate>Thu, 23 May 2019 02:21:56 +0800</pubDate>
 			
 			<guid>https://cvvz.github.io/post/login-permission-denied/</guid>
-			<description>问题现象 SSH登录主机失败，提示错误：/bin/bash: Permission denied。 分析过程 Linux处理SSH远程登录的流程如下： SSHD进程后台</description>
+			<description>问题现象 SSH登录主机失败，提示错误：/bin/bash: Permission denied。 分析过程 Linux处理SSH远程登录的流程如下： SSHD进程后台监</description>
 			<content type="html"><![CDATA[<h2 id="问题现象">问题现象</h2>
-<p>SSH登录主机失败，提示错误：<code>/bin/bash: Permission denied</code>。</p>
+<p>SSH登录主机失败，提示错误：<code>/bin/bash: Permission denied</code>。</p>
 <h2 id="分析过程">分析过程</h2>
 <p>Linux处理SSH远程登录的流程如下：</p>
 <ol>
@@ -2409,7 +2409,7 @@
 <li>通过<code>exec</code>系统调用将子进程替换为登录shell（这里是<code>/bin/bash</code>），shell的0、1、2文件描述符和伪终端相连</li>
 <li>用户通过伪终端和主机通信</li>
 </ol>
-<p>很明显这里的错误原因是因为设置了登陆用户的uid、gid的子进程没有<code>/bin/bash</code>的执行权限导致的，也就是第4步出错。通过<code>strace</code>跟踪sshd进程的系统调用，也印证了这一点：子进程确实是在执行<code>execve(/bin/bash)</code>时报<code>Permission denied</code>。</p>
+<p>很明显这里的错误原因是因为设置了登陆用户的uid、gid的子进程没有<code>/bin/bash</code>的执行权限导致的，也就是第4步出错。通过<code>strace</code>跟踪sshd进程的系统调用，也印证了这一点：子进程确实是在执行<code>execve(/bin/bash)</code>时报<code>Permission denied</code>。</p>
 <p>继续实验，发现只有非root组内用户登录才会报该错误。因此将一个已登录的root组内用户修改为非root组内用户后，通过<code>strace</code>跟踪其执行<code>/bin/bash</code>的过程，发现是在<code>open</code>某个动态库权限不足。查看该库文件及路径的权限，发现原本应该是<code>755</code>权限的<code>/usr</code>目录变成了<code>750</code>。通过<code>stat</code>命令查看该文件夹被修改的时间点，定位到是设备上电脚本中的一个bug。</p>
 ]]></content>
 		</item>
@@ -2465,7 +2465,7 @@
 <p><strong><a href="https://en.wikipedia.org/wiki/DLL_Hell">DLL Hell</a></strong>：同一台机器上，运行着A和B两个程序，他们使用了同一个so；程序A在升级时使用新的so<strong>直接覆盖</strong>老的so，此时可能会造成程序B无法正常运行。</p>
 <p>因此需要对动态链接库进行版本控制。</p>
 <h2 id="so-name">so name</h2>
-<p>在介绍版本控制前，需要先了解动态链接库的三种name：<code>real name</code>、<code>soname</code>、<code>link name</code>。</p>
+<p>在介绍版本控制前，需要先了解动态链接库的三种name：<code>real name</code>、<code>soname</code>、<code>link name</code>。</p>
 <ul>
 <li><strong>link name</strong>：<code>libxxx.so</code>称为动态链接库的<code>link name</code>。</li>
 <li><strong>real name</strong>：实际编译出来的动态链接库是具有版本号后缀的，如<code>libxxx.so.x.y.z</code>，称为动态链接库的<code>real name</code>。
@@ -2498,7 +2498,7 @@
 </ol>
 <h2 id="升级动态库">升级动态库</h2>
 <ol>
-<li>小版本升级，比如从<code>libtest.so.1.0.0</code>升级为<code>libtest.so.1.1.1</code>。这个时候，按照约定它的soname<code>libtest.so.1</code>是不变的，所以使用者可以直接把新版本so丢到机器上，执行<code>ldconfig</code>，新生成的<code>libtest.so.1</code>就变成了指向<code>libtest.so.1.1.1</code>的软连接。小版本升级是后向兼容的，所以这里直接进行升级是没有问题的。</li>
+<li>小版本升级，比如从<code>libtest.so.1.0.0</code>升级为<code>libtest.so.1.1.1</code>。这个时候，按照约定它的soname<code>libtest.so.1</code>是不变的，所以使用者可以直接把新版本so丢到机器上，执行<code>ldconfig</code>，新生成的<code>libtest.so.1</code>就变成了指向<code>libtest.so.1.1.1</code>的软连接。小版本升级是后向兼容的，所以这里直接进行升级是没有问题的。</li>
 <li>主版本升级，比如从<code>libtest.so.1.1.1</code>升级为<code>libtest.so.2.0.0</code>。这个时候，按照约定它的soname变成了<code>libtest.so.2</code>，此时<code>ldconfig</code>生成的软连接为<code>libtest.so.2</code>，指向<code>libtest.so.2.0.0</code>。一般主版本升级会有后向兼容性问题，但是由于使用了新的soname，因此对使用老版本so的程序没有影响。</li>
 </ol>
 ]]></content>
@@ -2524,7 +2524,7 @@
 <p>一个进程中的多个线程共享这个进程的资源，但是<strong>它们虽然共享同一片虚拟内存，自身却拥有这片虚拟内存中的不同的栈空间</strong>；</p>
 <h2 id="通信方式">通信方式</h2>
 <p>由于同一进程中的线程共享资源，所以通信非常方便，直接读写同一块用户态内存即可，但是这必然就涉及到互斥和原子性问题。</p>
-<p>而进程要实现通信则需要借助内核和文件，所有的IPC，都是把内核和文件充当交换信息的桥梁。</p>
+<p>而进程要实现通信则需要借助内核和文件，所有的IPC，都是把内核和文件充当交换信息的桥梁。</p>
 <h2 id="上下文切换">上下文切换</h2>
 <p>cpu调度基本的单位是线程，所以在运行不同的线程时，会导致<strong>cpu上下文切换</strong>，即CPU寄存器和程序计数器的保存和更新。而根据被调度的线程是同一个进程里的还是不同进程里的，又分为<strong>线程上下文切换</strong>和<strong>进程上下文切换</strong>。</p>
 <p>CPU上下文切换是需要CPU运行内核代码的，所以过多的cpu上下文切换会导致cpu将大量的时间都用来运行内核代码，导致真正的给用户态线程运行的时间变少。所以一般我们会根据机器的核数来决定进程的线程数量或者子进程数量，避免进行频繁的上下文切换。</p>

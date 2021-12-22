@@ -9,8 +9,8 @@
 <meta itemprop="name" content="抓包解读smtp和tls协议">
 <meta itemprop="description" content="背景：某进程调用 libcurl 提供的 curl_easy_perform 接口与邮箱服务器进行smtp通信时，服务端返回56(CURLE_RECV_ERROR)错误。由于服务端日志信息不足">
 <meta itemprop="datePublished" content="2019-06-22T23:21:54+08:00" />
-<meta itemprop="dateModified" content="2020-12-24T18:33:13+08:00" />
-<meta itemprop="wordCount" content="572">
+<meta itemprop="dateModified" content="2021-12-22T11:39:56+08:00" />
+<meta itemprop="wordCount" content="571">
 
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/smtp-with-tls/" />
 <meta property="article:published_time" content="2019-06-22T23:21:54+08:00" />
-<meta property="article:modified_time" content="2020-12-24T18:33:13+08:00" />
+<meta property="article:modified_time" content="2021-12-22T11:39:56+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="抓包解读smtp和tls协议"/>
 <meta name="twitter:description" content="背景：某进程调用 libcurl 提供的 curl_easy_perform 接口与邮箱服务器进行smtp通信时，服务端返回56(CURLE_RECV_ERROR)错误。由于服务端日志信息不足"/>
@@ -98,7 +98,7 @@
 <p>从第二次抓包得到的信息，可以看出连接断开的根因是smtp服务器返回了<code>502 VRFY disallowed</code>。</p>
 <p>接下来网上搜索<code>smtp VRFY disallowed</code>相关内容就能找到答案了：原来<code>libcurl</code>从7.34.0版本开始，要求SMTP客户端显式的设置 <code>CURLOPT_UPLOAD</code> 选项，否则libcurl将发送<code>VRFY</code>命令。而一般服务器出于安全性的考虑，会禁止执行VRFY命令。（参考<a href="https://issues.dlang.org/show_bug.cgi?id=13042">https://issues.dlang.org/show_bug.cgi?id=13042</a> ）</p>
 <blockquote>
-<p>通过抓包还证实了，不进行加密通信的应用层数据是明文传输的，smtp协议中的用户名密码被一览无余。</p>
+<p>通过抓包还证实了，不进行加密通信的应用层数据是明文传输的，smtp协议中的用户名密码被一览无余。</p>
 </blockquote>
 
 			</div>
@@ -107,8 +107,8 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/%E5%AE%89%E5%85%A8">安全</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>572 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/c7d31831171cc9f78fba8d32cdf3e907e1d80618" target="_blank" rel="noopener">c7d3183</a> @ 2020-12-24</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>571 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/e3763633dde2d52632cbdb90a743d2513368ea9d" target="_blank" rel="noopener">e376363</a> @ 2021-12-22</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">

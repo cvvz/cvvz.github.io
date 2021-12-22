@@ -9,8 +9,8 @@
 <meta itemprop="name" content="kubernetes网络之service">
 <meta itemprop="description" content="在kubernetes中，service其实只是一个保存在etcd里的API对象，并不对应任何具体的实例。service即k8s中的“微服务">
 <meta itemprop="datePublished" content="2020-12-30T15:42:01+08:00" />
-<meta itemprop="dateModified" content="2020-12-31T12:04:22+08:00" />
-<meta itemprop="wordCount" content="2706">
+<meta itemprop="dateModified" content="2021-12-22T11:39:56+08:00" />
+<meta itemprop="wordCount" content="2700">
 
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/k8s-network-service/" />
 <meta property="article:published_time" content="2020-12-30T15:42:01+08:00" />
-<meta property="article:modified_time" content="2020-12-31T12:04:22+08:00" />
+<meta property="article:modified_time" content="2021-12-22T11:39:56+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="kubernetes网络之service"/>
 <meta name="twitter:description" content="在kubernetes中，service其实只是一个保存在etcd里的API对象，并不对应任何具体的实例。service即k8s中的“微服务"/>
@@ -87,7 +87,7 @@
 <span class="ln">6</span>kubernetes   10.20.126.169:6443,10.28.116.8:6443,10.28.126.199:6443   348d
 </code></pre></div><ol>
 <li>首先数据包从容器中被路由到cni网桥，出现在宿主机网络栈中。</li>
-<li>Netfilter在<code>PREROUTING</code>链中处理该数据包，最终会将其转到<code>KUBE-SERVICES</code>链上进行处理：</li>
+<li>Netfilter在<code>PREROUTING</code>链中处理该数据包，最终会将其转到<code>KUBE-SERVICES</code>链上进行处理：</li>
 </ol>
 <div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>-A PREROUTING -m comment --comment <span class="s2">&#34;kubernetes service portals&#34;</span> -j KUBE-SERVICES
 </code></pre></div><ol start="3">
@@ -95,7 +95,7 @@
 </ol>
 <div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>-A KUBE-SERVICES -d 192.168.0.1/32 -p tcp -m comment --comment <span class="s2">&#34;default/kubernetes:https cluster IP&#34;</span> -m tcp --dport <span class="m">443</span> -j KUBE-SVC-NPX46M4PTMTKRN6Y
 </code></pre></div><ol start="4">
-<li><code>KUBE-SVC-NPX46M4PTMTKRN6Y</code>链以<strong>相等概率</strong>将数据包跳转到<code>KUBE-SEP-A66XJ5Q22M6AZV5X</code>、<code>KUBE-SEP-TYGT5TFZZ2W5DK4V</code>或<code>KUBE-SEP-KQD4HGXQYU3ORDNS</code>链进行处理：</li>
+<li><code>KUBE-SVC-NPX46M4PTMTKRN6Y</code>链以<strong>相等概率</strong>将数据包跳转到<code>KUBE-SEP-A66XJ5Q22M6AZV5X</code>、<code>KUBE-SEP-TYGT5TFZZ2W5DK4V</code>或<code>KUBE-SEP-KQD4HGXQYU3ORDNS</code>链进行处理：</li>
 </ol>
 <div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>-A KUBE-SVC-NPX46M4PTMTKRN6Y -m statistic --mode random --probability 0.33332999982 -j KUBE-SEP-A66XJ5Q22M6AZV5X
 <span class="ln">2</span>-A KUBE-SVC-NPX46M4PTMTKRN6Y -m statistic --mode random --probability 0.50000000000 -j KUBE-SEP-TYGT5TFZZ2W5DK4V
@@ -125,7 +125,7 @@
 </ol>
 <div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>-A KUBE-SERVICES -m comment --comment <span class="s2">&#34;kubernetes service nodeports; NOTE: this must be the last rule in this chain&#34;</span> -m addrtype --dst-type LOCAL -j KUBE-NODEPORTS
 </code></pre></div><ol start="3">
-<li>先跳到<code>KUBE-MARK-MASQ</code>链打上<strong>特殊记号<code>0x4000/0x4000</code></strong>，这个特殊记号<strong>后续在<code>POSTROUTING</code>链中进行SNAT时用到</strong>。</li>
+<li>先跳到<code>KUBE-MARK-MASQ</code>链打上<strong>特殊记号<code>0x4000/0x4000</code></strong>，这个特殊记号<strong>后续在<code>POSTROUTING</code>链中进行SNAT时用到</strong>。</li>
 </ol>
 <div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>-A KUBE-NODEPORTS -p tcp -m comment --comment <span class="s2">&#34;default/webapp:&#34;</span> -m tcp --dport <span class="m">31849</span> -j KUBE-MARK-MASQ
 <span class="ln">2</span>
@@ -139,7 +139,7 @@
 <li>如果目的Pod IP地址就在本节点，则路由给cni网桥转发；如果目的Pod IP在其他节点，则需要进行容器跨节点通信。<strong>注意，这种情形下，本节点相当于网关的角色，在将源数据包转发出去之前，需要进行SNAT，将源数据包的源IP地址，转换为网关（本节点）的IP地址，这样，数据包才可能原路返回，即从目的节点经过本节点返回到实际的k8s集群外部的客户端</strong>：</li>
 </ol>
 <div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>-A KUBE-POSTROUTING -m comment --comment <span class="s2">&#34;kubernetes service traffic requiring SNAT&#34;</span> -m mark --mark 0x4000/0x4000 -j MASQUERADE
-</code></pre></div><p>这条规则的意思就是：带有<code>0x4000/0x4000</code>这个特殊标记的数据包在离开节点之前，在<code>POSTROUTING</code>链上进行一次SNAT，即<code>MASQUERADE</code>。而这个特殊标记，如前所述，是在外部客户端数据流入节点时打上去的。</p>
+</code></pre></div><p>这条规则的意思就是：带有<code>0x4000/0x4000</code>这个特殊标记的数据包在离开节点之前，在<code>POSTROUTING</code>链上进行一次SNAT，即<code>MASQUERADE</code>。而这个特殊标记，如前所述，是在外部客户端数据流入节点时打上去的。</p>
 <h2 id="总结">总结<a href="#总结" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>从上面的分析中，可以看出来，kube-proxy iptables模式中，最重要的是下面这五条链：</p>
 <ul>
@@ -160,7 +160,7 @@
 <span class="ln">6</span>
 <span class="ln">7</span>-A KUBE-FIREWALL -m comment --comment <span class="s2">&#34;kubernetes firewall for dropping marked packets&#34;</span> -m mark --mark 0x8000/0x8000 -j DROP
 </code></pre></div><h2 id="kube-proxy的ipvs模式">kube-proxy的IPVS模式<a href="#kube-proxy的ipvs模式" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
-<p>上述流程描述的是kube-proxy的iptables模式的工作流程，这个模式最大的问题在于：</p>
+<p>上述流程描述的是kube-proxy的iptables模式的工作流程，这个模式最大的问题在于：</p>
 <ul>
 <li>kube-proxy需要为service配置大量的iptables规则，并且刷新这些规则以确保正确性；</li>
 <li>iptables的规则是以链表的形式保存的，对iptables的刷新需要遍历链表</li>
@@ -176,8 +176,8 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/kubernetes">kubernetes</a></span><span class="tag"><a href="https://cvvz.github.io/tags/linux">Linux</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2706 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/ef9ae4d0b0c79523bd67054fa49c6c045de6ba1d" target="_blank" rel="noopener">ef9ae4d</a> @ 2020-12-31</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2700 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/e3763633dde2d52632cbdb90a743d2513368ea9d" target="_blank" rel="noopener">e376363</a> @ 2021-12-22</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">

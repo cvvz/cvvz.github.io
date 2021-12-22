@@ -9,8 +9,8 @@
 <meta itemprop="name" content="动态链接库的版本控制">
 <meta itemprop="description" content="DLL Hell DLL Hell：同一台机器上，运行着A和B两个程序，他们使用了同一个so；程序A在升级时使用新的so直接覆盖老的so，此时可能会造成程序B无">
 <meta itemprop="datePublished" content="2018-10-20T21:00:51+08:00" />
-<meta itemprop="dateModified" content="2021-01-27T00:07:05+08:00" />
-<meta itemprop="wordCount" content="1246">
+<meta itemprop="dateModified" content="2021-12-22T11:39:56+08:00" />
+<meta itemprop="wordCount" content="1242">
 
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/version-control-of-shared-object/" />
 <meta property="article:published_time" content="2018-10-20T21:00:51+08:00" />
-<meta property="article:modified_time" content="2021-01-27T00:07:05+08:00" />
+<meta property="article:modified_time" content="2021-12-22T11:39:56+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="动态链接库的版本控制"/>
 <meta name="twitter:description" content="DLL Hell DLL Hell：同一台机器上，运行着A和B两个程序，他们使用了同一个so；程序A在升级时使用新的so直接覆盖老的so，此时可能会造成程序B无"/>
@@ -75,7 +75,7 @@
 <p><strong><a href="https://en.wikipedia.org/wiki/DLL_Hell">DLL Hell</a></strong>：同一台机器上，运行着A和B两个程序，他们使用了同一个so；程序A在升级时使用新的so<strong>直接覆盖</strong>老的so，此时可能会造成程序B无法正常运行。</p>
 <p>因此需要对动态链接库进行版本控制。</p>
 <h2 id="so-name">so name<a href="#so-name" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
-<p>在介绍版本控制前，需要先了解动态链接库的三种name：<code>real name</code>、<code>soname</code>、<code>link name</code>。</p>
+<p>在介绍版本控制前，需要先了解动态链接库的三种name：<code>real name</code>、<code>soname</code>、<code>link name</code>。</p>
 <ul>
 <li><strong>link name</strong>：<code>libxxx.so</code>称为动态链接库的<code>link name</code>。</li>
 <li><strong>real name</strong>：实际编译出来的动态链接库是具有版本号后缀的，如<code>libxxx.so.x.y.z</code>，称为动态链接库的<code>real name</code>。
@@ -108,15 +108,15 @@
 </ol>
 <h2 id="升级动态库">升级动态库<a href="#升级动态库" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <ol>
-<li>小版本升级，比如从<code>libtest.so.1.0.0</code>升级为<code>libtest.so.1.1.1</code>。这个时候，按照约定它的soname<code>libtest.so.1</code>是不变的，所以使用者可以直接把新版本so丢到机器上，执行<code>ldconfig</code>，新生成的<code>libtest.so.1</code>就变成了指向<code>libtest.so.1.1.1</code>的软连接。小版本升级是后向兼容的，所以这里直接进行升级是没有问题的。</li>
+<li>小版本升级，比如从<code>libtest.so.1.0.0</code>升级为<code>libtest.so.1.1.1</code>。这个时候，按照约定它的soname<code>libtest.so.1</code>是不变的，所以使用者可以直接把新版本so丢到机器上，执行<code>ldconfig</code>，新生成的<code>libtest.so.1</code>就变成了指向<code>libtest.so.1.1.1</code>的软连接。小版本升级是后向兼容的，所以这里直接进行升级是没有问题的。</li>
 <li>主版本升级，比如从<code>libtest.so.1.1.1</code>升级为<code>libtest.so.2.0.0</code>。这个时候，按照约定它的soname变成了<code>libtest.so.2</code>，此时<code>ldconfig</code>生成的软连接为<code>libtest.so.2</code>，指向<code>libtest.so.2.0.0</code>。一般主版本升级会有后向兼容性问题，但是由于使用了新的soname，因此对使用老版本so的程序没有影响。</li>
 </ol>
 
 			</div>
 			<hr class="post-end">
 			<footer class="post-info">
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1246 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/3db64d43f38db694053251e4dbd65783b2dc7020" target="_blank" rel="noopener">3db64d4</a> @ 2021-01-27</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1242 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/e3763633dde2d52632cbdb90a743d2513368ea9d" target="_blank" rel="noopener">e376363</a> @ 2021-12-22</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">

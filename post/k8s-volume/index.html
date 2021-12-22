@@ -9,8 +9,8 @@
 <meta itemprop="name" content="Kubernetes Volume实现原理">
 <meta itemprop="description" content="容器运行时挂载卷的过程 如果CRI是通过dockershim实现的话，kubelet通过CRI接口去拉起一个容器，就好比是通过docker-d">
 <meta itemprop="datePublished" content="2020-12-12T12:32:33+08:00" />
-<meta itemprop="dateModified" content="2020-12-24T18:33:13+08:00" />
-<meta itemprop="wordCount" content="3256">
+<meta itemprop="dateModified" content="2021-12-22T11:39:56+08:00" />
+<meta itemprop="wordCount" content="3246">
 
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/k8s-volume/" />
 <meta property="article:published_time" content="2020-12-12T12:32:33+08:00" />
-<meta property="article:modified_time" content="2020-12-24T18:33:13+08:00" />
+<meta property="article:modified_time" content="2021-12-22T11:39:56+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Kubernetes Volume实现原理"/>
 <meta name="twitter:description" content="容器运行时挂载卷的过程 如果CRI是通过dockershim实现的话，kubelet通过CRI接口去拉起一个容器，就好比是通过docker-d"/>
@@ -92,7 +92,7 @@
 <p>调用 <code>pivot_root</code> 或 <code>chroot</code>，改变容器进程的根目录。至此，容器再也看不到宿主机的文件系统目录了。</p>
 </li>
 </ol>
-<h2 id="kubelet挂载卷的过程">kubelet挂载卷的过程<a href="#kubelet挂载卷的过程" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<h2 id="kubelet挂载卷的过程">kubelet挂载卷的过程<a href="#kubelet挂载卷的过程" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>当一个Pod被调度到一个节点上之后，kubelet首先为这个Pod在宿主机上创建一个Volume目录：</p>
 <p><strong>/var/lib/kubelet/pods/&lt;Pod的ID&gt;/volumes/kubernetes.io~&lt;Volume类型&gt;/&lt;Volume名字&gt;</strong>。</p>
 <p>在kubernetes中，卷<code>volumes</code>是Pod的一个属性，而不是容器的。kubelet先以Pod为单位，在宿主机这个Volume目录中准备好Pod需要的卷。接着启动容器，容器启动时，根据<code>volumeMounts</code>的定义将主机的这个目录下的部分卷资源挂载进来。挂载的过程如前所述，相当于为每个容器执行了命令：</p>
@@ -125,8 +125,8 @@
 </blockquote>
 <h2 id="pvcpv和storageclass">PVC、PV和StorageClass<a href="#pvcpv和storageclass" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>在Pod中，如果想使用持久化的存储，如上面提到的远程块存储、NFS存储，或是本地块存储（非hostPath），则在volumes字段中，定义<code>persistentVolumeClaim</code>，即PVC。</p>
-<p>PVC和PV进行绑定的过程，由<code>Volume Controller</code>中的<code>PersistentVolumeController</code>这个控制循环负责。所谓“绑定”，也就是填写PVC中的<code>spec.volumeName</code>字段而已。<code>PersistentVolumeController</code>只会将StorageClass相同的PVC和PV绑定起来。</p>
-<p>StorageClass主要用来动态分配存储(Dynamic Provisioning)。StorageClass中的<code>provisioner</code>字段用于指定使用哪种<a href="https://kubernetes.io/docs/concepts/storage/storage-classes/#provisioner">存储插件</a>进行动态分配，当然，前提是你要在kubernetes中装好对应的存储插件。<code>parameters</code>字段就是生成出来的PV的参数。</p>
+<p>PVC和PV进行绑定的过程，由<code>Volume Controller</code>中的<code>PersistentVolumeController</code>这个控制循环负责。所谓“绑定”，也就是填写PVC中的<code>spec.volumeName</code>字段而已。<code>PersistentVolumeController</code>只会将StorageClass相同的PVC和PV绑定起来。</p>
+<p>StorageClass主要用来动态分配存储(Dynamic Provisioning)。StorageClass中的<code>provisioner</code>字段用于指定使用哪种<a href="https://kubernetes.io/docs/concepts/storage/storage-classes/#provisioner">存储插件</a>进行动态分配，当然，前提是你要在kubernetes中装好对应的存储插件。<code>parameters</code>字段就是生成出来的PV的参数。</p>
 <blockquote>
 <p><code>PersistentVolumeController</code>只是在找不到对应的PV资源和PVC进行绑定时，借助StorageClass生成了一个PV这个API对象。具体这个PV是怎么成为主机volume目录下的一个子目录的，则是靠前面所述的Attach + Mount两阶段处理后的结果。当然如果是NFS或本地持久化卷，就不需要<code>Volume Controller</code>进行Attach操作了。</p>
 </blockquote>
@@ -143,7 +143,7 @@
 <p>Q：hostPath可以是挂载在宿主机上的一块磁盘，而不是宿主机的主目录，这种情况使用hostPath作为持久化存储不会导致宿主机宕机。那是不是可以使用hostPath代替PVC/PV作为本地持久化卷？</p>
 <p>A：不可以。这种玩法失去了<code>PersistentVolumeController</code>对PVC和PV进行自动绑定、解绑的灵活性。也失去了通过<code>local-static-provisioner</code>对PV进行自动管理的灵活性。最关键的是失去了<strong>延迟绑定</strong>的特性，调度器进行调度的时候，无法参考节点存储的使用情况。</p>
 <p>Q：删除一个被Pod使用中的PVC/PV时，kubectl会卡住，为什么？</p>
-<p>A：PVC和PV中定义了<code>kubernetes.io/pvc-protection</code>、<code>kubernetes.io/pv-protection</code>这个finalizer字段，删除时，资源不会被apiserver立即删除，要等到<code>volume controller</code>进行<strong>pre-delete</strong>操作后，将finalizer字段删掉，才会被实际删除。而<code>volume controller</code>的<strong>pre-delete</strong>操作实际上就是检查PVC/PV有没有被Pod使用。</p>
+<p>A：PVC和PV中定义了<code>kubernetes.io/pvc-protection</code>、<code>kubernetes.io/pv-protection</code>这个finalizer字段，删除时，资源不会被apiserver立即删除，要等到<code>volume controller</code>进行<strong>pre-delete</strong>操作后，将finalizer字段删掉，才会被实际删除。而<code>volume controller</code>的<strong>pre-delete</strong>操作实际上就是检查PVC/PV有没有被Pod使用。</p>
 </blockquote>
 
 			</div>
@@ -152,8 +152,8 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/kubernetes">kubernetes</a></span><span class="tag"><a href="https://cvvz.github.io/tags/%E5%AE%B9%E5%99%A8">容器</a></span><span class="tag"><a href="https://cvvz.github.io/tags/linux">Linux</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>3256 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/c7d31831171cc9f78fba8d32cdf3e907e1d80618" target="_blank" rel="noopener">c7d3183</a> @ 2020-12-24</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>3246 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/e3763633dde2d52632cbdb90a743d2513368ea9d" target="_blank" rel="noopener">e376363</a> @ 2021-12-22</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">
@@ -161,7 +161,7 @@
 			<nav id="TableOfContents">
   <ul>
     <li><a href="#容器运行时挂载卷的过程">容器运行时挂载卷的过程</a></li>
-    <li><a href="#kubelet挂载卷的过程">kubelet挂载卷的过程</a>
+    <li><a href="#kubelet挂载卷的过程">kubelet挂载卷的过程</a>
       <ul>
         <li><a href="#远程块存储">远程块存储</a></li>
         <li><a href="#nfs">NFS</a></li>

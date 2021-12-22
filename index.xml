@@ -104,7 +104,7 @@
       <pubDate>Wed, 30 Dec 2020 09:41:51 +0800</pubDate>
       
       <guid>https://cvvz.github.io/post/k8s-network-dns/</guid>
-      <description>默认DNS策略 Pod默认的dns策略是 ClusterFirst，意思是先通过kubernetes的权威DNS服务器（如CoreDNS）直接</description>
+      <description>默认DNS策略 Pod默认的dns策略是 ClusterFirst，意思是先通过kubernetes的权威DNS服务器（如CoreDNS）直接解</description>
     </item>
     
     <item>
@@ -122,7 +122,7 @@
       <pubDate>Sun, 13 Dec 2020 19:26:15 +0800</pubDate>
       
       <guid>https://cvvz.github.io/post/k8s-3-deletion-webhook/</guid>
-      <description>最近在玩admission webhook时，发现一个奇怪的现象：我配置了validatingWebhookConfiguration使其监</description>
+      <description>最近在玩admission webhook时，发现一个奇怪的现象：我配置了validatingWebhookConfiguration使其监听</description>
     </item>
     
     <item>

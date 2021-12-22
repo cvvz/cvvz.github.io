@@ -9,8 +9,8 @@
 <meta itemprop="name" content="容器">
 <meta itemprop="description" content="容器镜像 容器镜像就是容器的rootfs。通过 Dockerfile 制作容器镜像时，就相当于增加 rootfs 层。通过容器镜像运行一个容器时，操作系统内核先将镜像中的每一层联">
 <meta itemprop="datePublished" content="2020-12-24T10:33:00+08:00" />
-<meta itemprop="dateModified" content="2021-05-15T15:10:07+08:00" />
-<meta itemprop="wordCount" content="3040">
+<meta itemprop="dateModified" content="2021-12-22T11:39:56+08:00" />
+<meta itemprop="wordCount" content="3033">
 
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/container/" />
 <meta property="article:published_time" content="2020-12-24T10:33:00+08:00" />
-<meta property="article:modified_time" content="2021-05-15T15:10:07+08:00" />
+<meta property="article:modified_time" content="2021-12-22T11:39:56+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="容器"/>
 <meta name="twitter:description" content="容器镜像 容器镜像就是容器的rootfs。通过 Dockerfile 制作容器镜像时，就相当于增加 rootfs 层。通过容器镜像运行一个容器时，操作系统内核先将镜像中的每一层联"/>
@@ -145,7 +145,7 @@
 <p>cpu cgroup能限制cpu的使用率，但是cpu cgroup并没有办法解决平均负载升高的问题。</p>
 <p>我们可以做的是，在生产环境中监控容器的宿主机节点里 D 状态的进程数量，然后对 D 状态进程数目异常的节点进行分析，比如磁盘硬件出现问题引起 D 状态进程数目增加，这时就需要更换硬盘。</p>
 <h3 id="cpuset-cgroup">cpuset cgroup<a href="#cpuset-cgroup" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
-<p>cpuset cgroup用于进程绑核，主要通过设置<code>cpuset.cpus</code>和<code>cpuset.mems</code>两个字段来实现。</p>
+<p>cpuset cgroup用于进程绑核，主要通过设置<code>cpuset.cpus</code>和<code>cpuset.mems</code>两个字段来实现。</p>
 <p>在kubernetes中，当 Pod 属于 Guaranteed QoS 类型，并且 requests 值与 limits 被设置为同一个相等的<strong>整数值</strong>就相当于声明Pod中的容器要进行绑核。</p>
 <h3 id="memory-cgroup">memory cgroup<a href="#memory-cgroup" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <ul>
@@ -163,7 +163,7 @@
 <p>Q：当执行 <code>kubectl exec</code> 时，创建的进程会加入到容器的cgroup控制组吗？</p>
 <p>A：会。以cpu cgroup为例，查看<code>/sys/fs/cgroup/cpu/kubepods.slice/kubepods-pod{$uid}.slice/docker-{$containerID}.scope/tasks</code>文件就能发现新创建的进程被加入到容器的cgroup控制组了。</p>
 <p>Q：执行 <code>kubectl top</code> 命令获取到的pod指标是从哪里来的？</p>
-<p>A：整个执行路径是：<code>kubectl -&gt; apiserver -&gt; aggregated-apiserver -&gt; metric-server -&gt; kubelet(cAdvisor) -&gt; cgroup</code>。最终来源就是cgroup。而Linux <code>top</code>命令的指标数据的来源是<code>/proc</code>文件系统。</p>
+<p>A：整个执行路径是：<code>kubectl -&gt; apiserver -&gt; aggregated-apiserver -&gt; metric-server -&gt; kubelet(cAdvisor) -&gt; cgroup</code>。最终来源就是cgroup。而Linux <code>top</code>命令的指标数据的来源是<code>/proc</code>文件系统。</p>
 </blockquote>
 <h2 id="kubeletdockercrioci">kubelet、Docker、CRI、OCI<a href="#kubeletdockercrioci" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>docker 架构图如下图所示：</p>
@@ -178,12 +178,12 @@
 
 <p>从这两幅图就能看出来，当前在kubernetes中，创建一个容器的调用链为：</p>
 <p><code>kubelet -&gt; dockershim -&gt; docker daemon -&gt; containerd -&gt; containerd-shim -&gt; runc -&gt; container</code></p>
-<p>dockershim实现了<a href="https://github.com/kubernetes/kubernetes/blob/8327e433590f9e867b1e31a4dc32316685695729/pkg/kubelet/apis/cri/services.go">CRI</a>定义的gRPC接口，实现方式就是充当docker daemon的客户端，向docker daemon发送命令。实际上dockershim和docker daemon都可以被干掉，<a href="https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.20.md#deprecation">kubernetes在v1.20也的确这么做了</a>。docker从kubernetes中被移除后，我们可以直接使用<a href="https://github.com/containerd/containerd">containerd</a>或<a href="https://github.com/cri-o/cri-o">CRI-O</a>作为CRI。</p>
+<p>dockershim实现了<a href="https://github.com/kubernetes/kubernetes/blob/8327e433590f9e867b1e31a4dc32316685695729/pkg/kubelet/apis/cri/services.go">CRI</a>定义的gRPC接口，实现方式就是充当docker daemon的客户端，向docker daemon发送命令。实际上dockershim和docker daemon都可以被干掉，<a href="https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.20.md#deprecation">kubernetes在v1.20也的确这么做了</a>。docker从kubernetes中被移除后，我们可以直接使用<a href="https://github.com/containerd/containerd">containerd</a>或<a href="https://github.com/cri-o/cri-o">CRI-O</a>作为CRI。</p>
 <p><a href="https://github.com/opencontainers/runc">runC</a>则是一个<a href="https://github.com/opencontainers/runtime-spec">OCI</a>的参考实现，底层通过Linux系统调用为容器设置 namespaces 和 cgroups, 挂载 rootfs。当然kubernetes其实不关心OCI的底层是怎么实现的，只要能保证遵循OCI文档里的标准，就能自己实现一个OCI。<a href="https://github.com/kata-containers/kata-containers">Kata</a>就是遵循了OCI标准实现的安全容器。它的底层是用虚拟机实现的资源强隔离，而不是namespace。</p>
 <p>Kata中的VM可以和Pod做一个类比：</p>
 <ul>
 <li>kubelet调用CRI的<code>RunPodSandbox</code>接口时，如果是runC实现的OCI，则会去创建<code>infra</code>容器，并执行<code>/pause</code>将容器挂起；如果是Kata，则会去创建一个虚拟机。</li>
-<li>接着kubelet调用<code>CreateContainer</code>去创建容器，对于runC，就是创建容器进程并将他们的namespace加入<code>infra</code>容器中去；对于Kata，则是往VM中添加容器。</li>
+<li>接着kubelet调用<code>CreateContainer</code>去创建容器，对于runC，就是创建容器进程并将他们的namespace加入<code>infra</code>容器中去；对于Kata，则是往VM中添加容器。</li>
 </ul>
 
 			</div>
@@ -192,8 +192,8 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/%E5%AE%B9%E5%99%A8">容器</a></span><span class="tag"><a href="https://cvvz.github.io/tags/kubernetes">kubernetes</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>3040 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/cef8cf65bff9763c12c1e0b97a5a03b99f9aeeaa" target="_blank" rel="noopener">cef8cf6</a> @ 2021-05-15</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>3033 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/e3763633dde2d52632cbdb90a743d2513368ea9d" target="_blank" rel="noopener">e376363</a> @ 2021-12-22</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">

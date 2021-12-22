@@ -7,23 +7,23 @@
 	<meta name="google-site-verification" content="Wp3QtEkIlF0ZvtKx90lPmoXyH39d-pmBhiTyTbba9L4" />
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 <meta itemprop="name" content="为什么删除Pod时webhook收到三次delete请求">
-<meta itemprop="description" content="最近在玩admission webhook时，发现一个奇怪的现象：我配置了validatingWebhookConfiguration使其监">
+<meta itemprop="description" content="最近在玩admission webhook时，发现一个奇怪的现象：我配置了validatingWebhookConfiguration使其监听">
 <meta itemprop="datePublished" content="2020-12-13T19:26:15+08:00" />
-<meta itemprop="dateModified" content="2020-12-24T18:33:13+08:00" />
-<meta itemprop="wordCount" content="3961">
+<meta itemprop="dateModified" content="2021-12-22T11:39:56+08:00" />
+<meta itemprop="wordCount" content="3955">
 
 
 
 <meta itemprop="keywords" content="kubernetes," />
 <meta property="og:title" content="为什么删除Pod时webhook收到三次delete请求" />
-<meta property="og:description" content="最近在玩admission webhook时，发现一个奇怪的现象：我配置了validatingWebhookConfiguration使其监" />
+<meta property="og:description" content="最近在玩admission webhook时，发现一个奇怪的现象：我配置了validatingWebhookConfiguration使其监听" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/k8s-3-deletion-webhook/" />
 <meta property="article:published_time" content="2020-12-13T19:26:15+08:00" />
-<meta property="article:modified_time" content="2020-12-24T18:33:13+08:00" />
+<meta property="article:modified_time" content="2021-12-22T11:39:56+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="为什么删除Pod时webhook收到三次delete请求"/>
-<meta name="twitter:description" content="最近在玩admission webhook时，发现一个奇怪的现象：我配置了validatingWebhookConfiguration使其监"/>
+<meta name="twitter:description" content="最近在玩admission webhook时，发现一个奇怪的现象：我配置了validatingWebhookConfiguration使其监听"/>
 
 	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -71,12 +71,12 @@
 				<h1>为什么删除Pod时webhook收到三次delete请求</h1>
 			</header>
 			<div class="content">
-				<p>最近在玩admission webhook时，发现一个奇怪的现象：我配置了validatingWebhookConfiguration使其监听pod的删除操作，结果发现每次删除Pod的时候，webhook会收到三次delete请求：</p>
+				<p>最近在玩admission webhook时，发现一个奇怪的现象：我配置了validatingWebhookConfiguration使其监听pod的删除操作，结果发现每次删除Pod的时候，webhook会收到三次delete请求：</p>
 <figure>
     <img src="/3-delete.png" width="1000px"/> 
 </figure>
 
-<p>从日志打印上可以分析出，第一次删除请求来自于kubectl客户端，后面两次来自于pod所在的node节点。为什么会收到三次delete请求呢？</p>
+<p>从日志打印上可以分析出，第一次删除请求来自于kubectl客户端，后面两次来自于pod所在的node节点。为什么会收到三次delete请求呢？</p>
 <h2 id="删除一个pod的过程">删除一个Pod的过程<a href="#删除一个pod的过程" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>通过阅读kube-apiserver和kubelet源码，我把一个pod的删除过程总结成如下这幅流程图，三个红色加粗的请求即为webhook收到的三次delete请求。
 <figure>
@@ -219,7 +219,7 @@
 <span class="ln">48</span><span class="p">}</span>  
 </code></pre></div><p>这个方法就是先调用prestop hook，然后在通过<code>runtimeService.StopContainer</code>方法杀掉容器进程，整个过程总时长不能超过<code>DeletionGracePeriodSeconds</code>。注意，prestop hook是不会进行重试的，失败了kubelet也不管，容器还是照杀不误。</p>
 <h3 id="statusmanager发送删除请求">statusManager发送删除请求<a href="#statusmanager发送删除请求" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
-<p>kubelet以goroutine的方式运行着一个<code>statusManager</code>，它的作用就是周期性的监听Pod的状态变化，然后执行<code>func (m *manager) syncPod(uid types.UID, status versionedPodStatus) {</code>。在<code>syncPod</code>中，注意到有如下的逻辑：</p>
+<p>kubelet以goroutine的方式运行着一个<code>statusManager</code>，它的作用就是周期性的监听Pod的状态变化，然后执行<code>func (m *manager) syncPod(uid types.UID, status versionedPodStatus) {</code>。在<code>syncPod</code>中，注意到有如下的逻辑：</p>
 <div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln"> 1</span><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">manager</span><span class="p">)</span> <span class="nf">syncPod</span><span class="p">(</span><span class="nx">uid</span> <span class="nx">types</span><span class="p">.</span><span class="nx">UID</span><span class="p">,</span> <span class="nx">status</span> <span class="nx">versionedPodStatus</span><span class="p">)</span> <span class="p">{</span>
 <span class="ln"> 2</span>    <span class="o">...</span>
 <span class="ln"> 3</span>
@@ -300,8 +300,8 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/kubernetes">kubernetes</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>3961 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/c7d31831171cc9f78fba8d32cdf3e907e1d80618" target="_blank" rel="noopener">c7d3183</a> @ 2020-12-24</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>3955 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/e3763633dde2d52632cbdb90a743d2513368ea9d" target="_blank" rel="noopener">e376363</a> @ 2021-12-22</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">

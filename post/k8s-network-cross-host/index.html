@@ -9,8 +9,8 @@
 <meta itemprop="name" content="kubernetes网络之CNI与跨节点通信原理">
 <meta itemprop="description" content="初始化infra容器网络环境 当kubelet通过调用CRI的RunPodSandbox创建好PodSandbox，即infra容器后，就需要">
 <meta itemprop="datePublished" content="2020-12-30T09:51:44+08:00" />
-<meta itemprop="dateModified" content="2020-12-30T14:31:33+08:00" />
-<meta itemprop="wordCount" content="2122">
+<meta itemprop="dateModified" content="2021-12-22T11:39:56+08:00" />
+<meta itemprop="wordCount" content="2115">
 
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/k8s-network-cross-host/" />
 <meta property="article:published_time" content="2020-12-30T09:51:44+08:00" />
-<meta property="article:modified_time" content="2020-12-30T14:31:33+08:00" />
+<meta property="article:modified_time" content="2021-12-22T11:39:56+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="kubernetes网络之CNI与跨节点通信原理"/>
 <meta name="twitter:description" content="初始化infra容器网络环境 当kubelet通过调用CRI的RunPodSandbox创建好PodSandbox，即infra容器后，就需要"/>
@@ -93,7 +93,7 @@
 <h3 id="underlay和overlay">underlay和overlay<a href="#underlay和overlay" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p>所谓underlay，也就是没有在宿主机网络上的虚拟层，容器和宿主机处于同一个网络层面上。</p>
 <blockquote>
-<p>在这种情形下，Kubernetes 内外网络是互通的，运行在kubernetes中的容器可以很方便的和公司内部已有的非云原生基础设施进行联动，比如DNS、负载均衡、配置中心等，而不需要借助kubernetes内部的DNS、ingress和service做服务发现和负载均衡。</p>
+<p>在这种情形下，Kubernetes 内外网络是互通的，运行在kubernetes中的容器可以很方便的和公司内部已有的非云原生基础设施进行联动，比如DNS、负载均衡、配置中心等，而不需要借助kubernetes内部的DNS、ingress和service做服务发现和负载均衡。</p>
 </blockquote>
 <p>所谓overlay，其实就是在容器的IP包外面附加额外的数据包头，然后<strong>整体作为宿主机网络报文中的数据进行传输</strong>。容器的IP包加上额外的数据包头就用于跨主机的容器之间通信，<strong>容器网络就相当于覆盖(overlay)在宿主机网络上的一层虚拟网络</strong>。如下图所示：</p>
 <figure>
@@ -118,14 +118,14 @@
 <h3 id="flannel-vxlan模式">Flannel VXLAN模式<a href="#flannel-vxlan模式" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p>Flannel VXLAN模式的原理和UDP模式差不多，区别在于：</p>
 <ol>
-<li>UDP模式创建的是TUN设备(flannel0)，VXLAN模式创建的是VTEP设备（flannel.1）。</li>
+<li>UDP模式创建的是TUN设备(flannel0)，VXLAN模式创建的是VTEP设备（flannel.1）。</li>
 <li>VTEP设备全程工作在内核态，性能比UDP模式更好。</li>
 </ol>
 <p>VXLAN模式的工作流程：</p>
 <ol>
 <li>container-1根据默认路由规则，将IP包发往cni网桥，出现在宿主机的网络栈上；</li>
 <li>flanneld预先在宿主机上创建好了路由规则，数据包到达cni网桥后，随即被转发给了flannel.1，flannel.1是一个VTEP设备，<strong>它既有 IP 地址，也有 MAC 地址</strong>；</li>
-<li><strong>在node2上的目的VTEP设备启动时，node1上的flanneld会将目的VTEP设备的IP地址和MAC地址分别写到node1上的路由表和ARP缓存表中</strong>。</li>
+<li><strong>在node2上的目的VTEP设备启动时，node1上的flanneld会将目的VTEP设备的IP地址和MAC地址分别写到node1上的路由表和ARP缓存表中</strong>。</li>
 <li>因此，node1上的flannel.1通过查询路由表，知道要发往目的容器，需要经过10.1.16.0这个网关。<strong>其实这个网关，就是目的VTEP设备的ip地址</strong>。</li>
 </ol>
 <div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>$ route -n
@@ -134,7 +134,7 @@
 <span class="ln">4</span>...
 <span class="ln">5</span>10.1.16.0       10.1.16.0       255.255.255.0   UG    <span class="m">0</span>      <span class="m">0</span>        <span class="m">0</span> flannel.1
 </code></pre></div><ol start="5">
-<li>又由于<strong>这个网关的MAC地址，事先已经被flanneld写到了ARP缓存表中</strong>，所以内核直接把目的VTEP设备的MAC地址封装到链路层的帧头即可：
+<li>又由于<strong>这个网关的MAC地址，事先已经被flanneld写到了ARP缓存表中</strong>，所以内核直接把目的VTEP设备的MAC地址封装到链路层的帧头即可：
 <figure>
     <img src="/flannel-vxlan-frame.jpg" width="500px"/> 
 </figure>
@@ -155,8 +155,8 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/kubernetes">kubernetes</a></span><span class="tag"><a href="https://cvvz.github.io/tags/cni">CNI</a></span><span class="tag"><a href="https://cvvz.github.io/tags/%E5%AE%B9%E5%99%A8">容器</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2122 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/8af8388d49e3e53f9d79845e710b83daca8f1012" target="_blank" rel="noopener">8af8388</a> @ 2020-12-30</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2115 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/e3763633dde2d52632cbdb90a743d2513368ea9d" target="_blank" rel="noopener">e376363</a> @ 2021-12-22</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">
