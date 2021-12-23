@@ -273,10 +273,10 @@
 <h3 id="数组">数组</h3>
 <p>数组的时间效率很高，但是空间效率很低，而且不安全，比如访问越界造成踩内存。</p>
 <p>很多高级语言都基于基础的数组实现了<strong>动态数组</strong>，比如Java中的ArrayList、C++ STL中的vector和golang中的slice，动态数组的优势在于可以动态扩容，使用起来很方便，<strong>在实现算法时更加handy</strong>。但是由于封装了额外的数据迁移等操作，时间效率上不如数组高。</p>
-<p>技巧：双指针</p>
+<p>🌟<strong>技巧：使用双指针求两数之和</strong></p>
 <h3 id="链表">链表</h3>
 <h3 id="单链表双链表循环链表">单链表、双链表、循环链表</h3>
-<p>技巧：<strong>使用哨兵节点（带头链表）</strong>。这样在插入第一个节点和删除最后一个节点时，就不需要做特殊判断，可以简化实现逻辑</p>
+<p>🌟<strong>技巧：使用哨兵节点简化插入和删除节点的逻辑。</strong></p>
 <blockquote>
 <p>所有高级数据结构都是在数组和链表的基础上衍生出来的。</p>
 </blockquote>
@@ -544,7 +544,7 @@
 <p>不要在函数中使用布尔类型的标识参数来控制内部逻辑，true 的时候走这块逻辑，false 的时候走另一块逻辑。</p>
 </li>
 </ol>
-<h2 id="设计模式基于golang">设计模式(基于golang)</h2>
+<h2 id="golang设计模式">golang设计模式</h2>
 <blockquote>
 <p>创建型：主要解决“对象的创建”问题</p>
 <p>结构型：主要解决“类或对象的组合或组装”问题</p>
@@ -558,13 +558,13 @@
 <li><a href="https://github.com/cvvz/go-design-pattern/tree/master/golang/builder">建造者</a></li>
 </ul>
 </li>
-<li>结构型
-<ul>
-<li><a href="https://github.com/cvvz/go-design-pattern/tree/master/golang/decorator">装饰器/Functional Option</a></li>
-</ul>
-</li>
+<li>结构型</li>
 <li>行为型</li>
 </ol>
+<h2 id="拓展golang常用编程模式">拓展：golang常用编程模式</h2>
+<ul>
+<li><a href="https://github.com/cvvz/go-design-pattern/tree/master/golang/decorator">Functional Option</a></li>
+</ul>
 ]]></content>
 		</item>
 		
