@@ -289,7 +289,7 @@
 <h3 id="hash表">hash表</h3>
 <p>高级语言内置了hash表，比如Java 中的 HashMap，golang中的map数据类型。</p>
 <blockquote>
-<p><strong>Java JDK 中自带 TreeMap</strong>，可以按 key 进行排序，任何一个 Javaer 应该都使用过。</p>
+<p><strong>Java JDK中自带TreeMap</strong>，可以按 key 进行排序。</p>
 <p>但是在 Go 语言的“简约设计”面前，这些都是不存在的——Go 只提供了最基础的 hash map。并且，在借助 range 关键字对 Go 的 map 进行遍历访问的时候，会对 map 的 key 的顺序做随机化处理，也就是说即使是同一个 map 在同一个程序里进行两次相同的遍历，前后两轮访问 key 的顺序也是随机化的。(可以在<a href="https://go.dev/play/p/LYJSbQBjWa6">这里</a>进行验证)。</p>
 <p>我们可以自己实现，或者借助其他开源解决方案，比如<a href="https://github.com/emirpasic/gods">emirpasic/gods</a>。</p>
 </blockquote>
@@ -319,17 +319,36 @@
 <h3 id="树">树</h3>
 <h4 id="二叉树">二叉树</h4>
 <ul>
-<li>二叉树的遍历：<strong>前中后指的是当前节点和左右子树谁先打印</strong></li>
-<li>完全二叉树和满二叉树：可以用<strong>数组存储</strong></li>
-<li>二叉查找树：<strong>和有序数组的二分查找类比记忆</strong></li>
+<li>二叉树的遍历：
+<ul>
+<li>广度优先搜索：层序遍历</li>
+<li>深度优先搜索：前中后序遍历。</li>
+</ul>
+<blockquote>
+<p><strong>“前中后”指的是当前节点和左右子树谁先打印</strong></p>
+</blockquote>
+</li>
+<li>完全二叉树和满二叉树：可以用<strong>数组存储</strong>
+<blockquote>
+<p><strong>堆通常用完全二叉树实现。完全二叉树又可以用数组实现，因此堆也可以用数组实现。</strong></p>
+</blockquote>
+</li>
+<li>二叉查找树：<strong>和有序数组的二分查找类比记忆</strong>
+<blockquote>
+<p><strong>中序遍历二叉搜索树可以得到一个有序数组</strong></p>
+</blockquote>
+</li>
 <li>平衡二叉查找树：二叉查找树在频繁的动态更新过程中，可能会出现树的高度远大于 log2n 的情况，从而导致各个操作的效率下降。<strong>极端情况下，二叉树会退化为链表</strong>，时间复杂度会退化到 O(n)。所以又发明了<strong>平衡二叉查找树</strong>。
 <blockquote>
 <p>“平衡”的意思，其实就是让整棵树左右看起来比较“对称”、比较“平衡”，不要出现左子树很高、右子树很矮的情况。这样就能让整棵树的高度相对来说低一些，相应的插入、删除、查找等操作的效率高一些。</p>
 </blockquote>
 </li>
-<li>红黑树是一种平衡二叉查找树。它是为了解决普通二叉查找树在数据更新的过程中，复杂度退化的问题而产生的。<strong>红黑树在Java中的实现&ndash;TreeMap</strong>。</li>
+<li><strong>红黑树是一种平衡二叉查找树</strong>。它是为了解决普通二叉查找树在数据更新的过程中，复杂度退化的问题而产生的。<strong>Java中的TreeMap可以对哈希表的key进行排序，底层就用到了红黑树</strong>。</li>
 </ul>
 <h4 id="堆httpsleetcode-cncomtagheap-priority-queueproblemset"><a href="https://leetcode-cn.com/tag/heap-priority-queue/problemset/">堆</a></h4>
+<blockquote>
+<p><strong>堆通常用完全二叉树实现。完全二叉树又可以用数组实现，因此堆也可以用数组实现。</strong></p>
+</blockquote>
 <p><strong>堆的核心操作：</strong></p>
 <ol start="0">
 <li>核心中的核心：堆化（heapify）
@@ -358,7 +377,11 @@
 <li><a href="https://leetcode-cn.com/problems/find-median-from-data-stream/">数据流的中位数</a>、99线问题</li>
 <li>TopK问题
 <ol>
-<li><a href="https://leetcode-cn.com/problems/kth-largest-element-in-an-array/">静态topK</a>（从上往下堆化）</li>
+<li><a href="https://leetcode-cn.com/problems/kth-largest-element-in-an-array/">静态topK</a>（从上往下堆化）
+<blockquote>
+<p>对于静态topK问题，如果数据量能够直接加载进内存，那么用快速排序思想求解会更快（O(n)）；堆排序会比快排更省内存，不过要一直读磁盘/网络，构造流数据，即动态topK</p>
+</blockquote>
+</li>
 <li><a href="https://leetcode-cn.com/problems/kth-largest-element-in-a-stream/">动态topK</a>（从下往上堆化）</li>
 </ol>
 </li>
