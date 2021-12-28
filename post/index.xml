@@ -353,18 +353,13 @@
 <ol start="0">
 <li>核心中的核心：堆化（heapify）
 <ol>
-<li><strong><a href="https://cs.opensource.google/go/go/+/refs/tags/go1.17.5:src/container/heap/heap.go;l=101-119">从上往下</a></strong></li>
-<li><strong><a href="https://cs.opensource.google/go/go/+/refs/tags/go1.17.5:src/container/heap/heap.go;l=90-99">从下往上</a></strong></li>
+<li><strong>从上往下<a href="https://cs.opensource.google/go/go/+/refs/tags/go1.17.5:src/container/heap/heap.go;l=101-119">down</a></strong></li>
+<li><strong>从下往上<a href="https://cs.opensource.google/go/go/+/refs/tags/go1.17.5:src/container/heap/heap.go;l=90-99">up</a></strong></li>
 </ol>
 </li>
-<li>替换堆顶元素，然后从上往下堆化</li>
-<li>向堆中增加元素时，<a href="https://cs.opensource.google/go/go/+/refs/tags/go1.17.5:src/container/heap/heap.go;l=50-55">Push到堆尾</a>，并进行从下往上堆化</li>
-<li>建堆
-<ol>
-<li><a href="https://cs.opensource.google/go/go/+/refs/tags/go1.17.5:src/container/heap/heap.go;l=42-48">从上往下堆化</a></li>
-<li>从下往上堆化，即一个个<a href="https://cs.opensource.google/go/go/+/refs/tags/go1.17.5:src/container/heap/heap.go;l=50-55">Push到堆尾</a>，并从下往上调整</li>
-</ol>
-</li>
+<li>替换堆顶元素，然后从上往下堆化：<a href="https://cs.opensource.google/go/go/+/refs/tags/go1.17.5:src/container/heap/heap.go;l=57-65">Pop</a></li>
+<li>向堆尾添加元素：<a href="https://cs.opensource.google/go/go/+/refs/tags/go1.17.5:src/container/heap/heap.go;l=50-55">Push</a>，并进行从下往上堆化</li>
+<li>建堆：<a href="https://cs.opensource.google/go/go/+/refs/tags/go1.17.5:src/container/heap/heap.go;l=42-48">Init</a></li>
 </ol>
 <p><a href="https://time.geekbang.org/column/article/70187"><strong>堆的应用</strong></a>:</p>
 <ol>
