@@ -9,8 +9,8 @@
 <meta itemprop="name" content="重学数据结构和算法">
 <meta itemprop="description" content="常见数据结构 数组 数组的时间效率很高，但是空间效率很低，而且不安全，比如访问越界造成踩内存。 很多高级语言都基于基础的数组实现了动态数组，比如J">
 <meta itemprop="datePublished" content="2021-07-18T21:14:55+08:00" />
-<meta itemprop="dateModified" content="2021-12-28T17:29:57+08:00" />
-<meta itemprop="wordCount" content="3371">
+<meta itemprop="dateModified" content="2021-12-30T21:52:00+08:00" />
+<meta itemprop="wordCount" content="3292">
 
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/data-structure-and-algorithm/" />
 <meta property="article:published_time" content="2021-07-18T21:14:55+08:00" />
-<meta property="article:modified_time" content="2021-12-28T17:29:57+08:00" />
+<meta property="article:modified_time" content="2021-12-30T21:52:00+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="重学数据结构和算法"/>
 <meta name="twitter:description" content="常见数据结构 数组 数组的时间效率很高，但是空间效率很低，而且不安全，比如访问越界造成踩内存。 很多高级语言都基于基础的数组实现了动态数组，比如J"/>
@@ -184,17 +184,12 @@
 </li>
 </ol>
 <h3 id="图">图<a href="#图" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
-<p><strong>度（degree）</strong>：in-degree、out-degree</p>
+<p><strong>有向无环图（DAG）的拓扑排序</strong>：</p>
 <p><strong>数据结构（存储方法）</strong>：</p>
 <ul>
 <li>邻接矩阵</li>
 <li>邻接表</li>
 </ul>
-<blockquote>
-<p><strong>面试的时候更多的是把二叉树和图结合起来考察，所以会用二叉树（链表）来表示图</strong></p>
-<p>DAG</p>
-</blockquote>
-<p><strong>图的搜索算法</strong>：BFS、DFS</p>
 <h2 id="常见算法">常见算法<a href="#常见算法" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <h3 id="排序">排序<a href="#排序" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p><strong>冒泡排序、插入排序、选择排序</strong>：三种O(n2)的<strong>简单无脑的</strong>算法，数据量不大时可以用一用。</p>
@@ -230,14 +225,10 @@
 <blockquote>
 <p><strong>注意，在做堆排序时，由于调整这一步是从上往下堆化，所以建堆时应该用方法一，这样heapify函数才能复用。参考<a href="https://cs.opensource.google/go/go/+/refs/tags/go1.17.5:src/sort/sort.go;l=66-81">heapSort</a></strong></p>
 </blockquote>
-<h3 id="搜索">搜索<a href="#搜索" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
-<blockquote>
-<p>算法是作用于具体数据结构之上的，深度优先搜索算法和广度优先搜索算法都是基于“图”这种数据结构的</p>
-</blockquote>
-<h4 id="广度优先搜索">广度优先搜索<a href="#广度优先搜索" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
-<p>通俗的理解就是，地毯式层层推进，从起始顶点开始，依次往外遍历。广度优先搜索需要借助<strong>队列</strong>来实现，遍历得到的路径就是，起始顶点到终止顶点的最短路径。</p>
-<h4 id="深度优先搜索">深度优先搜索<a href="#深度优先搜索" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
-<p>用的是回溯思想，非常适合用递归实现。换种说法，深度优先搜索是借助<strong>栈</strong>来实现的。</p>
+<h3 id="搜索算法">搜索算法<a href="#搜索算法" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p><strong>广度优先搜索和深度优先搜索</strong>在算法面试中都是非常有用的工具，也就是说掌握BFS和DFS是基础，很多时候使用任意一种搜索算法就能解决某些与图相关的面试题。</p>
+<p>如果面试题要求在无权图中找出两个节点之间的最短距离，那么广度优先搜索可能是更合适的算法。
+如果面试题要求找出符合条件的路径，那么深度优先搜索可能是更合适的算法。</p>
 <h3 id="二分查找">二分查找<a href="#二分查找" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p>二分查找的<strong>三个容易出错的地方</strong>：</p>
 <ul>
@@ -272,8 +263,8 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/code">code</a></span><span class="tag"><a href="https://cvvz.github.io/tags/golang">golang</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>3371 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/2d7fd040c49ba4aa14326a60f32271b621c64321" target="_blank" rel="noopener">2d7fd04</a> @ 2021-12-28</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>3292 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/1c4141e6f700f3cc3be2eab3ebf0ee934702505c" target="_blank" rel="noopener">1c4141e</a> @ 2021-12-30</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">
@@ -295,7 +286,7 @@
     <li><a href="#常见算法">常见算法</a>
       <ul>
         <li><a href="#排序">排序</a></li>
-        <li><a href="#搜索">搜索</a></li>
+        <li><a href="#搜索算法">搜索算法</a></li>
         <li><a href="#二分查找">二分查找</a></li>
       </ul>
     </li>
