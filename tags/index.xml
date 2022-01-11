@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Mon, 29 Nov 2021 15:37:20 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 11 Jan 2022 19:47:01 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>kubernetes</title>
+      <link>https://cvvz.github.io/tags/kubernetes/</link>
+      <pubDate>Tue, 11 Jan 2022 19:47:01 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/tags/kubernetes/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>code</title>
       <link>https://cvvz.github.io/tags/code/</link>
@@ -23,15 +32,6 @@
       <pubDate>Mon, 29 Nov 2021 15:37:20 +0800</pubDate>
       
       <guid>https://cvvz.github.io/tags/golang/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>kubernetes</title>
-      <link>https://cvvz.github.io/tags/kubernetes/</link>
-      <pubDate>Sun, 25 Jul 2021 08:58:26 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/tags/kubernetes/</guid>
       <description></description>
     </item>
     

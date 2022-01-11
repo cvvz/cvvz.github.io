@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Sun, 25 Jul 2021 08:58:26 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 11 Jan 2022 19:47:01 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>浅谈开源集群联邦的设计和实现原理</title>
+      <link>https://cvvz.github.io/post/kube-federation/</link>
+      <pubDate>Tue, 11 Jan 2022 19:47:01 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/kube-federation/</guid>
+      <description>集群联邦 集群联邦是为了解决单k8s集群节点数量有限的问题而出现的多集群管理方案。更具体一点，集群联邦要解决三类问题： 多k8s集群管理。这一块</description>
+    </item>
+    
     <item>
       <title>分布式数据库上k8s面临的困境</title>
       <link>https://cvvz.github.io/post/the-difficulty-of-distributed-db-on-cloud/</link>

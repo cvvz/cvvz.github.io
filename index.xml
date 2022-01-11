@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Mon, 29 Nov 2021 15:37:20 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 11 Jan 2022 19:47:01 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>浅谈开源集群联邦的设计和实现原理</title>
+      <link>https://cvvz.github.io/post/kube-federation/</link>
+      <pubDate>Tue, 11 Jan 2022 19:47:01 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/kube-federation/</guid>
+      <description>集群联邦 集群联邦是为了解决单k8s集群节点数量有限的问题而出现的多集群管理方案。更具体一点，集群联邦要解决三类问题： 多k8s集群管理。这一块</description>
+    </item>
+    
     <item>
       <title>不同上下文中的原子性问题</title>
       <link>https://cvvz.github.io/post/atomic-in-different-context/</link>
@@ -177,15 +186,6 @@
       
       <guid>https://cvvz.github.io/post/celery-worker-zombie/</guid>
       <description>组内有一个基于Flask + rabbitMQ + Celery搭建的web平台，最近在上面开发需求时碰到了一个比较有趣的问题，在这里记录下来。 问题背景 web平台</description>
-    </item>
-    
-    <item>
-      <title>用树莓派分析函数调用栈</title>
-      <link>https://cvvz.github.io/post/call-stack/</link>
-      <pubDate>Tue, 03 Sep 2019 18:44:12 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/call-stack/</guid>
-      <description>理解本篇文章需要具备一些GDB、汇编、寄存器的基础知识。可以在阅读的过程中碰到不理解的地方再针对性的学习。 寄存器 分析函数调用栈涉及到的几个特</description>
     </item>
     
   </channel>
