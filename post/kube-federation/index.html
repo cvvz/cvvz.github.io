@@ -9,8 +9,8 @@
 <meta itemprop="name" content="浅谈开源集群联邦的设计和实现原理">
 <meta itemprop="description" content="集群联邦 集群联邦是为了解决单k8s集群节点数量有限的问题而出现的多集群管理方案。更具体一点，集群联邦要解决三类问题： 多k8s集群管理。这一块">
 <meta itemprop="datePublished" content="2022-01-11T19:47:01+08:00" />
-<meta itemprop="dateModified" content="2022-01-11T22:00:01+08:00" />
-<meta itemprop="wordCount" content="3712">
+<meta itemprop="dateModified" content="2022-01-12T08:30:49+08:00" />
+<meta itemprop="wordCount" content="3756">
 
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/kube-federation/" />
 <meta property="article:published_time" content="2022-01-11T19:47:01+08:00" />
-<meta property="article:modified_time" content="2022-01-11T22:00:01+08:00" />
+<meta property="article:modified_time" content="2022-01-12T08:30:49+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="浅谈开源集群联邦的设计和实现原理"/>
 <meta name="twitter:description" content="集群联邦 集群联邦是为了解决单k8s集群节点数量有限的问题而出现的多集群管理方案。更具体一点，集群联邦要解决三类问题： 多k8s集群管理。这一块"/>
@@ -97,17 +97,17 @@
 <li>用户通过定义<code>ReplicaSchedulingPreference（RSP）</code>这个CRD来声明某个资源在集群范围内的调度规则。RSP Controller（对应图中的<code>Scheduling</code>）会根据调度规则以及资源状态来进行调度。所谓的调度，就是去修改<code>Federated Type</code>中的<code>Placement</code>或<code>Overrides</code>。sync controller watch到<code>Federated Type</code>的变更，就会去更新成员集群资源。</li>
 </ul>
 <h2 id="karmadahttpsgithubcomkarmada-iokarmada"><a href="https://github.com/karmada-io/karmada">Karmada</a><a href="#karmadahttpsgithubcomkarmada-iokarmada" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
-<p><figure>
+<figure>
     <img src="/karmada.png" width="450px"/> 
 </figure>
 
+<p>Karmada最大的特色是<strong>整个控制平面是一个部署在k8s中的定制化的k8s（k8s-on-k8s），包括etcd</strong>。底层的这个k8s唯一的作用就是部署karmada的k8s元集群，karmada只对外暴露元集群apiserver的API（图中<code>karmada apiserver</code>）。</p>
+<p><strong>Karmada的k8s原集群中的controller组件，通过启动flag限制了很多内置控制器的运行，最典型的例如不启动replicaset/deployment控制器</strong>。而Karmada的controller（图中<code>Karmada controllers</code>）则会watch replicaset/deployment等k8s原生资源，这样，用户在创建一个deployment时，实际是karmada controller对其进行reconcile，reconcile的逻辑自然是将workload分发到成员集群中去。</p>
+<p>Karmada的支持Push和Pull两种模式分发workload：push模式下由Karmada控制器将应用推送到成员集群，Pull模式下由运行在成员集群侧的Karmada Agent控制器将应用下拉到本地。</p>
 <figure>
     <img src="/karmada-resource-relation.png" width="450px"/> 
 </figure>
-</p>
-<p>Karmada最大的特色是<strong>整个控制平面是一个部署在k8s中的定制化的k8s（k8s-on-k8s），包括etcd</strong>。底层的这个k8s唯一的作用就是部署karmada的k8s元集群，karmada只对外暴露元集群apiserver的API。</p>
-<p><strong>Karmada的k8s原集群中的controller组件，通过启动flag限制了很多内置控制器的运行，最典型的例如不启动replicaset/deployment控制器</strong>。而Karmada的controller则会watch replicaset/deployment等k8s原生资源，这样，用户在创建一个deployment时，实际是karmada controller对其进行reconcile，reconcile的逻辑自然是将workload分发到成员集群中去。</p>
-<p>Karmada的支持Push和Pull两种模式分发workload：push模式下由Karmada控制器将应用推送到成员集群，Pull模式下由运行在成员集群侧的Karmada Agent控制器将应用下拉到本地。</p>
+
 <p>Karmada借鉴了KubeFed的很多设计思想。Karmada将KubeFed中定义在同一个<code>Federated Type</code>中的<code>Template</code>、<code>placement</code>、<code>overrides</code>拆分成了3个单独的对象：原生资源（图中<code>Resource Template</code>）、资源传播策略（图中<code>propagation policy</code>）、单集群差异化配置策略（图中<code>override policy</code>）。</p>
 <p>整体工作流程：</p>
 <ol>
@@ -148,7 +148,7 @@
 <li>定义调度策略：首先在中央集群中创建<code>placement</code>对象，其中定义了<code>predicate</code>和<code>priority</code>规则；控制器会自动创建出<code>PlacementDecision</code>对象，调度结果会存放在<code>PlacementDecision</code>中。</li>
 <li>资源部署：需要创建<code>ManifestWork</code>对象，这个对象里定义了manifests字段，即资源模板。对应的cluster上的agent watch到了<code>ManifestWork</code>，会在自己的集群内创建对应的资源。并且会将状态同步到中央集群中的<code>ManifestWork</code> status字段。</li>
 </ol>
-<p>OCM旨在提供一个精简的多集群/多应用管理的内核，不会去定义面向用户的接口部分，而是希望提供能力，使得其他面向最终用户的接口实现可以很轻易的集成进来，也就是说<strong>OCM不像其他集群联邦产品那样可以开箱即用</strong>。</p>
+<p><strong>OCM旨在提供一个精简的多集群/多应用管理的内核，不会去定义面向用户的接口部分，而是希望提供下层能力，使得其他面向最终用户的接口实现可以很轻易的集成进来，换句话说OCM不像其他集群联邦产品那样可以开箱即用</strong>。</p>
 <p>OCM 和 kubernetes 开源社区结合的比较的密切：</p>
 <ol>
 <li>实现了 kubernetes <a href="https://github.com/kubernetes/enhancements/tree/master/keps/sig-multicluster">sig-multicluster</a> 的多个设计方案，包括 KEP-2149中的Cluster ID、KEP-1645 Multi-Cluster Services API 中关于 clusterset 的概念。</li>
@@ -183,8 +183,8 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/kubernetes">kubernetes</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>3712 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/0f21b5ace89373301bf486cd9a2c79bb4b8959c6" target="_blank" rel="noopener">0f21b5a</a> @ 2022-01-11</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>3756 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/2b98e1a2846fea525abe35c31ff8a16ef65b0508" target="_blank" rel="noopener">2b98e1a</a> @ 2022-01-12</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">
