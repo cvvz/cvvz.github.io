@@ -7,25 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Wed, 12 Jan 2022 08:33:09 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>coding</title>
-      <link>https://cvvz.github.io/tags/coding/</link>
-      <pubDate>Wed, 12 Jan 2022 08:33:09 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/tags/coding/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>golang</title>
-      <link>https://cvvz.github.io/tags/golang/</link>
-      <pubDate>Wed, 12 Jan 2022 08:33:09 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/tags/golang/</guid>
-      <description></description>
-    </item>
-    
+    <lastBuildDate>Tue, 11 Jan 2022 19:47:01 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>kubernetes</title>
       <link>https://cvvz.github.io/tags/kubernetes/</link>
@@ -45,11 +27,29 @@
     </item>
     
     <item>
+      <title>golang</title>
+      <link>https://cvvz.github.io/tags/golang/</link>
+      <pubDate>Mon, 29 Nov 2021 15:37:20 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/tags/golang/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>storage</title>
       <link>https://cvvz.github.io/tags/storage/</link>
       <pubDate>Sun, 25 Jul 2021 08:58:26 +0800</pubDate>
       
       <guid>https://cvvz.github.io/tags/storage/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>coding</title>
+      <link>https://cvvz.github.io/tags/coding/</link>
+      <pubDate>Sun, 18 Jul 2021 20:40:19 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/tags/coding/</guid>
       <description></description>
     </item>
     

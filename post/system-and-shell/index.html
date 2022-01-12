@@ -9,8 +9,8 @@
 <meta itemprop="name" content="system系统调用探秘">
 <meta itemprop="description" content="6月3日更新 新的实验又发现使用/bin/sh和书中行为一致，但使用/bin/bash的行为和本文中的实验一致，看来是不同shell的底层的实">
 <meta itemprop="datePublished" content="2019-05-30T00:28:40+08:00" />
-<meta itemprop="dateModified" content="2021-12-22T11:39:56+08:00" />
-<meta itemprop="wordCount" content="1593">
+<meta itemprop="dateModified" content="2022-01-12T14:02:16+08:00" />
+<meta itemprop="wordCount" content="1592">
 
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/system-and-shell/" />
 <meta property="article:published_time" content="2019-05-30T00:28:40+08:00" />
-<meta property="article:modified_time" content="2021-12-22T11:39:56+08:00" />
+<meta property="article:modified_time" content="2022-01-12T14:02:16+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="system系统调用探秘"/>
 <meta name="twitter:description" content="6月3日更新 新的实验又发现使用/bin/sh和书中行为一致，但使用/bin/bash的行为和本文中的实验一致，看来是不同shell的底层的实"/>
@@ -78,7 +78,7 @@
 </blockquote>
 <h2 id="system实现原理">system实现原理<a href="#system实现原理" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p><code>system</code>这个系统调用的源码在网上已经有很多了，这里就不展示了。简单来说，就是父进程<code>fork</code>后，在子进程中通过执行<code>execl(&quot;/bin/sh&quot;, &quot;sh&quot;, &quot;-c&quot;, cmdstring, (char *)0)</code>，使得<code>/bin/sh</code>成为新的子进程，然后在<code>/bin/sh</code>中执行<code>cmdstring</code>命令；父进程循环执行<code>waitpid</code>，等待子进程退出的信号。</p>
-<h2 id="到底有几个子进程">到底有几个子进程？<a href="#到底有几个子进程" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<h2 id="到底有几个子进程">到底有几个子进程？<a href="#到底有几个子进程" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <h3 id="实验一">实验一<a href="#实验一" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p>在学习《UNIX环境高级编程（第3版）》信号一章时，根据图10-27所示，执行 <code>system(&quot;/bin/ed&quot;)</code> 命令后，会分别调用<code>fork</code>/<code>exec</code>系统调用两次：</p>
 <ol>
@@ -140,8 +140,8 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/linux">Linux</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1593 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/e3763633dde2d52632cbdb90a743d2513368ea9d" target="_blank" rel="noopener">e376363</a> @ 2021-12-22</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1592 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/ae7d57e7de14cc7b1edc694f6d2506c031448221" target="_blank" rel="noopener">ae7d57e</a> @ 2022-01-12</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">
@@ -149,7 +149,7 @@
 			<nav id="TableOfContents">
   <ul>
     <li><a href="#system实现原理">system实现原理</a></li>
-    <li><a href="#到底有几个子进程">到底有几个子进程？</a>
+    <li><a href="#到底有几个子进程">到底有几个子进程？</a>
       <ul>
         <li><a href="#实验一">实验一</a></li>
         <li><a href="#实验二">实验二</a></li>

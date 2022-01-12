@@ -6,27 +6,8 @@
 		<generator>Hugo -- gohugo.io</generator>
 		<language>zh-hans</language>
 		<copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-		<lastBuildDate>Wed, 12 Jan 2022 08:33:09 +0800</lastBuildDate>
+		<lastBuildDate>Tue, 11 Jan 2022 19:47:01 +0800</lastBuildDate>
 		<atom:link href="https://cvvz.github.io/post/index.xml" rel="self" type="application/rss+xml" />
-		
-		<item>
-			<title>Golang 编程模式</title>
-			<link>https://cvvz.github.io/post/golang-programming-patterns/</link>
-			<pubDate>Wed, 12 Jan 2022 08:33:09 +0800</pubDate>
-			
-			<guid>https://cvvz.github.io/post/golang-programming-patterns/</guid>
-			<description>总结一下Golang的一些常见的编程模式。 建造者模式-builder functional option 装饰器模式 Map Reduce Go generation generic programming 错误处理 pipeline</description>
-			<content type="html"><![CDATA[<p>总结一下Golang的一些常见的编程模式。</p>
-<h2 id="建造者模式-builder">建造者模式-builder</h2>
-<h2 id="functional-option">functional option</h2>
-<h2 id="装饰器模式">装饰器模式</h2>
-<h2 id="map-reduce">Map Reduce</h2>
-<h2 id="go-generation">Go generation</h2>
-<h2 id="generic-programming">generic programming</h2>
-<h2 id="错误处理">错误处理</h2>
-<h2 id="pipeline">pipeline</h2>
-]]></content>
-		</item>
 		
 		<item>
 			<title>浅谈开源集群联邦的设计和实现原理</title>
@@ -2470,7 +2451,7 @@
 </blockquote>
 <h2 id="system实现原理">system实现原理</h2>
 <p><code>system</code>这个系统调用的源码在网上已经有很多了，这里就不展示了。简单来说，就是父进程<code>fork</code>后，在子进程中通过执行<code>execl(&quot;/bin/sh&quot;, &quot;sh&quot;, &quot;-c&quot;, cmdstring, (char *)0)</code>，使得<code>/bin/sh</code>成为新的子进程，然后在<code>/bin/sh</code>中执行<code>cmdstring</code>命令；父进程循环执行<code>waitpid</code>，等待子进程退出的信号。</p>
-<h2 id="到底有几个子进程">到底有几个子进程？</h2>
+<h2 id="到底有几个子进程">到底有几个子进程？</h2>
 <h3 id="实验一">实验一</h3>
 <p>在学习《UNIX环境高级编程（第3版）》信号一章时，根据图10-27所示，执行 <code>system(&quot;/bin/ed&quot;)</code> 命令后，会分别调用<code>fork</code>/<code>exec</code>系统调用两次：</p>
 <ol>
