@@ -9,8 +9,8 @@
 <meta itemprop="name" content="浅谈开源集群联邦的设计和实现原理">
 <meta itemprop="description" content="集群联邦 集群联邦是为了解决单k8s集群节点数量有限的问题而出现的多集群管理方案。更具体一点，集群联邦要解决三类问题： 多k8s集群管理。这一块">
 <meta itemprop="datePublished" content="2022-01-11T19:47:01+08:00" />
-<meta itemprop="dateModified" content="2022-01-12T08:30:49+08:00" />
-<meta itemprop="wordCount" content="3756">
+<meta itemprop="dateModified" content="2022-01-12T08:50:33+08:00" />
+<meta itemprop="wordCount" content="3767">
 
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/kube-federation/" />
 <meta property="article:published_time" content="2022-01-11T19:47:01+08:00" />
-<meta property="article:modified_time" content="2022-01-12T08:30:49+08:00" />
+<meta property="article:modified_time" content="2022-01-12T08:50:33+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="浅谈开源集群联邦的设计和实现原理"/>
 <meta name="twitter:description" content="集群联邦 集群联邦是为了解决单k8s集群节点数量有限的问题而出现的多集群管理方案。更具体一点，集群联邦要解决三类问题： 多k8s集群管理。这一块"/>
@@ -74,9 +74,9 @@
 				<h2 id="集群联邦">集群联邦<a href="#集群联邦" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>集群联邦是为了解决单k8s集群节点数量有限的问题而出现的多集群管理方案。更具体一点，集群联邦要解决三类问题：</p>
 <ol>
-<li>多k8s集群管理。这一块对应有社区的<a href="https://github.com/kubernetes-retired/cluster-registry">cluster-registry（已归档）</a>项目和<a href="https://github.com/kubernetes-sigs/cluster-api">cluster-api</a>项目</li>
-<li>多集群workload管理。<a href="https://timewitch.net/post/2020-03-31-multicluster-workloads/">A Model For Multicluster Workloads (In Kubernetes And Beyond)</a> 这篇文章提出了一种多集群workload的模型，现在的集群联邦的应用管理框架基本上都符合该模型。</li>
-<li>多集群service。社区里有 <a href="https://github.com/kubernetes/enhancements/tree/master/keps/sig-multicluster/1645-multi-cluster-services-api">Multi-Cluster Services API</a> 的KEP，OCM中有相应的实现。</li>
+<li><strong>多k8s集群管理</strong>。这一块对应有社区的<a href="https://github.com/kubernetes-retired/cluster-registry">cluster-registry（已归档）</a>项目和<a href="https://github.com/kubernetes-sigs/cluster-api">cluster-api</a>项目</li>
+<li><strong>多集群workload管理</strong>。<a href="https://timewitch.net/post/2020-03-31-multicluster-workloads/">A Model For Multicluster Workloads (In Kubernetes And Beyond)</a> 这篇文章提出了一种多集群workload的模型，现在的集群联邦的应用管理框架基本上都符合该模型。</li>
+<li><strong>多集群service（服务暴露和服务发现）</strong>。社区里有 <a href="https://github.com/kubernetes/enhancements/tree/master/keps/sig-multicluster/1645-multi-cluster-services-api">Multi-Cluster Services API</a> 的KEP，OCM中有相应的实现。</li>
 </ol>
 <h2 id="kubefed-v2httpsgithubcomkubernetes-sigskubefed"><a href="https://github.com/kubernetes-sigs/kubefed">KubeFed v2</a><a href="#kubefed-v2httpsgithubcomkubernetes-sigskubefed" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <figure>
@@ -183,8 +183,8 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/kubernetes">kubernetes</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>3756 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/2b98e1a2846fea525abe35c31ff8a16ef65b0508" target="_blank" rel="noopener">2b98e1a</a> @ 2022-01-12</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>3767 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/9360972f94bf6f5c1f781de9519a858f6ae3fc24" target="_blank" rel="noopener">9360972</a> @ 2022-01-12</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">
@@ -200,6 +200,9 @@
 </nav>
 		</aside>
 		<div class="post-nav thin">
+			<a class="next-post" href="https://cvvz.github.io/post/golang-programming-patterns/">
+				<span class="post-nav-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>&nbsp;新</span><br><span>Golang 编程模式</span>
+			</a>
 			<a class="prev-post" href="https://cvvz.github.io/post/atomic-in-different-context/">
 				<span class="post-nav-label">旧&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>不同上下文中的原子性问题</span>
 			</a>

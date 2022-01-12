@@ -6,8 +6,27 @@
 		<generator>Hugo -- gohugo.io</generator>
 		<language>zh-hans</language>
 		<copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-		<lastBuildDate>Tue, 11 Jan 2022 19:47:01 +0800</lastBuildDate>
+		<lastBuildDate>Wed, 12 Jan 2022 08:33:09 +0800</lastBuildDate>
 		<atom:link href="https://cvvz.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+		
+		<item>
+			<title>Golang 编程模式</title>
+			<link>https://cvvz.github.io/post/golang-programming-patterns/</link>
+			<pubDate>Wed, 12 Jan 2022 08:33:09 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/post/golang-programming-patterns/</guid>
+			<description>总结一下Golang的一些常见的编程模式。 建造者模式-builder functional option 装饰器模式 Map Reduce Go generation generic programming 错误处理 pipeline</description>
+			<content type="html"><![CDATA[<p>总结一下Golang的一些常见的编程模式。</p>
+<h2 id="建造者模式-builder">建造者模式-builder</h2>
+<h2 id="functional-option">functional option</h2>
+<h2 id="装饰器模式">装饰器模式</h2>
+<h2 id="map-reduce">Map Reduce</h2>
+<h2 id="go-generation">Go generation</h2>
+<h2 id="generic-programming">generic programming</h2>
+<h2 id="错误处理">错误处理</h2>
+<h2 id="pipeline">pipeline</h2>
+]]></content>
+		</item>
 		
 		<item>
 			<title>浅谈开源集群联邦的设计和实现原理</title>
@@ -19,9 +38,9 @@
 			<content type="html"><![CDATA[<h2 id="集群联邦">集群联邦</h2>
 <p>集群联邦是为了解决单k8s集群节点数量有限的问题而出现的多集群管理方案。更具体一点，集群联邦要解决三类问题：</p>
 <ol>
-<li>多k8s集群管理。这一块对应有社区的<a href="https://github.com/kubernetes-retired/cluster-registry">cluster-registry（已归档）</a>项目和<a href="https://github.com/kubernetes-sigs/cluster-api">cluster-api</a>项目</li>
-<li>多集群workload管理。<a href="https://timewitch.net/post/2020-03-31-multicluster-workloads/">A Model For Multicluster Workloads (In Kubernetes And Beyond)</a> 这篇文章提出了一种多集群workload的模型，现在的集群联邦的应用管理框架基本上都符合该模型。</li>
-<li>多集群service。社区里有 <a href="https://github.com/kubernetes/enhancements/tree/master/keps/sig-multicluster/1645-multi-cluster-services-api">Multi-Cluster Services API</a> 的KEP，OCM中有相应的实现。</li>
+<li><strong>多k8s集群管理</strong>。这一块对应有社区的<a href="https://github.com/kubernetes-retired/cluster-registry">cluster-registry（已归档）</a>项目和<a href="https://github.com/kubernetes-sigs/cluster-api">cluster-api</a>项目</li>
+<li><strong>多集群workload管理</strong>。<a href="https://timewitch.net/post/2020-03-31-multicluster-workloads/">A Model For Multicluster Workloads (In Kubernetes And Beyond)</a> 这篇文章提出了一种多集群workload的模型，现在的集群联邦的应用管理框架基本上都符合该模型。</li>
+<li><strong>多集群service（服务暴露和服务发现）</strong>。社区里有 <a href="https://github.com/kubernetes/enhancements/tree/master/keps/sig-multicluster/1645-multi-cluster-services-api">Multi-Cluster Services API</a> 的KEP，OCM中有相应的实现。</li>
 </ol>
 <h2 id="kubefed-v2httpsgithubcomkubernetes-sigskubefed"><a href="https://github.com/kubernetes-sigs/kubefed">KubeFed v2</a></h2>
 <figure>
@@ -938,7 +957,7 @@
 <h3 id="underlay和overlay">underlay和overlay</h3>
 <p>所谓underlay，也就是没有在宿主机网络上的虚拟层，容器和宿主机处于同一个网络层面上。</p>
 <blockquote>
-<p>在这种情形下，Kubernetes 内外网络是互通的，运行在kubernetes中的容器可以很方便的和公司内部已有的非云原生基础设施进行联动，比如DNS、负载均衡、配置中心等，而不需要借助kubernetes内部的DNS、ingress和service做服务发现和负载均衡。</p>
+<p>在这种情形下，Kubernetes 内外网络是互通的，运行在kubernetes中的容器可以很方便的和公司内部已有的非云原生基础设施进行联动，比如DNS、负载均衡、配置中心等，而不需要借助kubernetes内部的DNS、ingress和service做服务发现和负载均衡。</p>
 </blockquote>
 <p>所谓overlay，其实就是在容器的IP包外面附加额外的数据包头，然后<strong>整体作为宿主机网络报文中的数据进行传输</strong>。容器的IP包加上额外的数据包头就用于跨主机的容器之间通信，<strong>容器网络就相当于覆盖(overlay)在宿主机网络上的一层虚拟网络</strong>。如下图所示：</p>
 <figure>
