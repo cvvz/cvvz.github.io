@@ -486,6 +486,9 @@
 <li>合并有序小文件</li>
 <li>定时器</li>
 </ol>
+<blockquote>
+<p>思考：为啥堆又叫做优先级队列？<strong>看起来堆似乎是一个二叉树，和队列不是同一个数据结构。但是实际上堆是一个完全二叉树，而完全二叉树通常用数组表示，所以堆也是用数组来存储的。而队列也是用数组存储的</strong>。</p>
+</blockquote>
 </li>
 <li><a href="https://leetcode-cn.com/problems/find-median-from-data-stream/">数据流的中位数</a>、99线问题</li>
 <li>TopK问题
