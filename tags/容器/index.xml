@@ -36,7 +36,7 @@
     </item>
     
     <item>
-      <title>Kubernetes Volume实现原理</title>
+      <title>Kubernetes存储之Volume实现原理</title>
       <link>https://cvvz.github.io/post/k8s-volume/</link>
       <pubDate>Sat, 12 Dec 2020 12:32:33 +0800</pubDate>
       
@@ -45,7 +45,7 @@
     </item>
     
     <item>
-      <title>浅谈单机容器网络</title>
+      <title>kubernetes网络之浅谈单机容器网络</title>
       <link>https://cvvz.github.io/post/container-network/</link>
       <pubDate>Thu, 03 Dec 2020 00:16:18 +0800</pubDate>
       

@@ -81,7 +81,7 @@
     </item>
     
     <item>
-      <title>Kubernetes Volume实现原理</title>
+      <title>Kubernetes存储之Volume实现原理</title>
       <link>https://cvvz.github.io/post/k8s-volume/</link>
       <pubDate>Sat, 12 Dec 2020 12:32:33 +0800</pubDate>
       
