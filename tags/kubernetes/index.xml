@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Tue, 11 Jan 2022 19:47:01 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 10 Feb 2022 08:19:53 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>谈谈kubernetes中的etcd</title>
+      <link>https://cvvz.github.io/post/etcd-and-kubernetes/</link>
+      <pubDate>Thu, 10 Feb 2022 08:19:53 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/etcd-and-kubernetes/</guid>
+      <description>revision revision是etcd中资源的全局版本号，可以看作一个全局逻辑时钟。etcd 启动的时候默认revision是 1，对任何一个key的增、</description>
+    </item>
+    
     <item>
       <title>浅谈开源集群联邦的设计和实现原理</title>
       <link>https://cvvz.github.io/post/kube-federation/</link>

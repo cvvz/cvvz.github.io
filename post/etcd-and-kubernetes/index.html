@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="google-site-verification" content="Wp3QtEkIlF0ZvtKx90lPmoXyH39d-pmBhiTyTbba9L4" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta itemprop="name" content="谈谈kubernetes中的etcd">
+<meta itemprop="description" content="revision revision是etcd中资源的全局版本号，可以看作一个全局逻辑时钟。etcd 启动的时候默认revision是 1，对任何一个key的增、">
+<meta itemprop="datePublished" content="2022-02-10T08:19:53+08:00" />
+<meta itemprop="dateModified" content="2022-02-10T18:22:57+08:00" />
+<meta itemprop="wordCount" content="2807">
+
+
+
+<meta itemprop="keywords" content="kubernetes,etcd," />
+<meta property="og:title" content="谈谈kubernetes中的etcd" />
+<meta property="og:description" content="revision revision是etcd中资源的全局版本号，可以看作一个全局逻辑时钟。etcd 启动的时候默认revision是 1，对任何一个key的增、" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://cvvz.github.io/post/etcd-and-kubernetes/" />
+<meta property="article:published_time" content="2022-02-10T08:19:53+08:00" />
+<meta property="article:modified_time" content="2022-02-10T18:22:57+08:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="谈谈kubernetes中的etcd"/>
+<meta name="twitter:description" content="revision revision是etcd中资源的全局版本号，可以看作一个全局逻辑时钟。etcd 启动的时候默认revision是 1，对任何一个key的增、"/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>谈谈kubernetes中的etcd</title>
+	<link rel="stylesheet" href="https://cvvz.github.io/css/style.min.7a1ec200e9f3394f73c6eda58011808507a3b24318de81e1e343f22a2470caef.css">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp faster">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://cvvz.github.io">Vic&#39;s Blog</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					<a href="https://cvvz.github.io/post/">文章</a>
+					<a href="https://cvvz.github.io/read/">读书</a>
+					<a href="https://cvvz.github.io/aboutme/resume.pdf">关于</a>
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<button id="toc-btn" class="hdr-btn desktop-only-ib" title="目录"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-list"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3" y2="6"></line><line x1="3" y1="12" x2="3" y2="12"></line><line x1="3" y1="18" x2="3" y2="18"></line></svg></button><span class="hdr-social hide-in-mobile"><a href="https://github.com/cvvz" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="mailto:ftdchenwz@gmail.com" target="_blank" rel="noopener me" title="Email"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a></span><button id="menu-btn" class="hdr-btn" title="菜单"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://cvvz.github.io/post/">文章</a></li>
+			<li><a href="https://cvvz.github.io/read/">读书</a></li>
+			<li><a href="https://cvvz.github.io/aboutme/resume.pdf">关于</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<h1>谈谈kubernetes中的etcd</h1>
+			</header>
+			<div class="content">
+				<h2 id="revision">revision<a href="#revision" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>revision是etcd中资源的全局版本号，可以看作一个全局逻辑时钟。etcd 启动的时候默认revision是 1，对<strong>任何一个key</strong>的增、删、更新操作时都会导致其<strong>全局单调递增</strong>。</p>
+<p>etcd中每个kv都对应了两种revision，create_revision和mod_revision：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="ln"> 1</span><span class="c1"># etcdctl get hello -w=json | jq</span>
+<span class="ln"> 2</span><span class="o">{</span>
+<span class="ln"> 3</span>  <span class="s2">&#34;header&#34;</span>: <span class="o">{</span>
+<span class="ln"> 4</span>    <span class="s2">&#34;cluster_id&#34;</span>: 12938807918314689000,
+<span class="ln"> 5</span>    <span class="s2">&#34;member_id&#34;</span>: 15640011255034253000,
+<span class="ln"> 6</span>    <span class="s2">&#34;revision&#34;</span>: 234503652,
+<span class="ln"> 7</span>    <span class="s2">&#34;raft_term&#34;</span>: <span class="m">42</span>
+<span class="ln"> 8</span>  <span class="o">}</span>,
+<span class="ln"> 9</span>  <span class="s2">&#34;kvs&#34;</span>: <span class="o">[</span>
+<span class="ln">10</span>    <span class="o">{</span>
+<span class="ln">11</span>      <span class="s2">&#34;key&#34;</span>: <span class="s2">&#34;aGVsbG8=&#34;</span>,
+<span class="ln">12</span>      <span class="s2">&#34;create_revision&#34;</span>: 165796223,
+<span class="ln">13</span>      <span class="s2">&#34;mod_revision&#34;</span>: 165796223,
+<span class="ln">14</span>      <span class="s2">&#34;version&#34;</span>: 1,
+<span class="ln">15</span>      <span class="s2">&#34;value&#34;</span>: <span class="s2">&#34;d29ybGQ=&#34;</span>
+<span class="ln">16</span>    <span class="o">}</span>
+<span class="ln">17</span>  <span class="o">]</span>,
+<span class="ln">18</span>  <span class="s2">&#34;count&#34;</span>: <span class="m">1</span>
+<span class="ln">19</span><span class="o">}</span>
+</code></pre></div><p>创建一个kv时，create_revision为当前的全局revision；每当更新或者删除这个key时，mod_revision会被更新为当前的全局revision；读取时，不指定revision，则默认读取最新的数据，否则读取该kv在某个版本号下的快照。</p>
+<h3 id="mvcc和乐观锁">MVCC和乐观锁<a href="#mvcc和乐观锁" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>数据库可以通过悲观锁或乐观锁（MVCC）来实现事务的隔离级别。MVCC机制的核心思想是保存kv数据的多个历史版本（revision），etcd中的事务也是基于乐观锁机制实现。</p>
+<p><strong>kubernetes资源的resourceVersion对应的是etcd中kv的mod_revision</strong>。</p>
+<p>在controller的reconcile控制循环中，我们常常需要更新workload的spec或者status字段，而如果在同一次reconcile中对同一个资源对象进行了两次更新操作，那么第二次更新会报错：<code>the object has been modified; please apply your changes to the latest version and try again</code>，原因就是第一次更新过后，资源对象的resourceVersion被更新为了新的版本，在第二次更新时，由于版本过时导致更新操作返回失败。这就是一个典型的乐观并发场景，需要上层业务逻辑自行重试或者避免写冲突的发生。</p>
+<h3 id="可靠的watch机制">可靠的watch机制<a href="#可靠的watch机制" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>kubernetes借助resourceVersion实现了可靠的watch机制。client端初次进行list &amp; watch时，list就是一个普通的http get请求；第二步发送一个带有 <code>resourceVersion=0</code> 和 <code>watch=true</code> query string的http get请求建立watch连接。</p>
+<p>此处watch请求中resourceVersion=0的含义就是指client端初次与apiserver建立watch连接，api-server会返回cache中的最新数据，并推送事件。</p>
+<p>当client与server之间的连接由于网络原因短暂中断时，client会不断的发送watch请求，并指定resourceVersion，连接恢复时，如果resourceVersion比apiserver中缓存的资源最小版本大，那么apiserver会将由于网络连接中断而遗漏的事件和资源对象发送给客户端；但是如果网络中断时间过长，导致resourceVersion太老，则apiserver会返回410 StatusGone “too old Resource Version”的错误给客户端，客户端处理该错误的方式就是重新list该资源。通过版本号的机制，可以保证不会遗漏事件。</p>
+<p>但是这里list也可能出现问题。在1.17版本中，reflector逻辑进行了一次修改：1.17之前reflector在list-watch失败后重试时，会统一使用resourceVersion=0去list，此时apiserver的行为是返回apiserver cache中的所有版本资源对象；但是在1.17版本改成了使用指定的resourceVersion去进行list，此时apiserver的行为是返回cache中大于该版本的资源对象，如果cache中没有大于该版本的资源对象，会等待3s，期望etcd能推送新的事件更新apiserver缓存，如果3s内没有更新，则返回错误“Timeout: Too large resource version”。此时reflector需要处理这个超时错误，但是最初的实现是没有进行处理的。<a href="https://github.com/kubernetes/kubernetes/pull/92537/files">#92537</a>修复了这个问题，办法就是在reflector中单独处理“Too large resource version”错误，如果上一次watch失败是因为该错误导致，reflector在下次重试list时会指定resourceVersion=&quot;&quot;，直接从etcd中获取最新的版本。</p>
+<p>当然这么做只是一个简单的bugfix，造成问题的根本原因还是由于apiserver的无状态，多个apiserver内部的cache数据可能不一致，解决cache不一致的问题才是从源头解决。具体的解决方法可以参考<a href="https://github.com/kubernetes/enhancements/pull/1878/files">这个KEP</a>。</p>
+<h2 id="watch的实现原理">watch的实现原理<a href="#watch的实现原理" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<ol>
+<li>
+<p>client轮询</p>
+<p>这是最容易想到和实现的方法，事实上最初etcd提供的watch机制就是通过客户端轮询来实现的。</p>
+</li>
+<li>
+<p>http1.x 分块传输机制</p>
+<p>http1.x提供了分块传输的机制，apiserver与各个客户端之间的watch机制就是借助分块传输机制的实现的。客户端只需要发送一次get请求，apiserver每当收到etcd推送的新的事件时，就返回一个头部带有<code>Transfer-Encoding: chunked</code>的http响应。</p>
+</li>
+<li>
+<p>websocket</p>
+<p>websocket不像http协议里那样是应答-响应式的交互，它在TCP协议之上，通过在应用层进行二进制帧的组包，达到全双工通信的能力。websocket协议和http其实完全不同，但是由于它的主要应用场景是在web服务中，所以它的握手过程搭了http协议的便车：WebSocket 的握手是一个标准的 HTTP GET 请求，但要带上两个协议升级的专用头字段。</p>
+<p>因此通过websocket (ws)也可以实现watch功能。</p>
+</li>
+<li>
+<p>http/2 服务端推送</p>
+<p>etcd v3版本升级到使用基于http/2的gRPC协议。http/2除了解决了TCP连接复用和http协议队头阻塞的问题以外，由于http/2支持服务端主动推送消息，因此etcd可以主动向apiserver push数据，从而相比client端轮询，更加高效的实现了watch机制。</p>
+</li>
+</ol>
+<h2 id="lease">lease<a href="#lease" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>etcd 的租约模块的使用方法是：</p>
+<ol>
+<li>client创建lease，并指定TTL</li>
+<li>client创建kv，并关联某个lease</li>
+<li>client持续的对lease进行续租</li>
+</ol>
+<p><strong>Kubernetes Event的自动淘汰机制和controller的leader选举都是基于etcd的lease机制实现的</strong>。</p>
+<p>controller的选主机制：通过创建锁对象并绑定lease来实现leader续租超时锁被自动销毁；由于所有的client都会watch这个锁的delete事件，从而可以快速发起新的加锁操作。为了避免惊群，client端只会watch比自己revision小的那个key的delete事件，类似于从小到大排队取锁，从而避免所有client同时发起抢锁的情况发生。</p>
+<p>etcd是一个基于 Raft 实现的强一致数据库。相比 Redis 基于主备异步复制做数据同步可能导致的锁的安全性问题，etcd中一个写请求需要经过集群多数节点确认，因此一旦分布式锁申请返回给 client 成功后，它一定是持久化到了集群多数节点上，不会出现 Redis 主备异步复制可能导致丢数据的问题，具备更高的安全性。</p>
+
+			</div>
+			<hr class="post-end">
+			<footer class="post-info">
+				<p>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/kubernetes">kubernetes</a></span><span class="tag"><a href="https://cvvz.github.io/tags/etcd">etcd</a></span>
+				</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2807 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/b0d4322748f6c95dd5a691eb33587c88dae6d111" target="_blank" rel="noopener">b0d4322</a> @ 2022-02-10</p>
+			</footer>
+		</article>
+		<aside id="toc" class="show-toc">
+			<div class="toc-title">目录</div>
+			<nav id="TableOfContents">
+  <ul>
+    <li><a href="#revision">revision</a>
+      <ul>
+        <li><a href="#mvcc和乐观锁">MVCC和乐观锁</a></li>
+        <li><a href="#可靠的watch机制">可靠的watch机制</a></li>
+      </ul>
+    </li>
+    <li><a href="#watch的实现原理">watch的实现原理</a></li>
+    <li><a href="#lease">lease</a></li>
+  </ul>
+</nav>
+		</aside>
+		<div class="post-nav thin">
+			<a class="prev-post" href="https://cvvz.github.io/post/kube-federation/">
+				<span class="post-nav-label">旧&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>浅谈开源集群联邦的设计和实现原理</span>
+			</a>
+		</div>
+		<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+		<div id="gitalk-container" class="thin"></div>     
+		<script type="text/javascript">
+			var gitalk = new Gitalk({
+				clientID: '0f8bdcbe6b4973f9b206',
+				clientSecret: '4939e64d59c93fc5eb7eaf74469a746e4535700d',
+				repo: 'cvvz.github.io',
+				owner: 'cvvz',
+				admin: ['cvvz'],
+				id: location.pathname,      
+				distractionFreeMode: true 
+			});
+  			gitalk.render('gitalk-container');
+		</script>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2022 <a href="https://cvvz.github.io">陈维志</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://cvvz.github.io/post/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+	<script src="https://cvvz.github.io/js/main.min.784417f5847151f848c339cf0acb13a06cbb648b1483435a28ed4556c4ead69b.js"></script>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-M8Q3DKDEVL', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

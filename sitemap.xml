@@ -3,23 +3,33 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://cvvz.github.io/tags/etcd/</loc>
+    <lastmod>2022-02-10T18:22:57+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://cvvz.github.io/tags/kubernetes/</loc>
-    <lastmod>2022-02-07T16:28:42+08:00</lastmod>
+    <lastmod>2022-02-10T18:22:57+08:00</lastmod>
   </url>
   
   <url>
     <loc>https://cvvz.github.io/post/</loc>
-    <lastmod>2022-02-10T09:38:50+08:00</lastmod>
+    <lastmod>2022-02-10T18:22:57+08:00</lastmod>
   </url>
   
   <url>
     <loc>https://cvvz.github.io/tags/</loc>
-    <lastmod>2022-02-10T09:38:50+08:00</lastmod>
+    <lastmod>2022-02-10T18:22:57+08:00</lastmod>
   </url>
   
   <url>
     <loc>https://cvvz.github.io/</loc>
-    <lastmod>2022-02-10T09:38:50+08:00</lastmod>
+    <lastmod>2022-02-10T18:22:57+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://cvvz.github.io/post/etcd-and-kubernetes/</loc>
+    <lastmod>2022-02-10T18:22:57+08:00</lastmod>
   </url>
   
   <url>
