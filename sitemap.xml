@@ -3,6 +3,21 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://cvvz.github.io/read/</loc>
+    <lastmod>2022-02-18T11:26:45+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://cvvz.github.io/</loc>
+    <lastmod>2022-02-18T11:26:45+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://cvvz.github.io/read/the-underlying-logic/</loc>
+    <lastmod>2022-02-18T11:26:45+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://cvvz.github.io/tags/etcd/</loc>
     <lastmod>2022-02-10T18:22:57+08:00</lastmod>
   </url>
@@ -14,17 +29,12 @@
   
   <url>
     <loc>https://cvvz.github.io/post/</loc>
-    <lastmod>2022-02-10T18:22:57+08:00</lastmod>
+    <lastmod>2022-02-18T11:26:45+08:00</lastmod>
   </url>
   
   <url>
     <loc>https://cvvz.github.io/tags/</loc>
-    <lastmod>2022-02-10T18:22:57+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://cvvz.github.io/</loc>
-    <lastmod>2022-02-10T18:22:57+08:00</lastmod>
+    <lastmod>2022-02-18T11:26:45+08:00</lastmod>
   </url>
   
   <url>
@@ -39,12 +49,12 @@
   
   <url>
     <loc>https://cvvz.github.io/tags/code/</loc>
-    <lastmod>2022-02-10T09:38:50+08:00</lastmod>
+    <lastmod>2022-02-10T07:52:38+08:00</lastmod>
   </url>
   
   <url>
     <loc>https://cvvz.github.io/tags/golang/</loc>
-    <lastmod>2022-02-10T09:38:50+08:00</lastmod>
+    <lastmod>2022-02-18T11:26:45+08:00</lastmod>
   </url>
   
   <url>
@@ -59,17 +69,12 @@
   
   <url>
     <loc>https://cvvz.github.io/read/learn-more-study-less/</loc>
-    <lastmod>2021-10-11T00:16:29+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://cvvz.github.io/read/</loc>
-    <lastmod>2021-10-11T00:16:29+08:00</lastmod>
+    <lastmod>2022-02-18T11:26:45+08:00</lastmod>
   </url>
   
   <url>
     <loc>https://cvvz.github.io/read/okr/</loc>
-    <lastmod>2021-10-11T00:16:29+08:00</lastmod>
+    <lastmod>2022-02-18T11:26:45+08:00</lastmod>
   </url>
   
   <url>
@@ -83,13 +88,13 @@
   </url>
   
   <url>
-    <loc>https://cvvz.github.io/post/data-structure-and-algorithm/</loc>
-    <lastmod>2022-02-10T09:38:50+08:00</lastmod>
+    <loc>https://cvvz.github.io/tags/coding/</loc>
+    <lastmod>2022-02-18T11:26:45+08:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cvvz.github.io/tags/coding/</loc>
-    <lastmod>2021-12-23T17:33:17+08:00</lastmod>
+    <loc>https://cvvz.github.io/post/data-structure-and-algorithm/</loc>
+    <lastmod>2022-02-18T11:26:45+08:00</lastmod>
   </url>
   
   <url>

@@ -17,14 +17,5 @@
       <description>问这个问题的起因是我在进行code review时，对一个读map前加读锁的代码留下了如下comment： 这里从map中读出脏数据不会有什么问</description>
     </item>
     
-    <item>
-      <title>重学数据结构和算法</title>
-      <link>https://cvvz.github.io/post/data-structure-and-algorithm/</link>
-      <pubDate>Sun, 18 Jul 2021 21:14:55 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/data-structure-and-algorithm/</guid>
-      <description>我的题库 我的leetcode 常见数据结构 数组 数组的时间效率很高，但是空间效率很低，而且不安全，比如访问越界造成踩内存。 很多高级语言都基于基础</description>
-    </item>
-    
   </channel>
 </rss>
