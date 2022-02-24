@@ -27,6 +27,15 @@
     </item>
     
     <item>
+      <title>《有效管理你的健康》 张展晖</title>
+      <link>https://cvvz.github.io/read/effectively-health-management/</link>
+      <pubDate>Tue, 01 Feb 2022 09:33:55 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/read/effectively-health-management/</guid>
+      <description>很早之前在得到上学的一门课，带有科普性质的一门很短小的健康课。扫除了我很多关于健康方面的错误观念，今天跑步的时候又想起里面的一些知识，补充一</description>
+    </item>
+    
+    <item>
       <title>浅谈开源集群联邦的设计和实现原理</title>
       <link>https://cvvz.github.io/post/kube-federation/</link>
       <pubDate>Tue, 11 Jan 2022 19:47:01 +0800</pubDate>
@@ -177,15 +186,6 @@
       
       <guid>https://cvvz.github.io/post/why-aggregated-api-server-webhook/</guid>
       <description>热身概念：apiserver认证客户端的方式 apiserver为客户端提供三种认证方式： https双向认证（注意是双向认证，例如kubeco</description>
-    </item>
-    
-    <item>
-      <title>kubectl patch</title>
-      <link>https://cvvz.github.io/post/k8s-kubectl-patch/</link>
-      <pubDate>Sun, 22 Nov 2020 23:16:44 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/k8s-kubectl-patch/</guid>
-      <description>kubectl patch 用来修改 Kubernetes API 对象的字段。可以通过 --type 参数指定三种不同类型的 patch 方式： strategic：strategic merge patch merge： json merge patch json： json</description>
     </item>
     
   </channel>
