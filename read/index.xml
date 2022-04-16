@@ -6,17 +6,72 @@
 		<generator>Hugo -- gohugo.io</generator>
 		<language>zh-hans</language>
 		<copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-		<lastBuildDate>Fri, 18 Feb 2022 09:07:55 +0800</lastBuildDate>
+		<lastBuildDate>Wed, 13 Apr 2022 08:16:59 +0800</lastBuildDate>
 		<atom:link href="https://cvvz.github.io/read/index.xml" rel="self" type="application/rss+xml" />
 		
 		<item>
-			<title>《底层逻辑》刘润</title>
+			<title>沉默的大多数</title>
+			<link>https://cvvz.github.io/read/the-silent-majority/</link>
+			<pubDate>Wed, 13 Apr 2022 08:16:59 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/read/the-silent-majority/</guid>
+			<description>大学的时候读了王小波的《白银时代》和《黄金时代》，又读了他推荐的乔治奥威尔的《1984》和《动物庄园》，反乌托邦的思想开始在心里生根发芽。《</description>
+			<content type="html"><![CDATA[<p>大学的时候读了王小波的《白银时代》和《黄金时代》，又读了他推荐的乔治奥威尔的《1984》和《动物庄园》，反乌托邦的思想开始在心里生根发芽。《沉默的大多数》应该算是另一本很经典的书了，在书单里放了很久。</p>
+<p>这本书把王氏幽默体现的淋漓尽致。而且作为中国最早接触计算机的一批人，王小波有几篇文章都提到了计算机编程和互联网，让我感到非常亲切。真希望有一天也能像他一样计算机和文学双修，写点有趣的，想象力丰富的小说。</p>
+<p>这可能是中国人能享受到的为数不多的经官方审批通过的“自由言论”，放在今天应该是出版不了的，至少也要经过大量的“修正”。很庆幸在王小波逝世25周年的时候能够读到这本有意思的书，也祝福上海的朋友们运气能早点好起来，早日脱离苦海。</p>
+<p>推荐几篇我特别喜欢的文章：</p>
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text"><span class="ln"> 1</span>《皇帝做习题》
+<span class="ln"> 2</span>
+<span class="ln"> 3</span>《花剌子模信使问题》
+<span class="ln"> 4</span>
+<span class="ln"> 5</span>《东西方快乐观区别之我见》
+<span class="ln"> 6</span>
+<span class="ln"> 7</span>《对中国文化的布罗代尔式考证》
+<span class="ln"> 8</span>
+<span class="ln"> 9</span>《沉默的大多数》
+<span class="ln">10</span>
+<span class="ln">11</span>《思维的乐趣》
+<span class="ln">12</span>
+<span class="ln">13</span>《中国知识分子与中古遗风》
+<span class="ln">14</span>
+<span class="ln">15</span>《跳出手掌心》
+<span class="ln">16</span>
+<span class="ln">17</span>《智慧与国学》
+<span class="ln">18</span>
+<span class="ln">19</span>《人性的逆转》
+<span class="ln">20</span>
+<span class="ln">21</span>《椰子树与平等》
+<span class="ln">22</span>
+<span class="ln">23</span>《科学的美好》
+<span class="ln">24</span>
+<span class="ln">25</span>《海明威的《老人与海》》
+</code></pre></div>]]></content>
+		</item>
+		
+		<item>
+			<title>The Molecule of More</title>
+			<link>https://cvvz.github.io/read/the-molecule-of-more/</link>
+			<pubDate>Tue, 29 Mar 2022 14:28:19 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/read/the-molecule-of-more/</guid>
+			<description>Kindle精准推送的一本书，中文译名《贪婪的多巴胺》。作为一名神经科学和心理学爱好者，看完书的前言就被一下子吸引住：以前以为自己知道多巴胺</description>
+			<content type="html"><![CDATA[<p>Kindle精准推送的一本书，中文译名《贪婪的多巴胺》。作为一名神经科学和心理学爱好者，看完书的前言就被一下子吸引住：以前以为自己知道多巴胺是什么 —— 吃甜食就会释放多巴胺，让人感觉快乐，所以多巴胺就是一种让你觉得快乐的神经细胞，看完之后才发现这是长久以来的一个误解。</p>
+<p>这本书非常有趣，同时又富有科学精神，有大量的实验研究和生活中的案例相结合，而且涉及到了人类社会的方方面面，对于理解人类社会也很有帮助。唯一不足的是涉及到的内容过于繁多，却无法很有效的分门别类（可能这门学科就是这么复杂，难以结构化吧），再加上我想摘录下来经典语录的实在太多太多了，这导致我的思维导图很难做，最后干脆原封不动的把书里的内容照抄下来。🤣</p>
+<figure>
+    <img src="/dopamine.png" width="1550px"/> 
+</figure>
+
+]]></content>
+		</item>
+		
+		<item>
+			<title>底层逻辑</title>
 			<link>https://cvvz.github.io/read/the-underlying-logic/</link>
 			<pubDate>Fri, 18 Feb 2022 09:07:55 +0800</pubDate>
 			
 			<guid>https://cvvz.github.io/read/the-underlying-logic/</guid>
-			<description>内容有趣，读起来不费劲，用故事和案例使得自己的观点变得容易理解。很多问题的思考角度让人耳目一新，值得学习。 不过内容有一些零散，像是作者对自己</description>
-			<content type="html"><![CDATA[<p>内容有趣，读起来不费劲，用故事和案例使得自己的观点变得容易理解。很多问题的思考角度让人耳目一新，值得学习。</p>
+			<description>朋友圈有朋友推荐的，作者刘润。内容有趣，读起来不费劲，用故事和案例使得自己的观点变得容易理解。很多问题的思考角度让人耳目一新，值得学习。 不过</description>
+			<content type="html"><![CDATA[<p>朋友圈有朋友推荐的，作者刘润。内容有趣，读起来不费劲，用故事和案例使得自己的观点变得容易理解。很多问题的思考角度让人耳目一新，值得学习。</p>
 <p>不过内容有一些零散，像是作者对自己平时读书笔记和思考随笔的整理，没有很强的体系结构，感觉像是一个睿智的人生导师在跟你聊天，当然看完了也受益匪浅，不过个人还是更喜欢通过实验和数据分析得出来的结论，科学性更强，比如《亲密关系》或者《思考，快与慢》这类。</p>
 <figure>
     <img src="/%e5%ba%95%e5%b1%82%e9%80%bb%e8%be%91.png" width="1150px"/> 
@@ -26,7 +81,7 @@
 		</item>
 		
 		<item>
-			<title>《有效管理你的健康》 张展晖</title>
+			<title>有效管理你的健康</title>
 			<link>https://cvvz.github.io/read/effectively-health-management/</link>
 			<pubDate>Tue, 01 Feb 2022 09:33:55 +0800</pubDate>
 			
@@ -41,7 +96,7 @@
 		</item>
 		
 		<item>
-			<title>《Learn More Study Less》</title>
+			<title>Learn More Study Less</title>
 			<link>https://cvvz.github.io/read/learn-more-study-less/</link>
 			<pubDate>Sun, 10 Oct 2021 23:19:02 +0800</pubDate>
 			
@@ -56,7 +111,7 @@
 		</item>
 		
 		<item>
-			<title>《okr工作法》</title>
+			<title>okr工作法</title>
 			<link>https://cvvz.github.io/read/okr/</link>
 			<pubDate>Wed, 15 Sep 2021 19:58:55 +0800</pubDate>
 			
