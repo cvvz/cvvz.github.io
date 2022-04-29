@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Wed, 13 Apr 2022 08:16:59 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 15 Apr 2022 19:24:10 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>呐喊</title>
+      <link>https://cvvz.github.io/read/na-han/</link>
+      <pubDate>Fri, 15 Apr 2022 19:24:10 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/read/na-han/</guid>
+      <description>最近在上海和网络上发生的那些事情，让我感同身受的觉得耻辱、愤怒和心酸，但是你生活在中国，这些情绪都不知道该如何表达。看完《沉默的大多数》，再</description>
+    </item>
+    
     <item>
       <title>沉默的大多数</title>
       <link>https://cvvz.github.io/read/the-silent-majority/</link>
@@ -177,15 +186,6 @@
       
       <guid>https://cvvz.github.io/post/k8s-3-deletion-webhook/</guid>
       <description>最近在玩admission webhook时，发现一个奇怪的现象：我配置了validatingWebhookConfiguration使其监听</description>
-    </item>
-    
-    <item>
-      <title>Kubernetes存储之Volume实现原理</title>
-      <link>https://cvvz.github.io/post/k8s-volume/</link>
-      <pubDate>Sat, 12 Dec 2020 12:32:33 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/k8s-volume/</guid>
-      <description>容器运行时挂载卷的过程 如果CRI是通过dockershim实现的话，kubelet通过CRI接口去拉起一个容器，就好比是通过docker-d</description>
     </item>
     
   </channel>
