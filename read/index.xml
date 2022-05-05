@@ -6,8 +6,24 @@
 		<generator>Hugo -- gohugo.io</generator>
 		<language>zh-hans</language>
 		<copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-		<lastBuildDate>Fri, 15 Apr 2022 19:24:10 +0800</lastBuildDate>
+		<lastBuildDate>Wed, 04 May 2022 17:57:56 +0800</lastBuildDate>
 		<atom:link href="https://cvvz.github.io/read/index.xml" rel="self" type="application/rss+xml" />
+		
+		<item>
+			<title>思考，快与慢</title>
+			<link>https://cvvz.github.io/read/thinking-fast-and-slow/</link>
+			<pubDate>Wed, 04 May 2022 17:57:56 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/read/thinking-fast-and-slow/</guid>
+			<description>心理学的经典著作。看完这本书断断续续花了大半年时间，一是内容太多，二是中文翻译实在很难看懂。特别是一些术语，比如启动效应，眼见即为事实，锚定</description>
+			<content type="html"><![CDATA[<p>心理学的经典著作。看完这本书断断续续花了大半年时间，一是内容太多，二是中文翻译实在很难看懂。特别是一些术语，比如启动效应，眼见即为事实，锚定效应，可得性偏见，禀赋效应，聚焦错觉等等等等，这些术语本身就很陌生，再加上生硬的中文翻译，给我造成了很大的“认知紧张”，不过耐着性子理解了之后就会有种顿悟的感觉。</p>
+<p>这本书里涉及的各种心理学概念非常多，但本书的整体结构基本上是层层递进的关系的。一开始介绍了大脑运作的两个系统（系统1，快思考；系统2，慢思考）的概念，接着引入使用系统1时常会自然而然发生的一些偏见，以及是如何影响我们的决策的，然后介绍了心理学在经济学中所发挥的作用，也就是人类，而非理性经济人是如何进行经济决策的（行为经济学），最后一部分介绍了两个自我，回归到人类本身，并从心理学角度解释了幸福的含义。</p>
+<figure>
+    <img src="/thinking-fast-and-slow.png" width="1250px"/> 
+</figure>
+
+]]></content>
+		</item>
 		
 		<item>
 			<title>呐喊</title>
@@ -61,14 +77,14 @@
 		</item>
 		
 		<item>
-			<title>The Molecule of More</title>
+			<title>贪婪的多巴难</title>
 			<link>https://cvvz.github.io/read/the-molecule-of-more/</link>
 			<pubDate>Tue, 29 Mar 2022 14:28:19 +0800</pubDate>
 			
 			<guid>https://cvvz.github.io/read/the-molecule-of-more/</guid>
-			<description>Kindle精准推送的一本书，中文译名《贪婪的多巴胺》。作为一名神经科学和心理学爱好者，看完书的前言就被一下子吸引住：以前以为自己知道多巴胺</description>
-			<content type="html"><![CDATA[<p>Kindle精准推送的一本书，中文译名《贪婪的多巴胺》。作为一名神经科学和心理学爱好者，看完书的前言就被一下子吸引住：以前以为自己知道多巴胺是什么 —— 吃甜食就会释放多巴胺，让人感觉快乐，所以多巴胺就是一种让你觉得快乐的神经细胞，看完之后才发现这是长久以来的一个误解。</p>
-<p>这本书非常有趣，同时又富有科学精神，有大量的实验研究和生活中的案例相结合，而且涉及到了人类社会的方方面面，对于理解人类社会也很有帮助。唯一不足的是涉及到的内容过于繁多，却无法很有效的分门别类（可能这门学科就是这么复杂，难以结构化吧），再加上我想摘录下来经典语录的实在太多太多了，这导致我的思维导图很难做，最后干脆原封不动的把书里的内容照抄下来。🤣</p>
+			<description>Kindle精准推送的一本书。作为一名行为心理学爱好者，看完书的前言就被立刻吸引住了。以前自以为知道多巴胺是什么 —— 吃甜食就会释放多巴胺，让</description>
+			<content type="html"><![CDATA[<p>Kindle精准推送的一本书。作为一名行为心理学爱好者，看完书的前言就被立刻吸引住了。以前自以为知道多巴胺是什么 —— 吃甜食就会释放多巴胺，让人感觉快乐，所以多巴胺就是一种让你觉得快乐的神经递质，看完之后才发现这是最容易形成一种误解。</p>
+<p>这本书非常有趣，同时又富有科学精神，有大量的实验研究和生活中的案例相结合，而且涉及到了人类社会的方方面面，对于理解人类社会也很有帮助。唯一不足的是涉及到的内容过于繁多，却无法很有效的分门别类（可能心理学本身就是一门很难结构化的学科吧），再加上我想摘录下来经典语录的实在太多太多了，这导致思维导图越写越多，最后干脆把书里的内容照抄下来，原文远比我理解的精彩，推荐大家看看。🤣</p>
 <figure>
     <img src="/dopamine.png" width="1550px"/> 
 </figure>
@@ -82,9 +98,9 @@
 			<pubDate>Fri, 18 Feb 2022 09:07:55 +0800</pubDate>
 			
 			<guid>https://cvvz.github.io/read/the-underlying-logic/</guid>
-			<description>来自朋友圈的推荐，作者刘润。内容挺有趣，读起来不费劲，用故事和案例使得自己的观点变得容易理解，思考问题的角度也令人耳目一新。 不过没有核心知识</description>
+			<description>来自朋友圈的推荐，作者刘润。内容挺有趣，读起来不费劲，用故事和案例使得自己的观点变得容易理解，思考问题的角度也令人耳目一新。 不过没有专业性，</description>
 			<content type="html"><![CDATA[<p>来自朋友圈的推荐，作者刘润。内容挺有趣，读起来不费劲，用故事和案例使得自己的观点变得容易理解，思考问题的角度也令人耳目一新。</p>
-<p>不过没有核心知识点，没有体系结构，只是作者对自己平时读书笔记和思考的整理。感觉像是一个人生导师在和你聊天，有种高级鸡汤的味道，当然看完了也能受益匪浅。个人还是更喜欢科学性更强一点的书籍，比如《亲密关系》或者《思考，快与慢》这类。</p>
+<p>不过没有专业性，只是作者对自己平时读书笔记和思考的整理。感觉像是一个人生导师在和你聊天，有种高级鸡汤的味道，当然看完了也能受益匪浅。个人还是更喜欢科学性更强一点的书籍，比如《亲密关系》或者《思考，快与慢》这类。</p>
 <figure>
     <img src="/%e5%ba%95%e5%b1%82%e9%80%bb%e8%be%91.png" width="1150px"/> 
 </figure>
@@ -108,13 +124,13 @@
 		</item>
 		
 		<item>
-			<title>Learn More Study Less</title>
+			<title>如何高效学习</title>
 			<link>https://cvvz.github.io/read/learn-more-study-less/</link>
 			<pubDate>Sun, 10 Oct 2021 23:19:02 +0800</pubDate>
 			
 			<guid>https://cvvz.github.io/read/learn-more-study-less/</guid>
-			<description>这本书介绍了整体性学习法的概念和实践技巧</description>
-			<content type="html"><![CDATA[<p>这本书介绍了整体性学习法的概念和实践技巧</p>
+			<description>这本书介绍了整体性学习法的概念和实践技巧。学习是建立联系而不是整理盒子——可能对于很多人来说是显而易见的，但是对我而言这句话简直是醍醐灌顶。</description>
+			<content type="html"><![CDATA[<p>这本书介绍了<strong>整体性学习法</strong>的概念和实践技巧。学习是建立联系而不是整理盒子——可能对于很多人来说是显而易见的，但是对我而言这句话简直是醍醐灌顶。这本书对我帮助很大。</p>
 <figure>
     <img src="/%e6%95%b4%e4%bd%93%e6%80%a7%e5%ad%a6%e4%b9%a0.png" width="1150px"/> 
 </figure>
@@ -128,8 +144,8 @@
 			<pubDate>Wed, 15 Sep 2021 19:58:55 +0800</pubDate>
 			
 			<guid>https://cvvz.github.io/read/okr/</guid>
-			<description>OKR工作法最重要的三点：专注在最核心的目标上、任务拆解具体可实施、持续追踪和复盘</description>
-			<content type="html"><![CDATA[<p>OKR工作法最重要的三点：专注在最核心的目标上、任务拆解具体可实施、持续追踪和复盘</p>
+			<description>OKR工作法最重要的三点：专注在最核心的目标上、任务拆解具体可实施、持续追踪和复盘。对我个人而言，第一重要的就是对目标的专注，不分心。</description>
+			<content type="html"><![CDATA[<p>OKR工作法最重要的三点：专注在最核心的目标上、任务拆解具体可实施、持续追踪和复盘。对我个人而言，第一重要的就是对目标的专注，不分心。</p>
 <figure>
     <img src="/okr.png" width="1150px"/> 
 </figure>

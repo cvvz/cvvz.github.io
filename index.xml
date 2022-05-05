@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Fri, 15 Apr 2022 19:24:10 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 04 May 2022 17:57:56 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>思考，快与慢</title>
+      <link>https://cvvz.github.io/read/thinking-fast-and-slow/</link>
+      <pubDate>Wed, 04 May 2022 17:57:56 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/read/thinking-fast-and-slow/</guid>
+      <description>心理学的经典著作。看完这本书断断续续花了大半年时间，一是内容太多，二是中文翻译实在很难看懂。特别是一些术语，比如启动效应，眼见即为事实，锚定</description>
+    </item>
+    
     <item>
       <title>呐喊</title>
       <link>https://cvvz.github.io/read/na-han/</link>
@@ -27,12 +36,12 @@
     </item>
     
     <item>
-      <title>The Molecule of More</title>
+      <title>贪婪的多巴难</title>
       <link>https://cvvz.github.io/read/the-molecule-of-more/</link>
       <pubDate>Tue, 29 Mar 2022 14:28:19 +0800</pubDate>
       
       <guid>https://cvvz.github.io/read/the-molecule-of-more/</guid>
-      <description>Kindle精准推送的一本书，中文译名《贪婪的多巴胺》。作为一名神经科学和心理学爱好者，看完书的前言就被一下子吸引住：以前以为自己知道多巴胺</description>
+      <description>Kindle精准推送的一本书。作为一名行为心理学爱好者，看完书的前言就被立刻吸引住了。以前自以为知道多巴胺是什么 —— 吃甜食就会释放多巴胺，让</description>
     </item>
     
     <item>
@@ -41,7 +50,7 @@
       <pubDate>Fri, 18 Feb 2022 09:07:55 +0800</pubDate>
       
       <guid>https://cvvz.github.io/read/the-underlying-logic/</guid>
-      <description>来自朋友圈的推荐，作者刘润。内容挺有趣，读起来不费劲，用故事和案例使得自己的观点变得容易理解，思考问题的角度也令人耳目一新。 不过没有核心知识</description>
+      <description>来自朋友圈的推荐，作者刘润。内容挺有趣，读起来不费劲，用故事和案例使得自己的观点变得容易理解，思考问题的角度也令人耳目一新。 不过没有专业性，</description>
     </item>
     
     <item>
@@ -90,12 +99,12 @@
     </item>
     
     <item>
-      <title>Learn More Study Less</title>
+      <title>如何高效学习</title>
       <link>https://cvvz.github.io/read/learn-more-study-less/</link>
       <pubDate>Sun, 10 Oct 2021 23:19:02 +0800</pubDate>
       
       <guid>https://cvvz.github.io/read/learn-more-study-less/</guid>
-      <description>这本书介绍了整体性学习法的概念和实践技巧</description>
+      <description>这本书介绍了整体性学习法的概念和实践技巧。学习是建立联系而不是整理盒子——可能对于很多人来说是显而易见的，但是对我而言这句话简直是醍醐灌顶。</description>
     </item>
     
     <item>
@@ -104,7 +113,7 @@
       <pubDate>Wed, 15 Sep 2021 19:58:55 +0800</pubDate>
       
       <guid>https://cvvz.github.io/read/okr/</guid>
-      <description>OKR工作法最重要的三点：专注在最核心的目标上、任务拆解具体可实施、持续追踪和复盘</description>
+      <description>OKR工作法最重要的三点：专注在最核心的目标上、任务拆解具体可实施、持续追踪和复盘。对我个人而言，第一重要的就是对目标的专注，不分心。</description>
     </item>
     
     <item>
@@ -177,15 +186,6 @@
       
       <guid>https://cvvz.github.io/post/container/</guid>
       <description>容器镜像 容器镜像就是容器的rootfs。通过 Dockerfile 制作容器镜像时，就相当于增加 rootfs 层。通过容器镜像运行一个容器时，操作系统内核先将镜像中的每一层联</description>
-    </item>
-    
-    <item>
-      <title>为什么删除Pod时webhook收到三次delete请求</title>
-      <link>https://cvvz.github.io/post/k8s-3-deletion-webhook/</link>
-      <pubDate>Sun, 13 Dec 2020 19:26:15 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/k8s-3-deletion-webhook/</guid>
-      <description>最近在玩admission webhook时，发现一个奇怪的现象：我配置了validatingWebhookConfiguration使其监听</description>
     </item>
     
   </channel>
