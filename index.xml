@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Wed, 04 May 2022 17:57:56 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 05 Jun 2022 22:47:51 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>黑天鹅</title>
+      <link>https://cvvz.github.io/read/black-swan/</link>
+      <pubDate>Sun, 05 Jun 2022 22:47:51 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/read/black-swan/</guid>
+      <description>这也是一本很经典的书。kindle给我推荐这本书可能是因为我读了《思考，快与慢》，这两本书的作者都很赞同对方的理论和观点，在各自的书里也都引</description>
+    </item>
+    
     <item>
       <title>思考，快与慢</title>
       <link>https://cvvz.github.io/read/thinking-fast-and-slow/</link>
@@ -177,15 +186,6 @@
       
       <guid>https://cvvz.github.io/post/k8s-network-dns/</guid>
       <description>默认DNS策略 Pod默认的dns策略是 ClusterFirst，意思是先通过kubernetes的权威DNS服务器（如CoreDNS）直接解</description>
-    </item>
-    
-    <item>
-      <title>容器</title>
-      <link>https://cvvz.github.io/post/container/</link>
-      <pubDate>Thu, 24 Dec 2020 10:33:00 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/container/</guid>
-      <description>容器镜像 容器镜像就是容器的rootfs。通过 Dockerfile 制作容器镜像时，就相当于增加 rootfs 层。通过容器镜像运行一个容器时，操作系统内核先将镜像中的每一层联</description>
     </item>
     
   </channel>
