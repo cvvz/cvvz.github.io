@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Thu, 10 Feb 2022 08:19:53 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 15 Jun 2022 13:22:45 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>k8s存储演进过程</title>
+      <link>https://cvvz.github.io/post/kubernetes-storage-history/</link>
+      <pubDate>Wed, 15 Jun 2022 13:22:45 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/kubernetes-storage-history/</guid>
+      <description>最近在做一些CSI相关的工作，重新看了一下之前的笔记和资料，发现kubernetes从最初简单的Volume到现在复杂的CSI的设计，有一个</description>
+    </item>
+    
     <item>
       <title>谈谈kubernetes中的etcd</title>
       <link>https://cvvz.github.io/post/etcd-and-kubernetes/</link>

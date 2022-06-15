@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="google-site-verification" content="Wp3QtEkIlF0ZvtKx90lPmoXyH39d-pmBhiTyTbba9L4" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta itemprop="name" content="k8s存储演进过程">
+<meta itemprop="description" content="最近在做一些CSI相关的工作，重新看了一下之前的笔记和资料，发现kubernetes从最初简单的Volume到现在复杂的CSI的设计，有一个">
+<meta itemprop="datePublished" content="2022-06-15T13:22:45+08:00" />
+<meta itemprop="dateModified" content="2022-06-15T15:40:34+08:00" />
+<meta itemprop="wordCount" content="3103">
+
+
+
+<meta itemprop="keywords" content="kubernetes," />
+<meta property="og:title" content="k8s存储演进过程" />
+<meta property="og:description" content="最近在做一些CSI相关的工作，重新看了一下之前的笔记和资料，发现kubernetes从最初简单的Volume到现在复杂的CSI的设计，有一个" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://cvvz.github.io/post/kubernetes-storage-history/" />
+<meta property="article:published_time" content="2022-06-15T13:22:45+08:00" />
+<meta property="article:modified_time" content="2022-06-15T15:40:34+08:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="k8s存储演进过程"/>
+<meta name="twitter:description" content="最近在做一些CSI相关的工作，重新看了一下之前的笔记和资料，发现kubernetes从最初简单的Volume到现在复杂的CSI的设计，有一个"/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>k8s存储演进过程</title>
+	<link rel="stylesheet" href="https://cvvz.github.io/css/style.min.7a1ec200e9f3394f73c6eda58011808507a3b24318de81e1e343f22a2470caef.css">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp faster">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://cvvz.github.io">Vic&#39;s Blog</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					<a href="https://cvvz.github.io/post/">文章</a>
+					<a href="https://cvvz.github.io/read/">读书</a>
+					<a href="https://cvvz.github.io/aboutme/resume.pdf">关于</a>
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<button id="toc-btn" class="hdr-btn desktop-only-ib" title="目录"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-list"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3" y2="6"></line><line x1="3" y1="12" x2="3" y2="12"></line><line x1="3" y1="18" x2="3" y2="18"></line></svg></button><span class="hdr-social hide-in-mobile"><a href="https://github.com/cvvz" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="mailto:ftdchenwz@gmail.com" target="_blank" rel="noopener me" title="Email"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a></span><button id="menu-btn" class="hdr-btn" title="菜单"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://cvvz.github.io/post/">文章</a></li>
+			<li><a href="https://cvvz.github.io/read/">读书</a></li>
+			<li><a href="https://cvvz.github.io/aboutme/resume.pdf">关于</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<h1>k8s存储演进过程</h1>
+			</header>
+			<div class="content">
+				<p>最近在做一些CSI相关的工作，重新看了一下之前的笔记和资料，发现kubernetes从最初简单的Volume到现在复杂的CSI的设计，有一个逐步演进的过程，搞清楚一个技术的历史可以帮助我们更好的理解和掌握它。</p>
+<h2 id="volume">Volume<a href="#volume" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>要在一个 Pod 里声明 Volume，只要在 Pod 里加上 <code>spec.volumes</code> 字段即可。然后，你就可以在这个字段里定义一个具体类型的 Volume 了，比如：hostPath，emptyDir等。现在通常直接用Volume的情况局限在使用宿主机的本地存储，为什么不推荐通过Volume使用某个具体的网络存储呢？可以看下面这个例子：</p>
+<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="ln"> 1</span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="ln"> 2</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Pod</span><span class="w">
+</span><span class="ln"> 3</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="ln"> 4</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">rbd</span><span class="w">
+</span><span class="ln"> 5</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="ln"> 6</span><span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="ln"> 7</span><span class="w">    </span>- <span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">kubernetes/pause</span><span class="w">
+</span><span class="ln"> 8</span><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">rbd-rw</span><span class="w">
+</span><span class="ln"> 9</span><span class="w">      </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w">
+</span><span class="ln">10</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">rbdpd</span><span class="w">
+</span><span class="ln">11</span><span class="w">        </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l">/mnt/rbd</span><span class="w">
+</span><span class="ln">12</span><span class="w">  </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span><span class="ln">13</span><span class="w">    </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">rbdpd</span><span class="w">
+</span><span class="ln">14</span><span class="w">      </span><span class="nt">rbd</span><span class="p">:</span><span class="w">
+</span><span class="ln">15</span><span class="w">        </span><span class="nt">monitors</span><span class="p">:</span><span class="w">
+</span><span class="ln">16</span><span class="w">          </span>- <span class="s1">&#39;10.16.154.78:6789&#39;</span><span class="w">
+</span><span class="ln">17</span><span class="w">        </span><span class="nt">pool</span><span class="p">:</span><span class="w"> </span><span class="l">kube</span><span class="w">
+</span><span class="ln">18</span><span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">foo</span><span class="w">
+</span><span class="ln">19</span><span class="w">        </span><span class="nt">fsType</span><span class="p">:</span><span class="w"> </span><span class="l">ext4</span><span class="w">
+</span><span class="ln">20</span><span class="w">        </span><span class="nt">readOnly</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="ln">21</span><span class="w">        </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="l">admin</span><span class="w">
+</span><span class="ln">22</span><span class="w">        </span><span class="nt">keyring</span><span class="p">:</span><span class="w"> </span><span class="l">/etc/ceph/keyring</span><span class="w">
+</span><span class="ln">23</span><span class="w">        </span><span class="nt">imageformat</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2&#34;</span><span class="w">
+</span><span class="ln">24</span><span class="w">        </span><span class="nt">imagefeatures</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;layering&#34;</span><span class="w">
+</span></code></pre></div><p>可以发现，直接通过Volume使用网络存储有两个问题：</p>
+<ol>
+<li>开发者需要熟悉所使用的存储的各种配置参数</li>
+<li>暴露了存储服务api、用户名、授权文件等敏感信息</li>
+</ol>
+<h2 id="pvcpv">PVC/PV<a href="#pvcpv" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>为了解决上述两个问题，k8s项目引入了PVC/PV。</p>
+<p>PVC面向开发人员，开发人员不用再知道大量的存储实现细节，只需要声明需要的存储容量和读写权限等：</p>
+<div class="highlight"><pre class="chroma"><code class="language-yml" data-lang="yml"><span class="ln"> 1</span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">PersistentVolumeClaim</span><span class="w">
+</span><span class="ln"> 2</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="ln"> 3</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="ln"> 4</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">pv-claim</span><span class="w">
+</span><span class="ln"> 5</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="ln"> 6</span><span class="w">  </span><span class="nt">accessModes</span><span class="p">:</span><span class="w">
+</span><span class="ln"> 7</span><span class="w">  </span>- <span class="l">ReadWriteOnce</span><span class="w">
+</span><span class="ln"> 8</span><span class="w">  </span><span class="nt">resources</span><span class="p">:</span><span class="w">
+</span><span class="ln"> 9</span><span class="w">    </span><span class="nt">requests</span><span class="p">:</span><span class="w">
+</span><span class="ln">10</span><span class="w">      </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="l">1Gi</span><span class="w">
+</span></code></pre></div><p>而PV面向存储管理人员，他们熟知存储使用细节：</p>
+<div class="highlight"><pre class="chroma"><code class="language-yml" data-lang="yml"><span class="ln"> 1</span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">PersistentVolume</span><span class="w">
+</span><span class="ln"> 2</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="ln"> 3</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="ln"> 4</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">pv-volume</span><span class="w">
+</span><span class="ln"> 5</span><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="ln"> 6</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">local</span><span class="w">
+</span><span class="ln"> 7</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="ln"> 8</span><span class="w">  </span><span class="nt">capacity</span><span class="p">:</span><span class="w">
+</span><span class="ln"> 9</span><span class="w">    </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="l">10Gi</span><span class="w">
+</span><span class="ln">10</span><span class="w">  </span><span class="nt">accessModes</span><span class="p">:</span><span class="w">
+</span><span class="ln">11</span><span class="w">    </span>- <span class="l">ReadWriteOnce</span><span class="w">
+</span><span class="ln">12</span><span class="w">  </span><span class="nt">rbd</span><span class="p">:</span><span class="w">
+</span><span class="ln">13</span><span class="w">    </span><span class="nt">monitors</span><span class="p">:</span><span class="w">
+</span><span class="ln">14</span><span class="w">    </span>- <span class="s1">&#39;10.16.154.78:6789&#39;</span><span class="w">
+</span><span class="ln">15</span><span class="w">    </span><span class="nt">pool</span><span class="p">:</span><span class="w"> </span><span class="l">kube</span><span class="w">
+</span><span class="ln">16</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">foo</span><span class="w">
+</span><span class="ln">17</span><span class="w">    </span><span class="nt">fsType</span><span class="p">:</span><span class="w"> </span><span class="l">ext4</span><span class="w">
+</span><span class="ln">18</span><span class="w">    </span><span class="nt">readOnly</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="ln">19</span><span class="w">    </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="l">admin</span><span class="w">
+</span><span class="ln">20</span><span class="w">    </span><span class="nt">keyring</span><span class="p">:</span><span class="w"> </span><span class="l">/etc/ceph/keyring</span><span class="w">
+</span></code></pre></div><p>通过PVC/PV解决了开发者使用存储的困难，但是没有解决运维人员管理存储的困难。k8s虽然把网络存储<strong>attach</strong>、<strong>mount</strong>到宿主机和mount到容器的流程自动化了（参考<a href="https://cvvz.github.io/post/kubernetes-storage-history/#volume%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86">最后一节</a>），但是创建（<strong>provision</strong>）网络存储的工作还没有自动化，运维人员还是需要手动创建网络存储和PV。</p>
+<h2 id="storageclass">StorageClass<a href="#storageclass" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>为了解决上述问题，引入了StorageClass，借助storageclass和<a href="https://github.com/kubernetes-retired/external-storage">external-storage库</a>，可以使得存储的provision变得自动化（即自动的创建网络存储和PV）。比如声明下面这个sc：</p>
+<div class="highlight"><pre class="chroma"><code class="language-yml" data-lang="yml"><span class="ln">1</span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">storage.k8s.io/v1</span><span class="w">
+</span><span class="ln">2</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">StorageClass</span><span class="w">
+</span><span class="ln">3</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="ln">4</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">block-service</span><span class="w">
+</span><span class="ln">5</span><span class="w"></span><span class="nt">provisioner</span><span class="p">:</span><span class="w"> </span><span class="l">kubernetes.io/gce-pd</span><span class="w">
+</span><span class="ln">6</span><span class="w"></span><span class="nt">parameters</span><span class="p">:</span><span class="w">
+</span><span class="ln">7</span><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">pd-ssd</span><span class="w">
+</span></code></pre></div><p>则可以借助<code> kubernetes.io/gce-pd</code>存储插件（基于<a href="https://github.com/kubernetes-retired/external-storage">external-storage库</a>开发）自动创建网络存储和PV。</p>
+<h2 id="flexvolume">FlexVolume<a href="#flexvolume" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>现在看起来似乎没什么问题了。但还是有问题，随着各种云存储层出不穷，越来越多的存储厂商想要把自己的存储插件塞到k8s的主干代码（in-tree）中（pkg/volume）。所以k8s想提供一种抽象层，使得新增的存储插件不必和k8s主干一起演进和测试。随后就引入了FlexVolume这种Volume类型。</p>
+<p>对于<code>attach</code>和<code>Mount</code>这两个操作，controller实际上是根据不同的存储类型，调用pkg/volume目录下的存储插件(Volume Plugin)代码，而对于FlexVolume这个Volume类型，就是对应 pkg/volume/flexvolume 这个目录里的代码。</p>
+<p>但是这个目录和其他存储插件不一样，它只充当插件的入口，而没有复杂的业务逻辑。这个目录里的代码非常简单，比如mount操作，就是去调用宿主机上的二进制文件，所以当你编写完了 FlexVolume 的实现之后，一定要把它的可执行文件（比如 blobfuse）放在每个节点的插件目录下（<code>/usr/libexec/kubernetes/kubelet-plugins/volume/exec</code>）。</p>
+<h2 id="csi">CSI<a href="#csi" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>FlexVolume是一种out-of-tree的解决方案，但是依然不够完美。主要体现在它需要宿主机的权限并在宿主机上安装二进制文件（mount操作需要在worker node上安装二进制文件，attach操作需要在master node上安装二进制文件）</p>
+<p>此外，在StorageClass这一节提到我们可以借助<a href="https://github.com/kubernetes-retired/external-storage">external-storage库</a>来编写存储插件，实现dynamic provision的能力，但是要专门去写一个还是有点麻烦。</p>
+<p>为了解决这些问题（以及其他类似问题），社区又提出了CSI方案，彻底把存储插件的管理逻辑和k8s主干代码解耦开来：</p>
+<ol>
+<li>不需要节点权限，不需要在节点上安装可执行文件</li>
+<li>把公共能力（动态provision、attach等）从k8s主干分支中抽离出来，放在<a href="https://github.com/kubernetes-csi">kubernetes-csi</a>这个项目中</li>
+</ol>
+<p>此外设计上CSI甚至和k8s解耦，可以兼容其他容器编排平台</p>
+<p>CSI本身的运行机制不是本篇的重点，网上资料很多，比如当时的设计文档就把CSI Driver各个组件的交互过程写的非常清楚了：<a href="https://github.com/kubernetes/design-proposals-archive/blob/main/storage/container-storage-interface.md#example-walkthrough">Example Walkthrough
+</a></p>
+<h2 id="volume的实现原理">Volume的实现原理<a href="#volume的实现原理" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>这个主题其实和本文没什么关系，放在最后作参考用。</p>
+<h3 id="本地存储">本地存储<a href="#本地存储" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<ul>
+<li>
+<p>emptyDir：直接用 <code>/var/lib/kubelet/pods/&lt;Pod的ID&gt;/volumes/kubernetes.io~&lt;Volume类型&gt;/&lt;Volume名字&gt;</code> 目录，所以emptyDir Volume的存储介质（比如Disk还是SSD）由kubelet根目录（一般是/var/lib/kubelet）所在的文件系统决定</p>
+</li>
+<li>
+<p>hostPath：通过bind mount的方式把node上的某个路径mount到<code>/var/lib/kubelet/pods/&lt;Pod的ID&gt;/volumes/kubernetes.io~&lt;Volume类型&gt;/&lt;Volume名字&gt;</code></p>
+</li>
+</ul>
+<h3 id="网络存储">网络存储<a href="#网络存储" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>除了NFS只需要mount操作：<code>mount -t nfs &lt;NFS服务器地址&gt;:/ /var/lib/kubelet/pods/&lt;Pod的ID&gt;/volumes/kubernetes.io~&lt;Volume类型&gt;/&lt;Volume名字&gt; </code> 以外，其他存储（块、对象）都需要两步：</p>
+<ul>
+<li>
+<p><strong>attach</strong>: 把远程磁盘attach到宿主机，成为宿主机的一个块设备，比如<code>gcloud compute instances attach-disk &lt;虚拟机名字&gt; --disk &lt;远程磁盘名字&gt;</code></p>
+</li>
+<li>
+<p><strong>mount</strong>: 把块设备格式化成文件系统（NFS不需要），并mount到宿主机上，比如：<code>mount -t nfs &lt;NFS服务器地址&gt;:/ /var/lib/kubelet/pods/&lt;Pod的ID&gt;/volumes/kubernetes.io~&lt;Volume类型&gt;/&lt;Volume名字&gt; </code></p>
+</li>
+</ul>
+<p>kubelet 在向 Docker 发起 CRI 请求时，要先准备好宿主机上的<code>/var/lib/kubelet/pods/&lt;Pod的ID&gt;/volumes/kubernetes.io~&lt;Volume类型&gt;/&lt;Volume名字&gt;</code>这个目录，接着通过<code>docker run -v /var/lib/kubelet/pods/&lt;Pod的ID&gt;/volumes/kubernetes.io~&lt;Volume类型&gt;/&lt;Volume名字&gt;:/&lt;容器内的目标目录&gt; 我的镜像 …</code> 就把Volume挂载进了容器。</p>
+
+			</div>
+			<hr class="post-end">
+			<footer class="post-info">
+				<p>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/kubernetes">kubernetes</a></span>
+				</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>3103 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/acb3ef2820e0571e412182db8b95bc9424457adf" target="_blank" rel="noopener">acb3ef2</a> @ 2022-06-15</p>
+			</footer>
+		</article>
+		<aside id="toc" class="show-toc">
+			<div class="toc-title">目录</div>
+			<nav id="TableOfContents">
+  <ul>
+    <li><a href="#volume">Volume</a></li>
+    <li><a href="#pvcpv">PVC/PV</a></li>
+    <li><a href="#storageclass">StorageClass</a></li>
+    <li><a href="#flexvolume">FlexVolume</a></li>
+    <li><a href="#csi">CSI</a></li>
+    <li><a href="#volume的实现原理">Volume的实现原理</a>
+      <ul>
+        <li><a href="#本地存储">本地存储</a></li>
+        <li><a href="#网络存储">网络存储</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+		</aside>
+		<div class="post-nav thin">
+			<a class="prev-post" href="https://cvvz.github.io/post/etcd-and-kubernetes/">
+				<span class="post-nav-label">旧&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>谈谈kubernetes中的etcd</span>
+			</a>
+		</div>
+		<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+		<div id="gitalk-container" class="thin"></div>     
+		<script type="text/javascript">
+			var gitalk = new Gitalk({
+				clientID: '0f8bdcbe6b4973f9b206',
+				clientSecret: '4939e64d59c93fc5eb7eaf74469a746e4535700d',
+				repo: 'cvvz.github.io',
+				owner: 'cvvz',
+				admin: ['cvvz'],
+				id: location.pathname,      
+				distractionFreeMode: true 
+			});
+  			gitalk.render('gitalk-container');
+		</script>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2022 <a href="https://cvvz.github.io">陈维志</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://cvvz.github.io/post/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+	<script src="https://cvvz.github.io/js/main.min.784417f5847151f848c339cf0acb13a06cbb648b1483435a28ed4556c4ead69b.js"></script>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-M8Q3DKDEVL', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

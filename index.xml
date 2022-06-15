@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Sun, 05 Jun 2022 22:47:51 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 15 Jun 2022 13:22:45 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>k8s存储演进过程</title>
+      <link>https://cvvz.github.io/post/kubernetes-storage-history/</link>
+      <pubDate>Wed, 15 Jun 2022 13:22:45 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/kubernetes-storage-history/</guid>
+      <description>最近在做一些CSI相关的工作，重新看了一下之前的笔记和资料，发现kubernetes从最初简单的Volume到现在复杂的CSI的设计，有一个</description>
+    </item>
+    
     <item>
       <title>黑天鹅</title>
       <link>https://cvvz.github.io/read/black-swan/</link>
@@ -177,15 +186,6 @@
       
       <guid>https://cvvz.github.io/post/k8s-network-cross-host/</guid>
       <description>初始化infra容器网络环境 当kubelet通过调用CRI的RunPodSandbox创建好PodSandbox，即infra容器后，就需要</description>
-    </item>
-    
-    <item>
-      <title>kubernetes网络之DNS</title>
-      <link>https://cvvz.github.io/post/k8s-network-dns/</link>
-      <pubDate>Wed, 30 Dec 2020 09:41:51 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/k8s-network-dns/</guid>
-      <description>默认DNS策略 Pod默认的dns策略是 ClusterFirst，意思是先通过kubernetes的权威DNS服务器（如CoreDNS）直接解</description>
     </item>
     
   </channel>
