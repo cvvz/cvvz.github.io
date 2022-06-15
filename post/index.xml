@@ -105,9 +105,9 @@
 <li>不需要节点权限，不需要在节点上安装可执行文件</li>
 <li>把公共能力（动态provision、attach等）从k8s主干分支中抽离出来，放在<a href="https://github.com/kubernetes-csi">kubernetes-csi</a>这个项目中</li>
 </ol>
-<p>此外设计上CSI甚至和k8s解耦，可以兼容其他容器编排平台</p>
-<p>CSI本身的运行机制不是本篇的重点，网上资料很多，比如当时的设计文档就把CSI Driver各个组件的交互过程写的非常清楚了：<a href="https://github.com/kubernetes/design-proposals-archive/blob/main/storage/container-storage-interface.md#example-walkthrough">Example Walkthrough
-</a></p>
+<p>此外值得注意的是CSI<strong>不是专门为k8s设计的</strong>，可以兼容其他容器编排平台，参考<a href="https://github.com/container-storage-interface/spec/blob/master/spec.md">CSI spec</a>。</p>
+<p>CSI本身的运行机制不是本篇的重点，可以参考<a href="https://kubernetes-csi.github.io/docs/introduction.html">kubernetes CSI官方文档</a>和<a href="https://github.com/kubernetes/design-proposals-archive/blob/main/storage/container-storage-interface.md">设计文档</a>。比如在设计文档里已经把CSI Driver各个组件的交互过程写的非常清楚了：<a href="https://github.com/kubernetes/design-proposals-archive/blob/main/storage/container-storage-interface.md#example-walkthrough">Example Walkthrough
+</a>，无需赘述。</p>
 <h2 id="volume的实现原理">Volume的实现原理</h2>
 <p>这个主题其实和本文没什么关系，放在最后作参考用。</p>
 <h3 id="本地存储">本地存储</h3>
