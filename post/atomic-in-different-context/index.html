@@ -6,24 +6,24 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="google-site-verification" content="Wp3QtEkIlF0ZvtKx90lPmoXyH39d-pmBhiTyTbba9L4" />
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-<meta itemprop="name" content="不同上下文中的原子性问题">
-<meta itemprop="description" content="问这个问题的起因是我在进行code review时，对一个读map前加读锁的代码留下了如下comment： 这里从map中读出脏数据不会有什么问">
+<meta itemprop="name" content="不同上下文中的并发问题">
+<meta itemprop="description" content="问这个问题的起因是我在进行code review时，对一个读map前加读锁的代码留下了如下comment： 单独给一个读操作加锁没有必要。 但随后">
 <meta itemprop="datePublished" content="2021-11-29T15:37:20+08:00" />
-<meta itemprop="dateModified" content="2022-02-10T07:52:38+08:00" />
-<meta itemprop="wordCount" content="1823">
+<meta itemprop="dateModified" content="2022-06-16T10:20:26+08:00" />
+<meta itemprop="wordCount" content="1895">
 
 
 
 <meta itemprop="keywords" content="code,golang," />
-<meta property="og:title" content="不同上下文中的原子性问题" />
-<meta property="og:description" content="问这个问题的起因是我在进行code review时，对一个读map前加读锁的代码留下了如下comment： 这里从map中读出脏数据不会有什么问" />
+<meta property="og:title" content="不同上下文中的并发问题" />
+<meta property="og:description" content="问这个问题的起因是我在进行code review时，对一个读map前加读锁的代码留下了如下comment： 单独给一个读操作加锁没有必要。 但随后" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/atomic-in-different-context/" />
 <meta property="article:published_time" content="2021-11-29T15:37:20+08:00" />
-<meta property="article:modified_time" content="2022-02-10T07:52:38+08:00" />
+<meta property="article:modified_time" content="2022-06-16T10:20:26+08:00" />
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="不同上下文中的原子性问题"/>
-<meta name="twitter:description" content="问这个问题的起因是我在进行code review时，对一个读map前加读锁的代码留下了如下comment： 这里从map中读出脏数据不会有什么问"/>
+<meta name="twitter:title" content="不同上下文中的并发问题"/>
+<meta name="twitter:description" content="问这个问题的起因是我在进行code review时，对一个读map前加读锁的代码留下了如下comment： 单独给一个读操作加锁没有必要。 但随后"/>
 
 	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -32,7 +32,7 @@
 	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
 	<link rel="shortcut icon" href="/favicon.ico">
 
-	<title>不同上下文中的原子性问题</title>
+	<title>不同上下文中的并发问题</title>
 	<link rel="stylesheet" href="https://cvvz.github.io/css/style.min.7a1ec200e9f3394f73c6eda58011808507a3b24318de81e1e343f22a2470caef.css">
 	
 </head>
@@ -68,43 +68,39 @@
 	<main class="site-main section-inner animated fadeIn faster">
 		<article class="thin">
 			<header class="post-header">
-				<h1>不同上下文中的原子性问题</h1>
+				<h1>不同上下文中的并发问题</h1>
 			</header>
 			<div class="content">
 				<p>问这个问题的起因是我在进行code review时，对一个读map前加读锁的代码留下了如下comment：</p>
-<ol>
-<li>这里从map中读出脏数据不会有什么问题。</li>
-<li>即使加了读锁还是不能避免读脏数据的问题。所以这里没必要加读锁</li>
-</ol>
-<p>但随后自己隐约觉得哪里不对，查了一下在golang里map就是不允许并发读写的，其实对map加读写锁就跟 <code>if err != nil</code> 一样常见。自己犯了一个小白错误。</p>
-<p>回过头来也庆幸自己会犯这种错误，不然我可能永远只记得 <strong>map是非线程安全的，使用时要加锁</strong> 这个结论，以及使用前map加锁的肌肉记忆，却并不会停下来想一想为什么要这么做。</p>
-<p>之所以会犯这个“初学者”错误，原因在于我搞混了几种线程安全/数据竞争发生的维度。<strong>虽然传统的锁（或者golang更推荐的CSP）都是为了解决原子性问题，但是在不同的上下文中，“原子性”的含义是不同的</strong>。</p>
-<h3 id="应用层">应用层<a href="#应用层" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
-<p>最常见的就是数据库的隔离级别。<strong>假设我们都只考虑简单的悲观锁的情况</strong>，那么RC就是为了防止脏读，通过加写锁，避免执行事务写数据期间被读到脏数据；RR就是在读之前加读锁，这样就能保证一次事务中，多次读到的数据是相同的。</p>
-<p><strong>我在code review中犯的错误，是因为我以为给map加读锁就是为了避免数据不一致。然而又因为业务逻辑中并不涉及事务操作，所以我认为没必要加读锁，而且仅仅在读数据的时候加一下锁也避免不了脏读，因为不是一把事务锁。</strong></p>
-<h3 id="高级语言层">高级语言层<a href="#高级语言层" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p><code>单独给一个读操作加锁没有必要。</code></p>
+<p>但随后自己隐约觉得哪里不对，查了一下，原来golang的map就是不允许并发读写的，其实对map加读写锁就跟 <code>if err != nil</code> 一样常见。自己犯了一个小白错误。</p>
+<p>回过头来也庆幸自己会犯这种错误，不然我可能永远只记得 <strong>map是非线程安全的，使用时要加锁</strong> 这个结论，以及使用前map加锁的肌肉记忆，却并不会停下来想一想经常挂在嘴边的线程安全、并发到底在说什么，以及为什么要加锁。</p>
+<p>之所以会犯这个初学者错误，原因在于我搞混了几种并发问题发生的维度。<strong>虽然传统的锁（或者golang更推荐的CSP）都是为了解决并发问题，但是在不同的上下文中，要解决的并发问题也各不相同</strong>。</p>
+<h2 id="业务逻辑层">业务逻辑层<a href="#业务逻辑层" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>比如数据库的Serializable隔离级别，读加共享（读）锁，写加排他（写）锁，读写互斥。在业务逻辑层，通常最简单有效的解决并发问题的方法就是<strong>通过加锁把并发变成串行</strong>。我在code review中犯的错误，是因为我以为给map加锁是为了解决业务逻辑上的并发问题，而从业务逻辑上看，没有必要单独给一个读操作加锁，因为并不是一连串操作。</p>
+<h2 id="语言运行时层">语言运行时层<a href="#语言运行时层" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <ol>
 <li>
 <p>golang的slice在append时，如果没有超出cap大小，那么是不会重新分配内存的，这时数据是直接append到底层的数组中的。如果两个线程并发的append同一个slice，那么就可能写同一片内存，这样可能会导致append后的总数不符合预期（变少）。</p>
 </li>
 <li>
-<p>golang的map被设计为非并发安全的（<a href="https://go.dev/doc/faq#atomic_maps">原因</a>），在应用层如果并发时不加读锁或者写锁，就可能会报错，<code>fatal error: concurrent map read and map write</code>。我们可以通过<a href="https://go.dev/doc/articles/race_detector">golang race detector</a>进行检查。那为什么map的读写需要加锁呢（不管是由应用程序加，还是由语言特性加）？原因在于map类型的一次读写不是原子性的（需要进行哈希计算、解决哈希冲突等等），map的一次读写操作可能涉及到多个数据结构的查询/调整，并发读写可能造成数据异常。</p>
-</li>
-<li>
-<p>还有一种是在语言实现时就设计为并非原子性赋值的，可以看看这篇文章中的<a href="https://cloud.tencent.com/developer/article/1810536">讨论</a>，典型的有<strong>复数类型</strong>。</p>
+<p>golang的map被设计为非并发安全的（<a href="https://go.dev/doc/faq#atomic_maps">原因</a>），在应用层如果并发时不加读锁或者写锁，就可能会报错，<code>fatal error: concurrent map read and map write</code>。我们可以通过<a href="https://go.dev/doc/articles/race_detector">golang race detector</a>进行检查。那为什么map的读写需要加锁呢（不管是加在业务逻辑里还是加在语言运行时里）？原因在于map类型的一次读写不是原子性的（需要进行哈希计算、解决哈希冲突等）。</p>
 </li>
 </ol>
-<h3 id="编译器操作系统层">编译器/操作系统层<a href="#编译器操作系统层" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
-<p>这里又分为三种情形分析：</p>
+<h2 id="编译器操作系统层">编译器/操作系统层<a href="#编译器操作系统层" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>这里又分为四种情形分析：</p>
 <ol>
 <li>
-<p>一种是并发执行i++，由于i++在编译后在底层的实现是先读i，再写i，分为两步，所以并发时可能有问题。</p>
+<p>第一种是并发执行i++，由于i++在编译后在底层的实现是先读i，再+1，再写i，分为三步，操作系统并不保证这三步是原子性的，所以并发时可能有问题。</p>
 </li>
 <li>
-<p>另一种是读写超过一个计算机字长的数据（比如struct，或者复合类型，比如string），这时肯定无法通过一条机器指令进行读写的</p>
+<p>第二种仍然考虑并发执行i++，即使三步操作是原子性的，但是由于现代CPU是多核心的，每个核心都有自己的缓存，写操作实际是写入各自的缓存中再写到L3 cache和内存中，所以并发执行i++是否线程安全还依赖写操作是写到cpu自己的缓存中还是写到内存中。</p>
 </li>
 <li>
-<p>第三种是<strong>编译器或处理器可能会对单线程中的读写操作进行重新排序</strong>，只要保证重新排序后不影响单线程的执行即可。但是由于进行了重排序，所以对于多线程而言，读写操作的顺序就可能变化，就不能想当然的认为不用加锁！！</p>
+<p>第三种是读写超过一个计算机字长的数据（比如struct，或者复合类型，比如string，golang的复数类型等），和第一条类似，这时也无法通过一条机器指令进行读写。</p>
+</li>
+<li>
+<p>第四种，编译器/处理器为了提高程序运行效率，可能会对输入代码进行优化，它不保证程序中各个语句的执行先后顺序同代码中的顺序一致，但是它会保证程序最终执行结果和代码顺序执行的结果是一致的，这就是指令重排序（Instruction Reorder）。<strong>指令重排序不会影响单个线程的执行，但是会影响到线程并发执行的正确性。</strong></p>
 <blockquote>
 <p>所以<a href="https://go.dev/ref/mem">go内存模型</a>建议我们<code>Don't be clever.</code>，绝大多数情况下，请不要自作聪明。<code>To serialize access, protect the data with channel operations or other synchronization primitives such as those in the sync and sync/atomic packages.</code><strong>为了保证读写顺序，使用channel或者其他同步原语比如sync和sync/atomic包中提供的方法来保护你的数据。</strong></p>
 </blockquote>
@@ -116,7 +112,7 @@
 <p>典型代码可以查看<a href="https://github.com/Terry-Mao">毛剑</a>的<a href="https://github.com/Terry-Mao/gopush-cluster/blob/master/rpc/rand_lb.go#L221-L232">这段代码</a></p>
 <blockquote>
 <p>但是这段代码也引起了一些<a href="https://github.com/Terry-Mao/gopush-cluster/issues/44">争议</a>，主要争议在于golang的指针赋值到底是不是原子的。关于这个问题，可以看看<a href="https://stackoverflow.com/questions/21447463/is-assigning-a-pointer-atomic-in-go">这个问答</a>，简单来说就是，除了 <code>sync.atomic</code> 中的操作以外，其他任何操作都不建议看作是原子性的。因为即使当前版本golang中的实现是原子的，不代表以后某一天不会被改成非原子的。</p>
-<p>这可能也是<a href="https://go.dev/ref/mem">go内存模型</a>里让我们<code>Don't be clever.</code>的原因吧。<strong>我个人的理解是，如果你写golang，那么你需要能够接受一些性能损耗，而不要自作聪明的想一些奇技淫巧；如果你要追求极致的性能，你可以用C/C++/Rust实现 :)</strong></p>
+<p>这可能也是<a href="https://go.dev/ref/mem">go内存模型</a>里让我们<code>Don't be clever.</code>的原因吧。<strong>我个人的理解是，如果你写golang，可能需要适当的“笨”一点，让运行时帮你做底层的事情；如果你想追求极致的性能，是一个“聪明”的程序员，你可以选择更加底层的语言 :)</strong></p>
 </blockquote>
 
 			</div>
@@ -125,19 +121,18 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/code">code</a></span><span class="tag"><a href="https://cvvz.github.io/tags/golang">golang</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1823 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/92c8688880b956c85b07b1bbbbfe957cd8804bbf" target="_blank" rel="noopener">92c8688</a> @ 2022-02-10</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1895 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/c7599beaf7f0a7746b2a8cd2699abf4c0660b18f" target="_blank" rel="noopener">c7599be</a> @ 2022-06-16</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">
 			<div class="toc-title">目录</div>
 			<nav id="TableOfContents">
   <ul>
-    <li>
+    <li><a href="#业务逻辑层">业务逻辑层</a></li>
+    <li><a href="#语言运行时层">语言运行时层</a></li>
+    <li><a href="#编译器操作系统层">编译器/操作系统层</a>
       <ul>
-        <li><a href="#应用层">应用层</a></li>
-        <li><a href="#高级语言层">高级语言层</a></li>
-        <li><a href="#编译器操作系统层">编译器/操作系统层</a></li>
         <li><a href="#拓展golang中的cow">拓展：golang中的COW</a></li>
       </ul>
     </li>

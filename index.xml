@@ -99,12 +99,12 @@
     </item>
     
     <item>
-      <title>不同上下文中的原子性问题</title>
+      <title>不同上下文中的并发问题</title>
       <link>https://cvvz.github.io/post/atomic-in-different-context/</link>
       <pubDate>Mon, 29 Nov 2021 15:37:20 +0800</pubDate>
       
       <guid>https://cvvz.github.io/post/atomic-in-different-context/</guid>
-      <description>问这个问题的起因是我在进行code review时，对一个读map前加读锁的代码留下了如下comment： 这里从map中读出脏数据不会有什么问</description>
+      <description>问这个问题的起因是我在进行code review时，对一个读map前加读锁的代码留下了如下comment： 单独给一个读操作加锁没有必要。 但随后</description>
     </item>
     
     <item>
