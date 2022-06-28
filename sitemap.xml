@@ -3,6 +3,21 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://cvvz.github.io/read/</loc>
+    <lastmod>2022-06-28T12:29:47+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://cvvz.github.io/</loc>
+    <lastmod>2022-06-28T12:29:47+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://cvvz.github.io/read/weak-communication/</loc>
+    <lastmod>2022-06-28T12:29:47+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://cvvz.github.io/post/kubernetes-storage-history/</loc>
     <lastmod>2022-06-15T17:02:23+08:00</lastmod>
   </url>
@@ -20,16 +35,6 @@
   <url>
     <loc>https://cvvz.github.io/tags/</loc>
     <lastmod>2022-06-28T12:28:50+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://cvvz.github.io/</loc>
-    <lastmod>2022-06-28T12:28:50+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://cvvz.github.io/read/</loc>
-    <lastmod>2022-06-06T08:30:50+08:00</lastmod>
   </url>
   
   <url>

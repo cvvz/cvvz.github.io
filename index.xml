@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Wed, 15 Jun 2022 13:22:45 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 28 Jun 2022 08:47:07 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>弱传播</title>
+      <link>https://cvvz.github.io/read/weak-communication/</link>
+      <pubDate>Tue, 28 Jun 2022 08:47:07 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/read/weak-communication/</guid>
+      <description>一本关于舆论和传播的书。没有读完，看完了80%的内容，认真看了的部分可能只有50%。理论和泛泛而谈的东西太多了，自创了很多概念、定理，八股文</description>
+    </item>
+    
     <item>
       <title>k8s存储演进过程</title>
       <link>https://cvvz.github.io/post/kubernetes-storage-history/</link>
@@ -177,15 +186,6 @@
       
       <guid>https://cvvz.github.io/post/k8s-network-service/</guid>
       <description>在kubernetes中，service其实只是一个保存在etcd里的API对象，并不对应任何具体的实例。service即k8s中的“微服务</description>
-    </item>
-    
-    <item>
-      <title>kubernetes网络之CNI与跨节点通信原理</title>
-      <link>https://cvvz.github.io/post/k8s-network-cross-host/</link>
-      <pubDate>Wed, 30 Dec 2020 09:51:44 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/k8s-network-cross-host/</guid>
-      <description>初始化infra容器网络环境 当kubelet通过调用CRI的RunPodSandbox创建好PodSandbox，即infra容器后，就需要</description>
     </item>
     
   </channel>
