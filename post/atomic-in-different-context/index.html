@@ -9,8 +9,8 @@
 <meta itemprop="name" content="不同上下文中的并发问题">
 <meta itemprop="description" content="问这个问题的起因是我在进行code review时，对一个读map前加读锁的代码留下了如下comment： 单独给一个读操作加锁没有必要。 但随后">
 <meta itemprop="datePublished" content="2021-11-29T15:37:20+08:00" />
-<meta itemprop="dateModified" content="2022-06-16T10:20:26+08:00" />
-<meta itemprop="wordCount" content="1895">
+<meta itemprop="dateModified" content="2022-06-28T12:28:50+08:00" />
+<meta itemprop="wordCount" content="2090">
 
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/atomic-in-different-context/" />
 <meta property="article:published_time" content="2021-11-29T15:37:20+08:00" />
-<meta property="article:modified_time" content="2022-06-16T10:20:26+08:00" />
+<meta property="article:modified_time" content="2022-06-28T12:28:50+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="不同上下文中的并发问题"/>
 <meta name="twitter:description" content="问这个问题的起因是我在进行code review时，对一个读map前加读锁的代码留下了如下comment： 单独给一个读操作加锁没有必要。 但随后"/>
@@ -78,6 +78,10 @@
 <p>之所以会犯这个初学者错误，原因在于我搞混了几种并发问题发生的维度。<strong>虽然传统的锁（或者golang更推荐的CSP）都是为了解决并发问题，但是在不同的上下文中，要解决的并发问题也各不相同</strong>。</p>
 <h2 id="业务逻辑层">业务逻辑层<a href="#业务逻辑层" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>比如数据库的Serializable隔离级别，读加共享（读）锁，写加排他（写）锁，读写互斥。在业务逻辑层，通常最简单有效的解决并发问题的方法就是<strong>通过加锁把并发变成串行</strong>。我在code review中犯的错误，是因为我以为给map加锁是为了解决业务逻辑上的并发问题，而从业务逻辑上看，没有必要单独给一个读操作加锁，因为并不是一连串操作。</p>
+<blockquote>
+<p>顺便提一句，golang推荐使用CSP来解决并发问题。之所以要用CSP，是因为传统的共享内存（锁）的方式进行并发很难正确使用，但是遵循CSP原则的语言（go）则更易阅读和编写。但是Go语言确实在sync包中提供了传统的锁机制。</p>
+<p>golang中的锁一般用在保护某个结构的内部状态。即在 struct 内部使用 sync.Mutex，这样可以为调用者隐藏实现细节。除此以外的其他情况基本上都应该用channel。</p>
+</blockquote>
 <h2 id="语言运行时层">语言运行时层<a href="#语言运行时层" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <ol>
 <li>
@@ -121,8 +125,8 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/code">code</a></span><span class="tag"><a href="https://cvvz.github.io/tags/golang">golang</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1895 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/c7599beaf7f0a7746b2a8cd2699abf4c0660b18f" target="_blank" rel="noopener">c7599be</a> @ 2022-06-16</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2090 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/8b0d87bc8b116ab278500f1106562a6e71639482" target="_blank" rel="noopener">8b0d87b</a> @ 2022-06-28</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">
