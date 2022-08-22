@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Tue, 05 Jul 2022 22:03:58 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 22 Aug 2022 09:23:12 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>WSL: VPN的网络问题</title>
+      <link>https://cvvz.github.io/post/wsl-vpn-issue/</link>
+      <pubDate>Mon, 22 Aug 2022 09:23:12 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/wsl-vpn-issue/</guid>
+      <description>最近由于工作原因，不得不将工作机切换到Windows系统，准备装个WSL作为overlay的工作环境。安装、配置都没什么问题，但是发现主机接</description>
+    </item>
+    
     <item>
       <title>富爸爸穷爸爸</title>
       <link>https://cvvz.github.io/read/rich-dad/</link>
@@ -153,12 +162,12 @@
     </item>
     
     <item>
-      <title>分布式数据库上k8s面临的困境</title>
+      <title>浅谈云原生数据库</title>
       <link>https://cvvz.github.io/post/the-difficulty-of-distributed-db-on-cloud/</link>
       <pubDate>Sun, 25 Jul 2021 08:58:26 +0800</pubDate>
       
       <guid>https://cvvz.github.io/post/the-difficulty-of-distributed-db-on-cloud/</guid>
-      <description>说点虚的 云原生数据库、shared-nothing、算存分离&amp;hellip; 这些概念性的东西，网上资料一大把，看完以后感觉懂了，但是尝试用自</description>
+      <description>云原生数据库、shared-nothing、算存分离&amp;hellip; 这些概念性的东西，网上资料一大把，看完以后感觉懂了，但是尝试用自己的话复</description>
     </item>
     
     <item>
@@ -177,15 +186,6 @@
       
       <guid>https://cvvz.github.io/post/design-pattern/</guid>
       <description>设计模式和设计原则的合理应用非常依赖个人经验，用不好有时候会适得其反。学生时代时学习设计模式觉得枯燥，是因为没有实践经验。要多实践，然后再温</description>
-    </item>
-    
-    <item>
-      <title>容器2</title>
-      <link>https://cvvz.github.io/post/container2/</link>
-      <pubDate>Fri, 23 Apr 2021 16:52:20 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/container2/</guid>
-      <description>进程 单进程模型 容器中的1号进程对于宿主机而言就是一个普通的进程，它的父进程是runC，runC的父进程是containerd-shim。这个</description>
     </item>
     
   </channel>
