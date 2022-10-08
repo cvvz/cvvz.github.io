@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Thinkings on Vic&#39;s Blog</title>
+    <link>https://cvvz.github.io/thinking/</link>
+    <description>Recent content in Thinkings on Vic&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-hans</language>
+    <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
+    <lastBuildDate>Fri, 07 Oct 2022 21:47:48 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/thinking/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>2022 10 07</title>
+      <link>https://cvvz.github.io/thinking/2022-10-07/</link>
+      <pubDate>Fri, 07 Oct 2022 21:47:48 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/thinking/2022-10-07/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
