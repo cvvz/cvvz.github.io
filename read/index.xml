@@ -6,8 +6,22 @@
 		<generator>Hugo -- gohugo.io</generator>
 		<language>zh-hans</language>
 		<copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-		<lastBuildDate>Thu, 01 Sep 2022 17:46:14 +0800</lastBuildDate>
+		<lastBuildDate>Wed, 12 Oct 2022 10:43:51 +0800</lastBuildDate>
 		<atom:link href="https://cvvz.github.io/read/index.xml" rel="self" type="application/rss+xml" />
+		
+		<item>
+			<title>刻意练习</title>
+			<link>https://cvvz.github.io/read/ke-yi-lian-xi/</link>
+			<pubDate>Wed, 12 Oct 2022 10:43:51 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/read/ke-yi-lian-xi/</guid>
+			<description></description>
+			<content type="html"><![CDATA[<figure>
+    <img src="/%e5%88%bb%e6%84%8f%e7%bb%83%e4%b9%a0.png" width="1150px"/> 
+</figure>
+
+]]></content>
+		</item>
 		
 		<item>
 			<title>终身成长</title>
