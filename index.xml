@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Wed, 12 Oct 2022 10:43:51 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 16 Oct 2022 21:02:59 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>VolumeBindingMode</title>
+      <link>https://cvvz.github.io/post/volumebindingmode/</link>
+      <pubDate>Sun, 16 Oct 2022 21:02:59 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/volumebindingmode/</guid>
+      <description>VolumeBindingMode是storageclass的一个字段，这个字段可以设置为两个值：Immediate 或者 WaitForFir</description>
+    </item>
+    
     <item>
       <title>刻意练习</title>
       <link>https://cvvz.github.io/read/ke-yi-lian-xi/</link>
@@ -177,15 +186,6 @@
       
       <guid>https://cvvz.github.io/read/okr/</guid>
       <description>OKR工作法最重要的三点：专注在最核心的目标上、任务拆解具体可实施、持续追踪和复盘。对我个人而言，第一重要的就是对目标的专注，不分心。</description>
-    </item>
-    
-    <item>
-      <title>浅谈云原生数据库</title>
-      <link>https://cvvz.github.io/post/the-difficulty-of-distributed-db-on-cloud/</link>
-      <pubDate>Sun, 25 Jul 2021 08:58:26 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/the-difficulty-of-distributed-db-on-cloud/</guid>
-      <description>云原生数据库、shared-nothing、算存分离&amp;hellip; 这些概念性的东西，网上资料一大把，看完以后感觉懂了，但是尝试用自己的话复</description>
     </item>
     
   </channel>

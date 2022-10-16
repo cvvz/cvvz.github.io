@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="google-site-verification" content="Wp3QtEkIlF0ZvtKx90lPmoXyH39d-pmBhiTyTbba9L4" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta itemprop="name" content="VolumeBindingMode">
+<meta itemprop="description" content="VolumeBindingMode是storageclass的一个字段，这个字段可以设置为两个值：Immediate 或者 WaitForFir">
+<meta itemprop="datePublished" content="2022-10-16T21:02:59+08:00" />
+<meta itemprop="dateModified" content="2022-10-16T22:54:32+08:00" />
+<meta itemprop="wordCount" content="2258">
+
+
+
+<meta itemprop="keywords" content="kubernetes,csi," />
+<meta property="og:title" content="VolumeBindingMode" />
+<meta property="og:description" content="VolumeBindingMode是storageclass的一个字段，这个字段可以设置为两个值：Immediate 或者 WaitForFir" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://cvvz.github.io/post/volumebindingmode/" />
+<meta property="article:published_time" content="2022-10-16T21:02:59+08:00" />
+<meta property="article:modified_time" content="2022-10-16T22:54:32+08:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="VolumeBindingMode"/>
+<meta name="twitter:description" content="VolumeBindingMode是storageclass的一个字段，这个字段可以设置为两个值：Immediate 或者 WaitForFir"/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>VolumeBindingMode</title>
+	<link rel="stylesheet" href="https://cvvz.github.io/css/style.min.7a1ec200e9f3394f73c6eda58011808507a3b24318de81e1e343f22a2470caef.css">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp faster">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://cvvz.github.io">cvvz&#39;s Blog</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					<a href="https://cvvz.github.io/post/">技术</a>
+					<a href="https://cvvz.github.io/read/">读书</a>
+					<a href="https://cvvz.github.io/running/">跑步</a>
+					<a href="https://cvvz.github.io/aboutme/resume.pdf">关于</a>
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<button id="toc-btn" class="hdr-btn desktop-only-ib" title="目录"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-list"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3" y2="6"></line><line x1="3" y1="12" x2="3" y2="12"></line><line x1="3" y1="18" x2="3" y2="18"></line></svg></button><span class="hdr-social hide-in-mobile"><a href="https://github.com/cvvz" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="mailto:ftdchenwz@gmail.com" target="_blank" rel="noopener me" title="Email"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a></span><button id="menu-btn" class="hdr-btn" title="菜单"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://cvvz.github.io/post/">技术</a></li>
+			<li><a href="https://cvvz.github.io/read/">读书</a></li>
+			<li><a href="https://cvvz.github.io/running/">跑步</a></li>
+			<li><a href="https://cvvz.github.io/aboutme/resume.pdf">关于</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<h1>VolumeBindingMode</h1>
+			</header>
+			<div class="content">
+				<p><a href="https://kubernetes.io/docs/concepts/storage/storage-classes/#volume-binding-mode">VolumeBindingMode</a>是storageclass的一个字段，这个字段可以设置为两个值：<code>Immediate</code> 或者 <code>WaitForFirstConsumer</code>，<code>WaitForFirstConsumer</code>的作用有两个：</p>
+<ul>
+<li>static binding时，起到延迟绑定PVC和PV的作用</li>
+<li>dynamically provision时，起到延迟创建PV的作用</li>
+</ul>
+<p>具体啥意思，又是怎么实现的？通过走读代码来加深理解。以下涉及到scheduler、persistentvolume controller和external provisioner三个组件的交互，全部都是业务逻辑，所以理解起来比较直白，不用绕弯子，主要任务是把这些业务逻辑walk through一遍。</p>
+<p>首先，在集群中创建了Pod和PVC。Pod会触发调度器的调度流程，PVC会触发pv controller的binding流程以及external provisioner的provision流程。下面一个一个来看。</p>
+<h2 id="scheduler">scheduler<a href="#scheduler" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>先从调度器说起，重点在<a href="https://github.com/kubernetes/kubernetes/blob/master/pkg/scheduler/framework/plugins/volumebinding/volume_binding.go">volumebinding插件</a>中。</p>
+<h3 id="prefilter">Prefilter<a href="#prefilter" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>在Prefilter阶段，如果有<code>Immediate</code>的PVC存在，就必须先与PV绑定完成之后，才允许进行调度。这一点很关键。</p>
+<figure>
+    <img src="/VolumeBindingMode/prefilter.png" width="1000px"/> 
+</figure>
+
+<h3 id="filter">Filter<a href="#filter" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>在Filter阶段，对于已经bound的PVC，就必须要Node满足PV的affinity要求。也就是说既要满足Pod中定义的topology，又要满足PV的topology。</p>
+<figure>
+    <img src="/VolumeBindingMode/filter-0.png" width="1000px"/> 
+</figure>
+
+<p>对于unbound的PVC，先看这个PVC有没有<code>volume.kubernetes.io/selected-node</code> annotation，有的话，只能选择annotation指定的node。</p>
+<figure>
+    <img src="/VolumeBindingMode/filter-1.png" width="1000px"/> 
+</figure>
+
+<p>否则在集群中寻找提前创建的且满足PVC要求的PV，同时Node也要满足PV的affinity要求，进行PV-&gt;PVC的绑定（这属于static binding），否则这个PVC需要进行dynamic provision。</p>
+<figure>
+    <img src="/VolumeBindingMode/filter-2.png" width="1000px"/> 
+</figure>
+
+<p>如果存在需要进行dynamic provision的PVC，就再进行如下过滤，主要是判断：1. 判断Node是否能满足sc里定义的topology 2. CSIStorageCapacity这个feature开启了的话，需要判断节点是否有足够的volume容量</p>
+<figure>
+    <img src="/VolumeBindingMode/filter-3.png" width="1000px"/> 
+</figure>
+
+<h3 id="score">Score<a href="#score" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>在优选(Score)阶段，只需要根据static binding的情况来进行打分：基于volume capacity的情况来对节点进行优选</p>
+<figure>
+    <img src="/VolumeBindingMode/score.png" width="1000px"/> 
+</figure>
+
+<h3 id="reserve">Reserve<a href="#reserve" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>在预占(Reserve)阶段，对于static binding 的PV，在这里做PV -&gt; PVC的绑定，即更新PV的ClaimRef字段。</p>
+<figure>
+    <img src="/VolumeBindingMode/reserve.png" width="1000px"/> 
+</figure>
+
+<p>对于dynamic provision的PVC，则设置<code>volume.kubernetes.io/selected-node</code> annotation</p>
+<figure>
+    <img src="/VolumeBindingMode/reserve-2.png" width="1000px"/> 
+</figure>
+
+<h3 id="prebind">PreBind<a href="#prebind" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>在PreBind阶段，先向API Server更新PVC和PV。前面在Reserve这个步骤中已经更新了本地缓存，现在是更新到API Server中。即对于static bind的PVC，设置PV的ClaimRef，对于dynamic provision的PVC，设置了<code>volume.kubernetes.io/selected-node</code> annotation。</p>
+<p>然后等待PV controller完成PVC -&gt; PV的绑定，完成的标志是<code>pvc.Spec.VolumeName</code>和<code>pv.kubernetes.io/bind-completed</code> annotation被设置</p>
+<figure>
+    <img src="/VolumeBindingMode/prebind.png" width="1000px"/> 
+</figure>
+
+<h2 id="persistentvolume-controller">persistentvolume controller<a href="#persistentvolume-controller" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>这部分的代码位于<a href="https://github.com/kubernetes/kubernetes/blob/master/pkg/controller/volume/persistentvolume/pv_controller.go">pv_controller.go</a>中。</p>
+<p>pv controller尝试为PVC寻找一个合适的volume，但是如果是<code>WaitForFirstConsumer</code>的PVC，根据上面调度器的分析，调度器会选择合适的PV并进行PV-&gt;PVC的绑定，而pv controller则不会做这件事。</p>
+<figure>
+    <img src="/VolumeBindingMode/volumecontroller.png" width="1000px"/> 
+</figure>
+
+<p>而有了PV -&gt; PVC的绑定，pv controller只需要完成PVC -&gt; PV的绑定并设置<code>pv.kubernetes.io/bind-completed</code> annotation 即可。</p>
+<p>但是如果是<code>Immediate</code>的PVC，根据上面的分析，如果不bound，调度器压根就不会调度Pod。所以是靠controller来找合适的PV，并且完成PV和PVC的绑定。</p>
+<p>但是如果集群里没有合适的预先创建好的PV可供PVC进行static binding，那么就要先触发external provisioner进行dynamic provision pv。触发的方式就是设置<code>volume.kubernetes.io/storage-provisioner</code>这个annotation的值为指定的provisioner name。</p>
+<h2 id="external-provisioner">external provisioner<a href="#external-provisioner" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p><a href="https://github.com/kubernetes-csi/external-provisioner">external provisioner</a>中的ProvisionController负责根据watch到的PVC事件来决定要不要为它provision volume并创建PV。</p>
+<figure>
+    <img src="/VolumeBindingMode/provisioner-1.png" width="1000px"/> 
+</figure>
+
+<p>在<code>shouldProvision</code>中，首先判断<code>volume.kubernetes.io/storage-provisioner</code> annotation设置的provisioner name是不是自己；如果是<code>WaitForFirstConsumer</code>的PVC，还必须要求<code>volume.kubernetes.io/selected-node</code>这个annotation存在，才能进行provision。</p>
+<p>注释中还提到，provisioner会通过remove <code>volume.kubernetes.io/selected-node</code> 这个annotation来触发调度器来进行reschedule。因为有的时候在指定节点上进行dynamic provision时，还可能因为资源等问题而失败，这在调度阶段并不能感知，所以就有重调度的需求。</p>
+<figure>
+    <img src="/VolumeBindingMode/provisioner-2.png" width="1000px"/> 
+</figure>
+
+
+			</div>
+			<hr class="post-end">
+			<footer class="post-info">
+				<p>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/kubernetes">kubernetes</a></span><span class="tag"><a href="https://cvvz.github.io/tags/csi">csi</a></span>
+				</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2258 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/6241b276bca070aea6ee26d8e79a83ea77c8ab01" target="_blank" rel="noopener">6241b27</a> @ 2022-10-16</p>
+			</footer>
+		</article>
+		<aside id="toc" class="show-toc">
+			<div class="toc-title">目录</div>
+			<nav id="TableOfContents">
+  <ul>
+    <li><a href="#scheduler">scheduler</a>
+      <ul>
+        <li><a href="#prefilter">Prefilter</a></li>
+        <li><a href="#filter">Filter</a></li>
+        <li><a href="#score">Score</a></li>
+        <li><a href="#reserve">Reserve</a></li>
+        <li><a href="#prebind">PreBind</a></li>
+      </ul>
+    </li>
+    <li><a href="#persistentvolume-controller">persistentvolume controller</a></li>
+    <li><a href="#external-provisioner">external provisioner</a></li>
+  </ul>
+</nav>
+		</aside>
+		<div class="post-nav thin">
+			<a class="prev-post" href="https://cvvz.github.io/post/wsl-vpn-issue/">
+				<span class="post-nav-label">旧&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>WSL: VPN的网络问题</span>
+			</a>
+		</div>
+		<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+		<div id="gitalk-container" class="thin"></div>     
+		<script type="text/javascript">
+			var gitalk = new Gitalk({
+				clientID: '0f8bdcbe6b4973f9b206',
+				clientSecret: '4939e64d59c93fc5eb7eaf74469a746e4535700d',
+				repo: 'cvvz.github.io',
+				owner: 'cvvz',
+				admin: ['cvvz'],
+				id: location.pathname,      
+				distractionFreeMode: true 
+			});
+  			gitalk.render('gitalk-container');
+		</script>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2022 <a href="https://cvvz.github.io">陈维志</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://cvvz.github.io/post/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+	<script src="https://cvvz.github.io/js/main.min.784417f5847151f848c339cf0acb13a06cbb648b1483435a28ed4556c4ead69b.js"></script>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-M8Q3DKDEVL', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>csi on cvvz&#39;s Blog</title>
+    <link>https://cvvz.github.io/tags/csi/</link>
+    <description>Recent content in csi on cvvz&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-hans</language>
+    <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
+    <lastBuildDate>Sun, 16 Oct 2022 21:02:59 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/csi/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>VolumeBindingMode</title>
+      <link>https://cvvz.github.io/post/volumebindingmode/</link>
+      <pubDate>Sun, 16 Oct 2022 21:02:59 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/volumebindingmode/</guid>
+      <description>VolumeBindingMode是storageclass的一个字段，这个字段可以设置为两个值：Immediate 或者 WaitForFir</description>
+    </item>
+    
+  </channel>
+</rss>

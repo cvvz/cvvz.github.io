@@ -6,8 +6,100 @@
 		<generator>Hugo -- gohugo.io</generator>
 		<language>zh-hans</language>
 		<copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-		<lastBuildDate>Mon, 22 Aug 2022 09:23:12 +0800</lastBuildDate>
+		<lastBuildDate>Sun, 16 Oct 2022 21:02:59 +0800</lastBuildDate>
 		<atom:link href="https://cvvz.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+		
+		<item>
+			<title>VolumeBindingMode</title>
+			<link>https://cvvz.github.io/post/volumebindingmode/</link>
+			<pubDate>Sun, 16 Oct 2022 21:02:59 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/post/volumebindingmode/</guid>
+			<description>VolumeBindingMode是storageclass的一个字段，这个字段可以设置为两个值：Immediate 或者 WaitForFir</description>
+			<content type="html"><![CDATA[<p><a href="https://kubernetes.io/docs/concepts/storage/storage-classes/#volume-binding-mode">VolumeBindingMode</a>是storageclass的一个字段，这个字段可以设置为两个值：<code>Immediate</code> 或者 <code>WaitForFirstConsumer</code>，<code>WaitForFirstConsumer</code>的作用有两个：</p>
+<ul>
+<li>static binding时，起到延迟绑定PVC和PV的作用</li>
+<li>dynamically provision时，起到延迟创建PV的作用</li>
+</ul>
+<p>具体啥意思，又是怎么实现的？通过走读代码来加深理解。以下涉及到scheduler、persistentvolume controller和external provisioner三个组件的交互，全部都是业务逻辑，所以理解起来比较直白，不用绕弯子，主要任务是把这些业务逻辑walk through一遍。</p>
+<p>首先，在集群中创建了Pod和PVC。Pod会触发调度器的调度流程，PVC会触发pv controller的binding流程以及external provisioner的provision流程。下面一个一个来看。</p>
+<h2 id="scheduler">scheduler</h2>
+<p>先从调度器说起，重点在<a href="https://github.com/kubernetes/kubernetes/blob/master/pkg/scheduler/framework/plugins/volumebinding/volume_binding.go">volumebinding插件</a>中。</p>
+<h3 id="prefilter">Prefilter</h3>
+<p>在Prefilter阶段，如果有<code>Immediate</code>的PVC存在，就必须先与PV绑定完成之后，才允许进行调度。这一点很关键。</p>
+<figure>
+    <img src="/VolumeBindingMode/prefilter.png" width="1000px"/> 
+</figure>
+
+<h3 id="filter">Filter</h3>
+<p>在Filter阶段，对于已经bound的PVC，就必须要Node满足PV的affinity要求。也就是说既要满足Pod中定义的topology，又要满足PV的topology。</p>
+<figure>
+    <img src="/VolumeBindingMode/filter-0.png" width="1000px"/> 
+</figure>
+
+<p>对于unbound的PVC，先看这个PVC有没有<code>volume.kubernetes.io/selected-node</code> annotation，有的话，只能选择annotation指定的node。</p>
+<figure>
+    <img src="/VolumeBindingMode/filter-1.png" width="1000px"/> 
+</figure>
+
+<p>否则在集群中寻找提前创建的且满足PVC要求的PV，同时Node也要满足PV的affinity要求，进行PV-&gt;PVC的绑定（这属于static binding），否则这个PVC需要进行dynamic provision。</p>
+<figure>
+    <img src="/VolumeBindingMode/filter-2.png" width="1000px"/> 
+</figure>
+
+<p>如果存在需要进行dynamic provision的PVC，就再进行如下过滤，主要是判断：1. 判断Node是否能满足sc里定义的topology 2. CSIStorageCapacity这个feature开启了的话，需要判断节点是否有足够的volume容量</p>
+<figure>
+    <img src="/VolumeBindingMode/filter-3.png" width="1000px"/> 
+</figure>
+
+<h3 id="score">Score</h3>
+<p>在优选(Score)阶段，只需要根据static binding的情况来进行打分：基于volume capacity的情况来对节点进行优选</p>
+<figure>
+    <img src="/VolumeBindingMode/score.png" width="1000px"/> 
+</figure>
+
+<h3 id="reserve">Reserve</h3>
+<p>在预占(Reserve)阶段，对于static binding 的PV，在这里做PV -&gt; PVC的绑定，即更新PV的ClaimRef字段。</p>
+<figure>
+    <img src="/VolumeBindingMode/reserve.png" width="1000px"/> 
+</figure>
+
+<p>对于dynamic provision的PVC，则设置<code>volume.kubernetes.io/selected-node</code> annotation</p>
+<figure>
+    <img src="/VolumeBindingMode/reserve-2.png" width="1000px"/> 
+</figure>
+
+<h3 id="prebind">PreBind</h3>
+<p>在PreBind阶段，先向API Server更新PVC和PV。前面在Reserve这个步骤中已经更新了本地缓存，现在是更新到API Server中。即对于static bind的PVC，设置PV的ClaimRef，对于dynamic provision的PVC，设置了<code>volume.kubernetes.io/selected-node</code> annotation。</p>
+<p>然后等待PV controller完成PVC -&gt; PV的绑定，完成的标志是<code>pvc.Spec.VolumeName</code>和<code>pv.kubernetes.io/bind-completed</code> annotation被设置</p>
+<figure>
+    <img src="/VolumeBindingMode/prebind.png" width="1000px"/> 
+</figure>
+
+<h2 id="persistentvolume-controller">persistentvolume controller</h2>
+<p>这部分的代码位于<a href="https://github.com/kubernetes/kubernetes/blob/master/pkg/controller/volume/persistentvolume/pv_controller.go">pv_controller.go</a>中。</p>
+<p>pv controller尝试为PVC寻找一个合适的volume，但是如果是<code>WaitForFirstConsumer</code>的PVC，根据上面调度器的分析，调度器会选择合适的PV并进行PV-&gt;PVC的绑定，而pv controller则不会做这件事。</p>
+<figure>
+    <img src="/VolumeBindingMode/volumecontroller.png" width="1000px"/> 
+</figure>
+
+<p>而有了PV -&gt; PVC的绑定，pv controller只需要完成PVC -&gt; PV的绑定并设置<code>pv.kubernetes.io/bind-completed</code> annotation 即可。</p>
+<p>但是如果是<code>Immediate</code>的PVC，根据上面的分析，如果不bound，调度器压根就不会调度Pod。所以是靠controller来找合适的PV，并且完成PV和PVC的绑定。</p>
+<p>但是如果集群里没有合适的预先创建好的PV可供PVC进行static binding，那么就要先触发external provisioner进行dynamic provision pv。触发的方式就是设置<code>volume.kubernetes.io/storage-provisioner</code>这个annotation的值为指定的provisioner name。</p>
+<h2 id="external-provisioner">external provisioner</h2>
+<p><a href="https://github.com/kubernetes-csi/external-provisioner">external provisioner</a>中的ProvisionController负责根据watch到的PVC事件来决定要不要为它provision volume并创建PV。</p>
+<figure>
+    <img src="/VolumeBindingMode/provisioner-1.png" width="1000px"/> 
+</figure>
+
+<p>在<code>shouldProvision</code>中，首先判断<code>volume.kubernetes.io/storage-provisioner</code> annotation设置的provisioner name是不是自己；如果是<code>WaitForFirstConsumer</code>的PVC，还必须要求<code>volume.kubernetes.io/selected-node</code>这个annotation存在，才能进行provision。</p>
+<p>注释中还提到，provisioner会通过remove <code>volume.kubernetes.io/selected-node</code> 这个annotation来触发调度器来进行reschedule。因为有的时候在指定节点上进行dynamic provision时，还可能因为资源等问题而失败，这在调度阶段并不能感知，所以就有重调度的需求。</p>
+<figure>
+    <img src="/VolumeBindingMode/provisioner-2.png" width="1000px"/> 
+</figure>
+
+]]></content>
+		</item>
 		
 		<item>
 			<title>WSL: VPN的网络问题</title>
