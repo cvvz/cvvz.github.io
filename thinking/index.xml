@@ -1,21 +1,26 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Thinkings on Vic&#39;s Blog</title>
-    <link>https://cvvz.github.io/thinking/</link>
-    <description>Recent content in Thinkings on Vic&#39;s Blog</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>zh-hans</language>
-    <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Fri, 07 Oct 2022 21:47:48 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/thinking/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>2022 10 07</title>
-      <link>https://cvvz.github.io/thinking/2022-10-07/</link>
-      <pubDate>Fri, 07 Oct 2022 21:47:48 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/thinking/2022-10-07/</guid>
-      <description></description>
-    </item>
-    
-  </channel>
+	<channel>
+		<title>Thinkings on cvvz&#39;s Blog</title>
+		<link>https://cvvz.github.io/thinking/</link>
+		<description>Recent content in Thinkings on cvvz&#39;s Blog</description>
+		<generator>Hugo -- gohugo.io</generator>
+		<language>zh-hans</language>
+		<copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
+		<lastBuildDate>Sun, 16 Oct 2022 23:07:37 +0800</lastBuildDate>
+		<atom:link href="https://cvvz.github.io/thinking/index.xml" rel="self" type="application/rss+xml" />
+		
+		<item>
+			<title>技术和知识</title>
+			<link>https://cvvz.github.io/thinking/%E6%8A%80%E6%9C%AF%E5%92%8C%E7%9F%A5%E8%AF%86/</link>
+			<pubDate>Sun, 16 Oct 2022 23:07:37 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/thinking/%E6%8A%80%E6%9C%AF%E5%92%8C%E7%9F%A5%E8%AF%86/</guid>
+			<description>我所读的所有书都在强调技能比知识重要，经验主义比理论更正确。 我也把博客的子标题改成了“记录技能，而不是知识”来提醒自己。但是我在想，到底什么</description>
+			<content type="html"><![CDATA[<p>我所读的所有书都在强调技能比知识重要，经验主义比理论更正确。</p>
+<p>我也把博客的子标题改成了“记录技能，而不是知识”来提醒自己。但是我在想，到底什么时候我是在记录技能，什么时候是在记录知识呢？此外，我总觉得有很多技术上的东西想写，但是又觉得太耗时间，怎么解决这个问题？</p>
+<p>我自己想到的答案是：对于第一个问题，能很快写出来的文章是在记录技能，写得很慢的，需要经常停顿的文章是在记录知识。顺理成章的，对于第二个问题，解决办法是如果我确信我能很快（流畅地）写完一篇技术文章，那我就写，否则就不要浪费时间。</p>
+]]></content>
+		</item>
+		
+	</channel>
 </rss>

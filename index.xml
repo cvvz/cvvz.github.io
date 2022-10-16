@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Sun, 16 Oct 2022 21:02:59 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 16 Oct 2022 23:07:37 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>技术和知识</title>
+      <link>https://cvvz.github.io/thinking/%E6%8A%80%E6%9C%AF%E5%92%8C%E7%9F%A5%E8%AF%86/</link>
+      <pubDate>Sun, 16 Oct 2022 23:07:37 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/thinking/%E6%8A%80%E6%9C%AF%E5%92%8C%E7%9F%A5%E8%AF%86/</guid>
+      <description>我所读的所有书都在强调技能比知识重要，经验主义比理论更正确。 我也把博客的子标题改成了“记录技能，而不是知识”来提醒自己。但是我在想，到底什么</description>
+    </item>
+    
     <item>
       <title>VolumeBindingMode</title>
       <link>https://cvvz.github.io/post/volumebindingmode/</link>
@@ -177,15 +186,6 @@
       
       <guid>https://cvvz.github.io/read/learn-more-study-less/</guid>
       <description>这本书介绍了整体性学习法的概念和实践技巧。学习是建立联系而不是整理盒子——可能对于很多人来说是显而易见的，但是对我而言这句话简直是醍醐灌顶。</description>
-    </item>
-    
-    <item>
-      <title>okr工作法</title>
-      <link>https://cvvz.github.io/read/okr/</link>
-      <pubDate>Wed, 15 Sep 2021 19:58:55 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/read/okr/</guid>
-      <description>OKR工作法最重要的三点：专注在最核心的目标上、任务拆解具体可实施、持续追踪和复盘。对我个人而言，第一重要的就是对目标的专注，不分心。</description>
     </item>
     
   </channel>
