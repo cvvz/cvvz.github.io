@@ -9,8 +9,8 @@
 <meta itemprop="name" content="WSL: VPN的网络问题">
 <meta itemprop="description" content="最近由于工作原因，不得不将工作机切换到Windows系统，准备装个WSL作为overlay的工作环境。安装、配置都没什么问题，但是发现主机接">
 <meta itemprop="datePublished" content="2022-08-22T09:23:12+08:00" />
-<meta itemprop="dateModified" content="2022-08-22T15:11:50+08:00" />
-<meta itemprop="wordCount" content="1988">
+<meta itemprop="dateModified" content="2022-10-17T09:54:22+08:00" />
+<meta itemprop="wordCount" content="2068">
 
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/wsl-vpn-issue/" />
 <meta property="article:published_time" content="2022-08-22T09:23:12+08:00" />
-<meta property="article:modified_time" content="2022-08-22T15:11:50+08:00" />
+<meta property="article:modified_time" content="2022-10-17T09:54:22+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="WSL: VPN的网络问题"/>
 <meta name="twitter:description" content="最近由于工作原因，不得不将工作机切换到Windows系统，准备装个WSL作为overlay的工作环境。安装、配置都没什么问题，但是发现主机接"/>
@@ -76,26 +76,31 @@
 			</header>
 			<div class="content">
 				<p>最近由于工作原因，不得不将工作机切换到Windows系统，准备装个WSL作为overlay的工作环境。安装、配置都没什么问题，但是发现主机接了VPN以后，虚拟机没法科学上网了。利用周末时间折腾了一下，在这里记录一下调查和解决问题的过程。</p>
-<h2 id="环境信息">环境信息<a href="#环境信息" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<h2 id="基本信息">基本信息<a href="#基本信息" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>主机：Windows10, OS build: 19044.1889</p>
-<p>虚拟机：Ubuntu 20.04</p>
-<p>WSL有1和2两个版本，这两个版本的区别是wsl1以桥接方式加入主机网络，wsl2则有自己的虚拟以太网卡和ip地址，通过NAT的方式访问Internet。主机VPN导致的网络问题在wsl1和wsl2上都存在，但是问题原因不一样，这里分开讨论。</p>
+<p>wsl：Ubuntu 20.04</p>
+<p>WSL有1和2两个版本，这两个版本的<a href="https://learn.microsoft.com/en-us/windows/wsl/compare-versions#:~:text=WSL%202%20is%20running,will%20change%20on%20restart.">区别</a>是wsl1以桥接方式加入主机网络，类似于docker的host网络模式，和宿主机共用同一个network namespace；wsl2则有独立的虚拟以太网卡和ip地址，通过NAT的方式访问Internet。主机VPN导致的网络问题在wsl1和wsl2上都存在，但是问题原因不一样，这里分开讨论。</p>
 <h2 id="wsl1">WSL1<a href="#wsl1" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<h3 id="整体网络环境">整体网络环境<a href="#整体网络环境" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<figure>
+    <img src="/wsl-vpn/wsl1-network.drawio.svg" width="700px"/> 
+</figure>
+
 <h3 id="主机环境">主机环境<a href="#主机环境" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p><strong>网络设备</strong></p>
 <figure>
     <img src="/wsl-vpn/wsl1-host-devices.png" width="1000px"/> 
 </figure>
 
-<p>图中Ethernet是我的物理网卡（192.168.31.8），连接小米路由器（192.168.31.1），MSFTVPN是VPN的虚拟出来的一块虚拟网卡（100.64.16.6）。</p>
+<p>图中Ethernet是我的物理网卡（192.168.31.8），连接小米路由器（192.168.31.1），MSFTVPN是VP虚拟出来的一块虚拟网卡（100.64.16.6）。</p>
 <p><strong>路由表</strong></p>
 <figure>
     <img src="/wsl-vpn/wsl1-host-route.png" width="700px"/> 
 </figure>
 
 <p>值得注意的是路由表开头有两条默认路由规则，内核会选择metric较小的那个作为高优先级的网络接口。(数据流和metric的关系就好像电流和电阻的关系:) )这说明主机流量会强制通过VPN虚拟网卡，无论是访问墙内还是墙外网站。这一点在<a href="https://docs.microsoft.com/en-us/windows/security/identity-protection/vpn/vpn-routing#force-tunnel-configuration">官方文档</a>中有解释。</p>
-<h3 id="虚拟机环境">虚拟机环境<a href="#虚拟机环境" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
-<p>在虚拟机内看到的网络设备和路由表和主机几乎相同。说明桥接模式下，两者共处在同一个网络层下。</p>
+<h3 id="wsl环境">wsl环境<a href="#wsl环境" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>在wsl内看到的网络设备和路由表和主机几乎相同。说明wsl1和windows宿主机两者共处在同一个network namespace中。</p>
 <figure>
     <img src="/wsl-vpn/wsl1-vm-devices.png" width="700px"/> 
 </figure>
@@ -128,7 +133,7 @@
     <img src="/wsl-vpn/data-capture-vm.png" width="1000px"/> 
 </figure>
 </p>
-<p>后来又想能不能直接抓VPN的这块虚拟网卡呢，这样不就拿到明文数据了吗？结果发现windows上wireshark看不到这块设备，Ubuntu里系统调用支持不全，抓包失败。。</p>
+<p>后来又想能不能直接抓VPN的这块虚拟网卡呢，这样不就拿到明文数据了吗？结果发现windows上wireshark看不到这块设备，而wsl1里系统调用支持不全，抓包失败。。</p>
 <p>但是找到了正确的方向解决起来就很快了，在网上查找VPN域名解析相关的内容时找到了这篇<a href="https://docs.microsoft.com/en-us/windows/security/identity-protection/vpn/vpn-name-resolution">文档</a>，介绍了Windows VPN进行域名解析时，会先去查询<a href="https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/ee649207(v=ws.10)">NRPT</a>表，我在主机上找到了这张表，其中定义了DNS Server：</p>
 <figure>
     <img src="/wsl-vpn/nrpt.png" width="800px"/> 
@@ -137,18 +142,23 @@
 <p>手动修改虚拟机DNS配置文件，问题解决。</p>
 <h2 id="wsl2">WSL2<a href="#wsl2" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>WSL1升级到WSL2之后，这个网络问题仍然存在，但是原因不同。fyi，这个问题我还没找到根因，暂时还是继续用WSL1。。</p>
+<h3 id="整体网络环境-1">整体网络环境<a href="#整体网络环境-1" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<figure>
+    <img src="/wsl-vpn/wsl2-network.drawio.svg" width="700px"/> 
+</figure>
+
 <h3 id="主机环境-1">主机环境<a href="#主机环境-1" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
-<p>WSL2中的虚拟机和主机不在同一个网段，虚拟机通过NAT，转换为主机的ip访问外网（使用VPN时，则是转换为VPN的client ip访问VPN server再访问外网，当然实际流量也是搭载在真实物理网络之上）。升级WSL2后，会在主机上多创建一块虚拟网卡172.20.176.1：</p>
+<p>WSL2中的虚拟机和主机不在同一个网段，虚拟机通过NAT，转换为主机的ip访问外网（使用VPN时，则是转换为VPN的client ip访问VPN server再访问外网，当然实际流量也是搭载在真实物理网络之上）。升级WSL2后，在主机上出现了一块名为WSL的虚拟网卡172.20.176.1：</p>
 <figure>
     <img src="/wsl-vpn/wsl2-host-devices.png" width="1000px"/> 
 </figure>
 
-<h3 id="虚拟机环境-1">虚拟机环境<a href="#虚拟机环境-1" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<h3 id="wsl环境-1">wsl环境<a href="#wsl环境-1" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <figure>
     <img src="/wsl-vpn/wsl2-vm-devices.png" width="900px"/> 
 </figure>
 
-<p>可以看到，这时虚拟机有自己的网络设备和路由规则。不再像桥接模式那样与宿主机共用网络设备和路由表。在虚拟机中有一块网卡eth0，ip地址为172.20.179.153/20，默认路由通过这个网卡发到宿主机上的虚拟网卡172.20.176.1。</p>
+<p>可以看到，wsl2有自己的网络设备和路由规则。不再像wsl1那样与宿主机共用网络设备和路由表。在虚拟机中有一块网卡eth0，ip地址为172.20.179.153/20，默认路由通过这个网卡发到宿主机上的虚拟网卡172.20.176.1。</p>
 <h3 id="问题排查过程">问题排查过程<a href="#问题排查过程" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p>首先dns解析是没有问题的，ping外网也没有问题，说明整个网络链路是没有问题的。</p>
 <p>那么先看看curl命令具体卡在哪一步：</p>
@@ -173,26 +183,28 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/network">network</a></span><span class="tag"><a href="https://cvvz.github.io/tags/%E8%BF%90%E7%BB%B4">运维</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1988 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/8d6d1c7e298ac318627128d8a204aa52bb7ca7ad" target="_blank" rel="noopener">8d6d1c7</a> @ 2022-08-22</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2068 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/39b9d2cec6f1a05a25f26788f7279bead592bd38" target="_blank" rel="noopener">39b9d2c</a> @ 2022-10-17</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">
 			<div class="toc-title">目录</div>
 			<nav id="TableOfContents">
   <ul>
-    <li><a href="#环境信息">环境信息</a></li>
+    <li><a href="#基本信息">基本信息</a></li>
     <li><a href="#wsl1">WSL1</a>
       <ul>
+        <li><a href="#整体网络环境">整体网络环境</a></li>
         <li><a href="#主机环境">主机环境</a></li>
-        <li><a href="#虚拟机环境">虚拟机环境</a></li>
+        <li><a href="#wsl环境">wsl环境</a></li>
         <li><a href="#问题和排查过程">问题和排查过程</a></li>
       </ul>
     </li>
     <li><a href="#wsl2">WSL2</a>
       <ul>
+        <li><a href="#整体网络环境-1">整体网络环境</a></li>
         <li><a href="#主机环境-1">主机环境</a></li>
-        <li><a href="#虚拟机环境-1">虚拟机环境</a></li>
+        <li><a href="#wsl环境-1">wsl环境</a></li>
         <li><a href="#问题排查过程">问题排查过程</a></li>
       </ul>
     </li>
