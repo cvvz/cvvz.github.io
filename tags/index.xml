@@ -7,7 +7,25 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Sun, 16 Oct 2022 21:02:59 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 16 Oct 2022 22:58:42 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Linux</title>
+      <link>https://cvvz.github.io/tags/linux/</link>
+      <pubDate>Sun, 16 Oct 2022 22:58:42 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/tags/linux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>存储</title>
+      <link>https://cvvz.github.io/tags/%E5%AD%98%E5%82%A8/</link>
+      <pubDate>Sun, 16 Oct 2022 22:58:42 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/tags/%E5%AD%98%E5%82%A8/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>csi</title>
       <link>https://cvvz.github.io/tags/csi/</link>
@@ -72,15 +90,6 @@
     </item>
     
     <item>
-      <title>storage</title>
-      <link>https://cvvz.github.io/tags/storage/</link>
-      <pubDate>Sun, 25 Jul 2021 08:58:26 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/tags/storage/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>coding</title>
       <link>https://cvvz.github.io/tags/coding/</link>
       <pubDate>Sun, 18 Jul 2021 21:14:55 +0800</pubDate>
@@ -95,15 +104,6 @@
       <pubDate>Fri, 23 Apr 2021 16:52:20 +0800</pubDate>
       
       <guid>https://cvvz.github.io/tags/%E5%AE%B9%E5%99%A8/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Linux</title>
-      <link>https://cvvz.github.io/tags/linux/</link>
-      <pubDate>Wed, 30 Dec 2020 15:42:01 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/tags/linux/</guid>
       <description></description>
     </item>
     

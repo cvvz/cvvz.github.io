@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Wed, 30 Dec 2020 15:42:01 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 16 Oct 2022 22:58:42 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>通过read-ahead优化NFS性能</title>
+      <link>https://cvvz.github.io/post/nfs-read-ahead/</link>
+      <pubDate>Sun, 16 Oct 2022 22:58:42 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/nfs-read-ahead/</guid>
+      <description>问题 agent node操作系统版本Ubuntu 18.04，客户使用blob csi driver，使用NFS协议进行挂载，对一个25GB的文件执行sha25</description>
+    </item>
+    
     <item>
       <title>kubernetes网络之service</title>
       <link>https://cvvz.github.io/post/k8s-network-service/</link>

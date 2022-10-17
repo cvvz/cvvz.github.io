@@ -18,6 +18,15 @@
     </item>
     
     <item>
+      <title>通过read-ahead优化NFS性能</title>
+      <link>https://cvvz.github.io/post/nfs-read-ahead/</link>
+      <pubDate>Sun, 16 Oct 2022 22:58:42 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/nfs-read-ahead/</guid>
+      <description>问题 agent node操作系统版本Ubuntu 18.04，客户使用blob csi driver，使用NFS协议进行挂载，对一个25GB的文件执行sha25</description>
+    </item>
+    
+    <item>
       <title>VolumeBindingMode</title>
       <link>https://cvvz.github.io/post/volumebindingmode/</link>
       <pubDate>Sun, 16 Oct 2022 21:02:59 +0800</pubDate>
@@ -177,15 +186,6 @@
       
       <guid>https://cvvz.github.io/post/controller-reconcile/</guid>
       <description>问题 怎么让controller每隔1分钟进行一次reconcile，而不需要借助任何外部事件触发？ 虽然解决的方法看似很简单，但是知其然还要知</description>
-    </item>
-    
-    <item>
-      <title>如何高效学习</title>
-      <link>https://cvvz.github.io/read/learn-more-study-less/</link>
-      <pubDate>Sun, 10 Oct 2021 23:19:02 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/read/learn-more-study-less/</guid>
-      <description>这本书介绍了整体性学习法的概念和实践技巧。学习是建立联系而不是整理盒子——可能对于很多人来说是显而易见的，但是对我而言这句话简直是醍醐灌顶。</description>
     </item>
     
   </channel>
