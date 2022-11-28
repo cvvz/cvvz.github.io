@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Sun, 16 Oct 2022 23:07:37 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 28 Nov 2022 17:01:03 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>生存智慧</title>
+      <link>https://cvvz.github.io/thinking/nosense/</link>
+      <pubDate>Mon, 28 Nov 2022 17:01:03 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/thinking/nosense/</guid>
+      <description>最近在跟开发商维权，我又想起来罗永浩讲的这个故事： 过去，他住的新小区冬天取暖达不到规定温度，他就和一些小区论坛的刺儿头一起天天去折磨物业和开</description>
+    </item>
+    
     <item>
       <title>技术和知识</title>
       <link>https://cvvz.github.io/thinking/skill-and-knowledge/</link>
@@ -177,15 +186,6 @@
       
       <guid>https://cvvz.github.io/post/atomic-in-different-context/</guid>
       <description>问这个问题的起因是我在进行code review时，对一个读map前加读锁的代码留下了如下comment： 单独给一个读操作加锁没有必要。 但随后</description>
-    </item>
-    
-    <item>
-      <title>怎么让controller周期性的reconcile</title>
-      <link>https://cvvz.github.io/post/controller-reconcile/</link>
-      <pubDate>Sat, 20 Nov 2021 14:17:23 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/controller-reconcile/</guid>
-      <description>问题 怎么让controller每隔1分钟进行一次reconcile，而不需要借助任何外部事件触发？ 虽然解决的方法看似很简单，但是知其然还要知</description>
     </item>
     
   </channel>
