@@ -9,8 +9,8 @@
 <meta itemprop="name" content="WSL: VPN的网络问题">
 <meta itemprop="description" content="最近由于工作原因，不得不将工作机切换到Windows系统，准备装个WSL作为overlay的工作环境。安装、配置都没什么问题，但是发现主机接">
 <meta itemprop="datePublished" content="2022-08-22T09:23:12+08:00" />
-<meta itemprop="dateModified" content="2022-12-24T09:15:48+08:00" />
-<meta itemprop="wordCount" content="2179">
+<meta itemprop="dateModified" content="2022-12-24T12:38:43+08:00" />
+<meta itemprop="wordCount" content="2178">
 
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/wsl-vpn-issue/" />
 <meta property="article:published_time" content="2022-08-22T09:23:12+08:00" />
-<meta property="article:modified_time" content="2022-12-24T09:15:48+08:00" />
+<meta property="article:modified_time" content="2022-12-24T12:38:43+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="WSL: VPN的网络问题"/>
 <meta name="twitter:description" content="最近由于工作原因，不得不将工作机切换到Windows系统，准备装个WSL作为overlay的工作环境。安装、配置都没什么问题，但是发现主机接"/>
@@ -177,7 +177,7 @@
 <p>这个问题我最终没有找到根因，也还没有解决。github上有类似的<a href="https://github.com/microsoft/WSL/issues/5068">issue</a>，但是这里提到的workaround的方法对我都不起作用。</p>
 <p>最后如果继续排查这个问题，我觉得需要借助一些内核工具，沿着数据返回的链路依次调查：宿主机物理网卡-&gt;宿主机内核协议栈-&gt;解密数据-&gt;VPN虚拟网卡-&gt;宿主机内核协议栈-&gt;DNAT并路由-&gt;wsl的虚拟网卡-&gt;进入linux内核协议栈。</p>
 <hr>
-<p>最近在查<code>apiserver TLS handshake</code>的问题的时候，找到了这个问题的<a href="https://stackoverflow.com/a/71723695">解决办法</a>，就是<strong>把WLS2的eth0的MTU调整为和VPN虚拟网卡的MTU一致</strong>，这样数据帧才能正确的encode/decode，比如：<code>sudo ip link set dev eth0 mtu 1350</code>。这个方法在这个<a href="https://github.com/microsoft/WSL/issues/4698#issuecomment-628682785">issue</a>里也有提到。</p>
+<p>最近在查<code>apiserver TLS handshake timeout</code>的问题的时候，找到了这个问题的<a href="https://stackoverflow.com/a/71723695">解决办法</a>，就是<strong>把WLS2的eth0的MTU调整为和VPN虚拟网卡的MTU一致</strong>，这样数据帧才能正确的encode/decode，比如：<code>sudo ip link set dev eth0 mtu 1350</code>。这个方法在这个<a href="https://github.com/microsoft/WSL/issues/4698#issuecomment-628682785">issue</a>里也有提到。</p>
 
 			</div>
 			<hr class="post-end">
@@ -185,8 +185,8 @@
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.github.io/tags/network">network</a></span><span class="tag"><a href="https://cvvz.github.io/tags/%E8%BF%90%E7%BB%B4">运维</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2179 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/07c19dae6dd654125154392c69ac42cc25b2a26a" target="_blank" rel="noopener">07c19da</a> @ 2022-12-24</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2178 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/42414ecc7aa056080090de88abe64a63039960ea" target="_blank" rel="noopener">42414ec</a> @ 2022-12-24</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">
