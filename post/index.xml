@@ -274,9 +274,11 @@
 </figure>
 
 <p>物理机上抓包只能看到一堆加密后的数据包，没有任何有帮助的信息。</p>
-<p>后来又进一步发现curl大部分https站点有问题，有小部分是没有问题的。但是这也没有给我带来什么实质性的启发。</p>
-<p>这个问题我最终没有找到根因。社区里相同的<a href="https://github.com/microsoft/WSL/issues/5068">issue</a>长达两年了一直在讨论但是一直没有等到ms官方的回应或者修复。。。有一些民间的workaroud: <a href="https://github.com/sakai135/wsl-vpnkit">wsl-vpnkit</a>, <a href="https://github.com/microsoft/WSL/issues/4150">bridge workaroud</a>，还没有尝试过。</p>
-<p>最后如果继续排查这个问题，估计需要借助一些内核工具，沿着数据返回的链路依次调查：宿主机物理网卡-&gt;宿主机内核协议栈-&gt;解密数据-&gt;VPN虚拟网卡-&gt;宿主机内核协议栈-&gt;DNAT并路由-&gt;wsl的虚拟网卡-&gt;进入linux内核协议栈。</p>
+<p>后来又进一步发现curl大部分https站点有问题，有一些是没有问题的。但是这也没有给我带来什么实质性的启发。</p>
+<p>这个问题我最终没有找到根因，也还没有解决。github上有类似的<a href="https://github.com/microsoft/WSL/issues/5068">issue</a>，但是这里提到的workaround的方法对我都不起作用。</p>
+<p>最后如果继续排查这个问题，我觉得需要借助一些内核工具，沿着数据返回的链路依次调查：宿主机物理网卡-&gt;宿主机内核协议栈-&gt;解密数据-&gt;VPN虚拟网卡-&gt;宿主机内核协议栈-&gt;DNAT并路由-&gt;wsl的虚拟网卡-&gt;进入linux内核协议栈。</p>
+<hr>
+<p>最近在查<code>apiserver TLS handshake</code>的问题的时候，找到了这个问题的<a href="https://stackoverflow.com/a/71723695">解决办法</a>，就是<strong>把WLS2的eth0的MTU调整为和VPN虚拟网卡的MTU一致</strong>，这样数据帧才能正确的encode/decode，比如：<code>sudo ip link set dev eth0 mtu 1350</code>。这个方法在这个<a href="https://github.com/microsoft/WSL/issues/4698#issuecomment-628682785">issue</a>里也有提到。</p>
 ]]></content>
 		</item>
 		
