@@ -9,8 +9,8 @@
 <meta itemprop="name" content="Ginkgo源码">
 <meta itemprop="description" content="ginkgo cmd 执行ginkgo cmd默认运行的是ginkgo run 入口函数 1func (r *SpecRunner) RunSpecs(args []string, additionalArgs []string) { 主要做两件事，编译和运行suite 编译 使用 go test -c -o 得到.test">
 <meta itemprop="datePublished" content="2023-04-05T08:56:03+08:00" />
-<meta itemprop="dateModified" content="2023-04-05T09:03:25+08:00" />
-<meta itemprop="wordCount" content="1697">
+<meta itemprop="dateModified" content="2023-04-05T09:15:08+08:00" />
+<meta itemprop="wordCount" content="1888">
 
 
 
@@ -20,7 +20,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://cvvz.github.io/post/ginkgo/" />
 <meta property="article:published_time" content="2023-04-05T08:56:03+08:00" />
-<meta property="article:modified_time" content="2023-04-05T09:03:25+08:00" />
+<meta property="article:modified_time" content="2023-04-05T09:15:08+08:00" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Ginkgo源码"/>
 <meta name="twitter:description" content="ginkgo cmd 执行ginkgo cmd默认运行的是ginkgo run 入口函数 1func (r *SpecRunner) RunSpecs(args []string, additionalArgs []string) { 主要做两件事，编译和运行suite 编译 使用 go test -c -o 得到.test"/>
@@ -234,7 +234,15 @@
     <img src="/ginkgo/Untitled%204.png" width="800px"/> 
 </figure>
 
-<p>如果可以那么就会给这个interrupt channel发送。如果是Abort的channel，那么如果当前处于cleanup，直接忽略。</p>
+<p>如果可以那么就会触发这个interrupt channel close。</p>
+<blockquote>
+<p>这个地方的实现是通过轮询来实现的，状态更新会有500ms的延迟。存在两个问题：</p>
+<ol>
+<li>在运行Serial的Node或者cleanup Node时，会先检查一下状态，再决定是否运行。但是可能当时server端已经设置为需要abort了，可是还需要等500ms才能拿到实际状态。这个时候会去运行Node，但是实际上是应该skip的。</li>
+<li>cleanup Node应该直接忽略Abort的channel。</li>
+</ol>
+<p>具体可以参考：<a href="https://github.com/onsi/ginkgo/pull/1178">https://github.com/onsi/ginkgo/pull/1178</a></p>
+</blockquote>
 </li>
 <li>
 <p>收到SIGINT和SIGTERM信号</p>
@@ -255,8 +263,8 @@
 			</div>
 			<hr class="post-end">
 			<footer class="post-info">
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1697 字</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/eb737a982a5f2deeb62e9ac3f383515249036c35" target="_blank" rel="noopener">eb737a9</a> @ 2023-04-05</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1888 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/52b77c96dd66e7966b6dae5cc72db862cb704040" target="_blank" rel="noopener">52b77c9</a> @ 2023-04-05</p>
 			</footer>
 		</article>
 		<aside id="toc" class="show-toc">
