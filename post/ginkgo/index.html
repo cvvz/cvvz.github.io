@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="google-site-verification" content="Wp3QtEkIlF0ZvtKx90lPmoXyH39d-pmBhiTyTbba9L4" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta itemprop="name" content="Ginkgo源码">
+<meta itemprop="description" content="ginkgo cmd 执行ginkgo cmd默认运行的是ginkgo run 入口函数 1func (r *SpecRunner) RunSpecs(args []string, additionalArgs []string) { 主要做两件事，编译和运行suite 编译 使用 go test -c -o 得到.test">
+<meta itemprop="datePublished" content="2023-04-05T08:56:03+08:00" />
+<meta itemprop="dateModified" content="2023-04-05T09:03:25+08:00" />
+<meta itemprop="wordCount" content="1697">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta property="og:title" content="Ginkgo源码" />
+<meta property="og:description" content="ginkgo cmd 执行ginkgo cmd默认运行的是ginkgo run 入口函数 1func (r *SpecRunner) RunSpecs(args []string, additionalArgs []string) { 主要做两件事，编译和运行suite 编译 使用 go test -c -o 得到.test" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://cvvz.github.io/post/ginkgo/" />
+<meta property="article:published_time" content="2023-04-05T08:56:03+08:00" />
+<meta property="article:modified_time" content="2023-04-05T09:03:25+08:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Ginkgo源码"/>
+<meta name="twitter:description" content="ginkgo cmd 执行ginkgo cmd默认运行的是ginkgo run 入口函数 1func (r *SpecRunner) RunSpecs(args []string, additionalArgs []string) { 主要做两件事，编译和运行suite 编译 使用 go test -c -o 得到.test"/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>Ginkgo源码</title>
+	<link rel="stylesheet" href="https://cvvz.github.io/css/style.min.7a1ec200e9f3394f73c6eda58011808507a3b24318de81e1e343f22a2470caef.css">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp faster">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://cvvz.github.io">cvvz&#39;s Blog</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					<a href="https://cvvz.github.io/post/">技术</a>
+					<a href="https://cvvz.github.io/read/">读书</a>
+					<a href="https://cvvz.github.io/thinking/">想法</a>
+					<a href="https://cvvz.github.io/running/">跑步</a>
+					<a href="https://cvvz.github.io/aboutme/resume.pdf">关于</a>
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<button id="toc-btn" class="hdr-btn desktop-only-ib" title="目录"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-list"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3" y2="6"></line><line x1="3" y1="12" x2="3" y2="12"></line><line x1="3" y1="18" x2="3" y2="18"></line></svg></button><span class="hdr-social hide-in-mobile"><a href="https://github.com/cvvz" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="mailto:ftdchenwz@gmail.com" target="_blank" rel="noopener me" title="Email"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a></span><button id="menu-btn" class="hdr-btn" title="菜单"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://cvvz.github.io/post/">技术</a></li>
+			<li><a href="https://cvvz.github.io/read/">读书</a></li>
+			<li><a href="https://cvvz.github.io/thinking/">想法</a></li>
+			<li><a href="https://cvvz.github.io/running/">跑步</a></li>
+			<li><a href="https://cvvz.github.io/aboutme/resume.pdf">关于</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<h1>Ginkgo源码</h1>
+			</header>
+			<div class="content">
+				<h1 id="ginkgo-cmd">ginkgo cmd<a href="#ginkgo-cmd" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h1>
+<p>执行ginkgo cmd默认运行的是ginkgo run</p>
+<figure>
+    <img src="/ginkgo/Untitled.png" width="800px"/> 
+</figure>
+
+<p>入口函数</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln">1</span><span class="kd">func</span> <span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">SpecRunner</span><span class="p">)</span> <span class="nf">RunSpecs</span><span class="p">(</span><span class="nx">args</span> <span class="p">[]</span><span class="kt">string</span><span class="p">,</span> <span class="nx">additionalArgs</span> <span class="p">[]</span><span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+</code></pre></div><p>主要做两件事，编译和运行suite</p>
+<h2 id="编译">编译<a href="#编译" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<figure>
+    <img src="/ginkgo/Untitled%201.png" width="800px"/> 
+</figure>
+
+<p>使用 <code>go test -c -o</code> 得到<code>.test</code>可执行文件</p>
+<p>要理解怎么编译出.test文件的，就要理解ginkgo是怎么构造specs tree的</p>
+<h3 id="构造specs-tree">构造specs tree<a href="#构造specs-tree" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p><code>Describe</code>等是container Node，<code>BeforeXXX</code>和<code>AfterXXX</code>等是setup Node，<code>It</code>是subject Node。<code>Describe</code>通过<code>var _ = Describe</code>的方式实现在golang源文件顶层执行函数，这会使得在编译时最先执行Describe。</p>
+<p>他们底层都是通过<code>pushNode</code>，从外向内一层一层的push Node，然后在<code>RunSpecs</code>入口中的<code>BuildTree</code>构造出如下的specs tree数据结构：</p>
+<figure>
+    <img src="/ginkgo/image3.png" width="800px"/> 
+</figure>
+
+<h2 id="运行">运行<a href="#运行" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<h3 id="ginkgo">ginkgo<a href="#ginkgo" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>在SUITE_LOOP中循环运行每一个编译出来的<code>.test</code>：</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln">1</span><span class="nx">suites</span><span class="p">[</span><span class="nx">suiteIdx</span><span class="p">]</span> <span class="p">=</span> <span class="nx">internal</span><span class="p">.</span><span class="nf">RunCompiledSuite</span><span class="p">(</span><span class="nx">suites</span><span class="p">[</span><span class="nx">suiteIdx</span><span class="p">],</span> <span class="nx">r</span><span class="p">.</span><span class="nx">suiteConfig</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">reporterConfig</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">cliConfig</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">goFlagsConfig</span><span class="p">,</span> <span class="nx">additionalArgs</span><span class="p">)</span>
+</code></pre></div><p>每个suite都会编译成一个<code>.test</code>，如果有多个test suite，一个一个的运行</p>
+<p>如果以parallel的模式运行，则启动server</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln">1</span><span class="nx">server</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">parallel_support</span><span class="p">.</span><span class="nf">NewServer</span><span class="p">(</span><span class="nx">numProcs</span><span class="p">,</span> <span class="nx">reporters</span><span class="p">.</span><span class="nf">NewDefaultReporter</span><span class="p">(</span><span class="nx">reporterConfig</span><span class="p">,</span> <span class="nx">formatter</span><span class="p">.</span><span class="nx">ColorableStdOut</span><span class="p">))</span>
+</code></pre></div><p>生成flag并运行多个.test进程</p>
+<figure>
+    <img src="/ginkgo/Untitled%202.png" width="1000px"/> 
+</figure>
+
+<p>启动goroutine等待子进程退出并卡住等待结果</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln"> 1</span><span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+<span class="ln"> 2</span>	<span class="nx">cmd</span><span class="p">.</span><span class="nf">Wait</span><span class="p">()</span>
+<span class="ln"> 3</span>	<span class="nx">exitStatus</span> <span class="o">:=</span> <span class="nx">cmd</span><span class="p">.</span><span class="nx">ProcessState</span><span class="p">.</span><span class="nf">Sys</span><span class="p">().(</span><span class="nx">syscall</span><span class="p">.</span><span class="nx">WaitStatus</span><span class="p">).</span><span class="nf">ExitStatus</span><span class="p">()</span>
+<span class="ln"> 4</span>	<span class="nx">procResults</span> <span class="o">&lt;-</span> <span class="nx">procResult</span><span class="p">{</span>
+<span class="ln"> 5</span>		<span class="nx">passed</span><span class="p">:</span>               <span class="p">(</span><span class="nx">exitStatus</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="nx">exitStatus</span> <span class="o">==</span> <span class="nx">types</span><span class="p">.</span><span class="nx">GINKGO_FOCUS_EXIT_CODE</span><span class="p">),</span>
+<span class="ln"> 6</span>		<span class="nx">hasProgrammaticFocus</span><span class="p">:</span> <span class="nx">exitStatus</span> <span class="o">==</span> <span class="nx">types</span><span class="p">.</span><span class="nx">GINKGO_FOCUS_EXIT_CODE</span><span class="p">,</span>
+<span class="ln"> 7</span>	<span class="p">}</span>
+<span class="ln"> 8</span><span class="p">}()</span>
+<span class="ln"> 9</span>
+<span class="ln">10</span><span class="c1">// 然后卡住等待子进程结果
+</span><span class="ln">11</span><span class="c1"></span><span class="nx">passed</span> <span class="o">:=</span> <span class="kc">true</span>
+<span class="ln">12</span><span class="k">for</span> <span class="nx">proc</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">proc</span> <span class="o">&lt;=</span> <span class="nx">cliConfig</span><span class="p">.</span><span class="nf">ComputedProcs</span><span class="p">();</span> <span class="nx">proc</span><span class="o">++</span> <span class="p">{</span>
+<span class="ln">13</span>	<span class="nx">result</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">procResults</span>
+<span class="ln">14</span>	<span class="nx">passed</span> <span class="p">=</span> <span class="nx">passed</span> <span class="o">&amp;&amp;</span> <span class="nx">result</span><span class="p">.</span><span class="nx">passed</span>
+<span class="ln">15</span>	<span class="nx">suite</span><span class="p">.</span><span class="nx">HasProgrammaticFocus</span> <span class="p">=</span> <span class="nx">suite</span><span class="p">.</span><span class="nx">HasProgrammaticFocus</span> <span class="o">||</span> <span class="nx">result</span><span class="p">.</span><span class="nx">hasProgrammaticFocus</span>
+<span class="ln">16</span><span class="p">}</span>
+</code></pre></div><h3 id="test">.test<a href="#test" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>.test文件的入口：</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln">1</span><span class="kd">func</span> <span class="nf">TestE2E</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+<span class="ln">2</span>	<span class="nx">gomega</span><span class="p">.</span><span class="nf">RegisterFailHandler</span><span class="p">(</span><span class="nx">ginkgo</span><span class="p">.</span><span class="nx">Fail</span><span class="p">)</span>
+<span class="ln">3</span>	<span class="nx">ginkgo</span><span class="p">.</span><span class="nf">RunSpecs</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="s">&#34;Sample Suite&#34;</span><span class="p">)</span>
+<span class="ln">4</span><span class="p">}</span>
+</code></pre></div><p>如果运行在parallel模式，则启动client并连接server</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln">1</span><span class="nx">client</span> <span class="p">=</span> <span class="nx">parallel_support</span><span class="p">.</span><span class="nf">NewClient</span><span class="p">(</span><span class="nx">suiteConfig</span><span class="p">.</span><span class="nx">ParallelHost</span><span class="p">)</span>
+<span class="ln">2</span><span class="k">if</span> <span class="p">!</span><span class="nx">client</span><span class="p">.</span><span class="nf">Connect</span><span class="p">()</span> <span class="p">{</span>
+<span class="ln">3</span>	<span class="nx">client</span> <span class="p">=</span> <span class="kc">nil</span>
+<span class="ln">4</span>	<span class="nf">exitIfErr</span><span class="p">(</span><span class="nx">types</span><span class="p">.</span><span class="nx">GinkgoErrors</span><span class="p">.</span><span class="nf">UnreachableParallelHost</span><span class="p">(</span><span class="nx">suiteConfig</span><span class="p">.</span><span class="nx">ParallelHost</span><span class="p">))</span>
+<span class="ln">5</span><span class="p">}</span>
+</code></pre></div><p>Build specs tree</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln">1</span><span class="nx">err</span> <span class="o">:=</span> <span class="nx">global</span><span class="p">.</span><span class="nx">Suite</span><span class="p">.</span><span class="nf">BuildTree</span><span class="p">()</span>
+</code></pre></div><p>Run Suite</p>
+<ol>
+<li>
+<p>把specs随机打散分组</p>
+<blockquote>
+<p>ordered specs分在一组，普通的spec单独一个是一组，serial specs分为一组</p>
+</blockquote>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln">1</span><span class="nx">groupedSpecIndices</span><span class="p">,</span> <span class="nx">serialGroupedSpecIndices</span> <span class="o">:=</span> <span class="nf">OrderSpecs</span><span class="p">(</span><span class="nx">specs</span><span class="p">,</span> <span class="nx">suite</span><span class="p">.</span><span class="nx">config</span><span class="p">)</span>
+</code></pre></div></li>
+<li>
+<p>以group为单位runSpecs。具体下一步运行哪一组从server获得下标</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln">1</span><span class="nx">nextIndex</span> <span class="p">=</span> <span class="nx">suite</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nx">FetchNextCounter</span>
+</code></pre></div></li>
+<li>
+<p>如果是serial group，那么必须当前是#1 process，而且要等到其他process都退出。</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln">1</span><span class="k">if</span> <span class="nx">suite</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">ParallelProcess</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">serialGroupedSpecIndices</span><span class="p">)</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+<span class="ln">2</span>    <span class="nx">groupedSpecIndices</span><span class="p">,</span> <span class="nx">serialGroupedSpecIndices</span><span class="p">,</span> <span class="nx">nextIndex</span> <span class="p">=</span> <span class="nx">serialGroupedSpecIndices</span><span class="p">,</span> <span class="nx">GroupedSpecIndices</span><span class="p">{},</span> <span class="nf">MakeIncrementingIndexCounter</span><span class="p">()</span>
+<span class="ln">3</span>    <span class="nx">suite</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nf">BlockUntilNonprimaryProcsHaveFinished</span><span class="p">()</span>
+<span class="ln">4</span>    <span class="k">continue</span>
+<span class="ln">5</span><span class="p">}</span>
+</code></pre></div></li>
+<li>
+<p>开始Run group specs</p>
+<p>每一组里可能多个specs，一个spec一个spc的执行</p>
+<p>runSpec</p>
+<ol>
+<li>
+<p>判断interruptStatus，来决定要不要skip 这个spec</p>
+</li>
+<li>
+<p>根据attempt derocator的定义，尝试attempts次</p>
+</li>
+<li>
+<p>spec中的nodes分为两批执行，先把spec中的setup Node和subject Node（It）组成为一批nodes依次运行</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln">1</span><span class="nx">nodes</span> <span class="o">:=</span> <span class="nx">spec</span><span class="p">.</span><span class="nx">Nodes</span><span class="p">.</span><span class="nf">WithType</span><span class="p">(</span><span class="nx">types</span><span class="p">.</span><span class="nx">NodeTypeBeforeAll</span><span class="p">)</span>
+<span class="ln">2</span><span class="nx">nodes</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">nodes</span><span class="p">,</span> <span class="nx">spec</span><span class="p">.</span><span class="nx">Nodes</span><span class="p">.</span><span class="nf">WithType</span><span class="p">(</span><span class="nx">types</span><span class="p">.</span><span class="nx">NodeTypeBeforeEach</span><span class="p">)</span><span class="o">...</span><span class="p">).</span><span class="nf">SortedByAscendingNestingLevel</span><span class="p">()</span>
+<span class="ln">3</span><span class="nx">nodes</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">nodes</span><span class="p">,</span> <span class="nx">spec</span><span class="p">.</span><span class="nx">Nodes</span><span class="p">.</span><span class="nf">WithType</span><span class="p">(</span><span class="nx">types</span><span class="p">.</span><span class="nx">NodeTypeJustBeforeEach</span><span class="p">).</span><span class="nf">SortedByAscendingNestingLevel</span><span class="p">()</span><span class="o">...</span><span class="p">)</span>
+<span class="ln">4</span><span class="nx">nodes</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">nodes</span><span class="p">,</span> <span class="nx">spec</span><span class="p">.</span><span class="nx">Nodes</span><span class="p">.</span><span class="nf">FirstNodeWithType</span><span class="p">(</span><span class="nx">types</span><span class="p">.</span><span class="nx">NodeTypeIt</span><span class="p">))</span>
+</code></pre></div></li>
+<li>
+<p>再把cleanup Node组成一批Nodes依次运行。</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln">1</span><span class="nx">nodes</span> <span class="o">:=</span> <span class="nx">spec</span><span class="p">.</span><span class="nx">Nodes</span><span class="p">.</span><span class="nf">WithType</span><span class="p">(</span><span class="nx">types</span><span class="p">.</span><span class="nx">NodeTypeAfterEach</span><span class="p">)</span>
+<span class="ln">2</span><span class="nx">nodes</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">nodes</span><span class="p">,</span> <span class="nx">spec</span><span class="p">.</span><span class="nx">Nodes</span><span class="p">.</span><span class="nf">WithType</span><span class="p">(</span><span class="nx">types</span><span class="p">.</span><span class="nx">NodeTypeAfterAll</span><span class="p">)</span><span class="o">...</span><span class="p">).</span><span class="nf">SortedByDescendingNestingLevel</span><span class="p">()</span>
+<span class="ln">3</span><span class="nx">nodes</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">spec</span><span class="p">.</span><span class="nx">Nodes</span><span class="p">.</span><span class="nf">WithType</span><span class="p">(</span><span class="nx">types</span><span class="p">.</span><span class="nx">NodeTypeJustAfterEach</span><span class="p">).</span><span class="nf">SortedByDescendingNestingLevel</span><span class="p">(),</span> <span class="nx">nodes</span><span class="o">...</span><span class="p">)</span>
+</code></pre></div></li>
+<li>
+<p>nodes中的Node一个一个的执行，runNode</p>
+<p>runNode</p>
+<ol>
+<li>
+<p>判断interruptStatus，来决定Node要不要跳过，但是cleanup、report的Node必须要收到多次信号才会真正跳过。</p>
+</li>
+<li>
+<p>It中用户定义的closure在底层就是通过goroutine执行：</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln"> 1</span><span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+<span class="ln"> 2</span>    <span class="nx">finished</span> <span class="o">:=</span> <span class="kc">false</span>
+<span class="ln"> 3</span>    <span class="k">defer</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+<span class="ln"> 4</span>        <span class="k">if</span> <span class="nx">e</span> <span class="o">:=</span> <span class="nb">recover</span><span class="p">();</span> <span class="nx">e</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="o">||</span> <span class="p">!</span><span class="nx">finished</span> <span class="p">{</span>
+<span class="ln"> 5</span>            <span class="nx">suite</span><span class="p">.</span><span class="nx">failer</span><span class="p">.</span><span class="nf">Panic</span><span class="p">(</span><span class="nx">types</span><span class="p">.</span><span class="nf">NewCodeLocationWithStackTrace</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="nx">e</span><span class="p">)</span>
+<span class="ln"> 6</span>        <span class="p">}</span>
+<span class="ln"> 7</span>           
+<span class="ln"> 8</span>        <span class="nx">outcomeFromRun</span><span class="p">,</span> <span class="nx">failureFromRun</span> <span class="o">:=</span> <span class="nx">suite</span><span class="p">.</span><span class="nx">failer</span><span class="p">.</span><span class="nf">Drain</span><span class="p">()</span>
+<span class="ln"> 9</span>        <span class="nx">failureFromRun</span><span class="p">.</span><span class="nx">TimelineLocation</span> <span class="p">=</span> <span class="nx">suite</span><span class="p">.</span><span class="nf">generateTimelineLocation</span><span class="p">()</span>
+<span class="ln">10</span>        <span class="nx">outcomeC</span> <span class="o">&lt;-</span> <span class="nx">outcomeFromRun</span>
+<span class="ln">11</span>        <span class="nx">failureC</span> <span class="o">&lt;-</span> <span class="nx">failureFromRun</span>
+<span class="ln">12</span>    <span class="p">}()</span>
+<span class="ln">13</span>           
+<span class="ln">14</span>    <span class="c1">// It 中定义的closure
+</span><span class="ln">15</span><span class="c1"></span>    <span class="nx">node</span><span class="p">.</span><span class="nf">Body</span><span class="p">(</span><span class="nx">sc</span><span class="p">)</span>
+<span class="ln">16</span>    <span class="nx">finished</span> <span class="p">=</span> <span class="kc">true</span>
+<span class="ln">17</span><span class="p">}()</span>
+</code></pre></div></li>
+<li>
+<p>这个goroutine有几个退出条件：</p>
+<figure>
+    <img src="/ginkgo/Untitled%203.png" width="800px"/> 
+</figure>
+
+<p>超时和interrupt的情况下都会再等待gracePeriod，但是如果Node没定义context，则gracePeriod为0</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln">1</span><span class="k">if</span> <span class="p">!</span><span class="nx">node</span><span class="p">.</span><span class="nx">HasContext</span> <span class="p">{</span>
+<span class="ln">2</span>    <span class="nx">gracePeriod</span> <span class="p">=</span> <span class="mi">0</span>
+<span class="ln">3</span><span class="p">}</span>
+</code></pre></div><p>如果gracePeriod时间到了Node还没有执行完，那就leak Node，也就是leak goroutine，这可能会导致无法预测的行为。</p>
+<p><strong>interrupt机制：</strong></p>
+<p>这个channel是从interrupt handler复制过来的，有几种interrupt的情况</p>
+<ul>
+<li>
+<p>interrupt handler每隔500ms去服务端轮询是否可以Abort。</p>
+<p>什么时候可以Abort呢：如果运行在paralle模式，并且开启了fail-fast，这样有任何一个process失败，都会通知服务端现在可以开始Abort了</p>
+<figure>
+    <img src="/ginkgo/Untitled%204.png" width="800px"/> 
+</figure>
+
+<p>如果可以那么就会给这个interrupt channel发送。如果是Abort的channel，那么如果当前处于cleanup，直接忽略。</p>
+</li>
+<li>
+<p>收到SIGINT和SIGTERM信号</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln">1</span><span class="kd">func</span> <span class="nf">NewInterruptHandler</span><span class="p">(</span><span class="nx">client</span> <span class="nx">parallel_support</span><span class="p">.</span><span class="nx">Client</span><span class="p">,</span> <span class="nx">signals</span> <span class="o">...</span><span class="nx">os</span><span class="p">.</span><span class="nx">Signal</span><span class="p">)</span> <span class="o">*</span><span class="nx">InterruptHandler</span> <span class="p">{</span>
+<span class="ln">2</span>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">signals</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+<span class="ln">3</span>        <span class="nx">signals</span> <span class="p">=</span> <span class="p">[]</span><span class="nx">os</span><span class="p">.</span><span class="nx">Signal</span><span class="p">{</span><span class="nx">os</span><span class="p">.</span><span class="nx">Interrupt</span><span class="p">,</span> <span class="nx">syscall</span><span class="p">.</span><span class="nx">SIGTERM</span><span class="p">}</span>
+<span class="ln">4</span>    <span class="p">}</span>
+</code></pre></div></li>
+</ul>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<p>运行AfterSuiteCleanup Node</p>
+
+			</div>
+			<hr class="post-end">
+			<footer class="post-info">
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1697 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/eb737a982a5f2deeb62e9ac3f383515249036c35" target="_blank" rel="noopener">eb737a9</a> @ 2023-04-05</p>
+			</footer>
+		</article>
+		<aside id="toc" class="show-toc">
+			<div class="toc-title">目录</div>
+			<nav id="TableOfContents">
+  <ul>
+    <li><a href="#编译">编译</a>
+      <ul>
+        <li><a href="#构造specs-tree">构造specs tree</a></li>
+      </ul>
+    </li>
+    <li><a href="#运行">运行</a>
+      <ul>
+        <li><a href="#ginkgo">ginkgo</a></li>
+        <li><a href="#test">.test</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+		</aside>
+		<div class="post-nav thin">
+			<a class="prev-post" href="https://cvvz.github.io/post/nfs-read-ahead/">
+				<span class="post-nav-label">旧&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>通过read-ahead优化NFS性能</span>
+			</a>
+		</div>
+		<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+		<div id="gitalk-container" class="thin"></div>     
+		<script type="text/javascript">
+			var gitalk = new Gitalk({
+				clientID: '0f8bdcbe6b4973f9b206',
+				clientSecret: '4939e64d59c93fc5eb7eaf74469a746e4535700d',
+				repo: 'cvvz.github.io',
+				owner: 'cvvz',
+				admin: ['cvvz'],
+				id: location.pathname,      
+				distractionFreeMode: true 
+			});
+  			gitalk.render('gitalk-container');
+		</script>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2023 <a href="https://cvvz.github.io">陈维志</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://cvvz.github.io/post/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+	<script src="https://cvvz.github.io/js/main.min.784417f5847151f848c339cf0acb13a06cbb648b1483435a28ed4556c4ead69b.js"></script>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-M8Q3DKDEVL', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>
