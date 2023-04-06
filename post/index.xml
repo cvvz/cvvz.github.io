@@ -6,136 +6,8 @@
 		<generator>Hugo -- gohugo.io</generator>
 		<language>zh-hans</language>
 		<copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-		<lastBuildDate>Wed, 05 Apr 2023 09:26:59 +0800</lastBuildDate>
+		<lastBuildDate>Wed, 05 Apr 2023 08:56:03 +0800</lastBuildDate>
 		<atom:link href="https://cvvz.github.io/post/index.xml" rel="self" type="application/rss+xml" />
-		
-		<item>
-			<title>Prometheus试玩</title>
-			<link>https://cvvz.github.io/post/prometheus/</link>
-			<pubDate>Wed, 05 Apr 2023 09:26:59 +0800</pubDate>
-			
-			<guid>https://cvvz.github.io/post/prometheus/</guid>
-			<description>Mental Model Prometheus的配置文件中，scrape_config 部分定义的是job —— 也就是去哪个target instance scrape metrics —— 但是配置文件里不关心</description>
-			<content type="html"><![CDATA[<h2 id="mental-model">Mental Model</h2>
-<ol>
-<li>
-<p>Prometheus的<a href="https://prometheus.io/docs/prometheus/latest/configuration/configuration/">配置文件</a>中，<a href="https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config">scrape_config</a> 部分定义的是<a href="https://prometheus.io/docs/concepts/jobs_instances/#jobs-and-instances">job</a> —— 也就是去哪个target <a href="https://prometheus.io/docs/concepts/jobs_instances/#jobs-and-instances">instance</a> scrape metrics —— 但是<strong>配置文件里不关心也没法关心具体抓哪些指标</strong>。</p>
-</li>
-<li>
-<p>具体有哪些指标可以抓，也就是 <strong><a href="https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels">metrics name + label</a> 和 <a href="https://prometheus.io/docs/concepts/metric_types/">metrics type</a>，都在客户端源代码中定义</strong>。</p>
-</li>
-</ol>
-<blockquote>
-<p>如果configuration没有配置对，相当于找不到抓的地方。</p>
-<p>如果client代码不正确，相当于抓的地方对了，但是什么东西都抓不到。</p>
-</blockquote>
-<ol start="3">
-<li>抓到metrics以后，就可以定义rules —— 通过<a href="https://prometheus.io/docs/prometheus/latest/querying/basics/">promQL查询</a>，然后处理查询结果 —— <a href="https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/">alerting</a>或是<a href="https://prometheus.io/docs/prometheus/latest/configuration/recording_rules/">recording</a></li>
-</ol>
-<blockquote>
-<p>报警无法触发的原因有两种：</p>
-<ul>
-<li>client或configuration没写对</li>
-<li>promQL没写对，可以使用ut测试rules规则是否正确。</li>
-</ul>
-</blockquote>
-<h2 id="configuration">configuration</h2>
-<p>除了直接配置target instance之外，scrape_config还支持多种服务发现机制，<a href="https://prometheus.io/docs/prometheus/latest/configuration/configuration/#kubernetes_sd_config">kubernetes_sd_config</a>是k8s的服务发现配置</p>
-<p>服务发现机制会给metrics额外设置一些<code>__meta__</code>开头的label，可以通过<a href="https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config">relabel_config</a>来过滤出具体的instance，比如：</p>
-<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="ln"> 1</span><span class="nt">relabel_configs</span><span class="p">:</span><span class="w">
-</span><span class="ln"> 2</span><span class="w">  </span>- <span class="nt">target_label</span><span class="p">:</span><span class="w"> </span><span class="l">__address__</span><span class="w">
-</span><span class="ln"> 3</span><span class="w">    </span><span class="nt">replacement</span><span class="p">:</span><span class="w"> </span><span class="l">$(FQDN):443</span><span class="w">
-</span><span class="ln"> 4</span><span class="w">  </span>- <span class="nt">source_labels</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="l">__meta_kubernetes_namespace, __meta_kubernetes_pod_label_component,     __meta_kubernetes_pod_container_name]</span><span class="w">
-</span><span class="ln"> 5</span><span class="w">    </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l">keep</span><span class="w">
-</span><span class="ln"> 6</span><span class="w">    </span><span class="nt">regex</span><span class="p">:</span><span class="w"> </span><span class="l">kube-system;kube-proxy;kube-proxy</span><span class="w">
-</span><span class="ln"> 7</span><span class="w">  </span>- <span class="nt">source_labels</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="l">__meta_kubernetes_namespace, __meta_kubernetes_pod_name]</span><span class="w">
-</span><span class="ln"> 8</span><span class="w">    </span><span class="nt">regex</span><span class="p">:</span><span class="w"> </span><span class="l">(.+);(.+)</span><span class="w">
-</span><span class="ln"> 9</span><span class="w">    </span><span class="nt">target_label</span><span class="p">:</span><span class="w"> </span><span class="l">__metrics_path__</span><span class="w">
-</span><span class="ln">10</span><span class="w">    </span><span class="nt">replacement</span><span class="p">:</span><span class="w"> </span><span class="l">/api/v1/namespaces/${1}/pods/${2}:10249/proxy/metrics</span><span class="w">
-</span><span class="ln">11</span><span class="w">  </span>- <span class="nt">source_labels</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="l">__meta_kubernetes_pod_name]</span><span class="w">
-</span><span class="ln">12</span><span class="w">    </span><span class="nt">regex</span><span class="p">:</span><span class="w"> </span><span class="l">(.*)</span><span class="w">
-</span><span class="ln">13</span><span class="w">    </span><span class="nt">target_label</span><span class="p">:</span><span class="w"> </span><span class="l">pod</span><span class="w">
-</span><span class="ln">14</span><span class="w">    </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l">replace</span><span class="w">
-</span><span class="ln">15</span><span class="w">  </span>- <span class="nt">source_labels</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="l">__meta_kubernetes_namespace]</span><span class="w">
-</span><span class="ln">16</span><span class="w">    </span><span class="nt">regex</span><span class="p">:</span><span class="w"> </span><span class="l">(.*)</span><span class="w">
-</span><span class="ln">17</span><span class="w">    </span><span class="nt">target_label</span><span class="p">:</span><span class="w"> </span><span class="l">namespace</span><span class="w">
-</span><span class="ln">18</span><span class="w">    </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l">replace</span><span class="w">
-</span></code></pre></div><p>prometheus会抓取 <code>kube-system/kube-proxy</code>的metrics，target instance是<code>$(FQDN):443</code>，metrics api path是<code>/api/v1/namespaces/kube-system/pods/kube-proxy:10249/proxy/metrics</code></p>
-<blockquote>
-<p>说明kube-proxy的metrics并不是直接从pod的/metrics接口获取的，而是通过<a href="https://kubernetes.io/docs/tasks/access-application-cluster/access-cluster-services/#manually-constructing-apiserver-proxy-urls">apiserver的proxy api</a>)</p>
-</blockquote>
-<p>并且给metrics加上<code>namespace</code>和<code>pod</code>这两个label，比如：</p>
-<figure>
-    <img src="/prometheus/kubeproxy.png" width="1000px"/> 
-</figure>
-
-<h2 id="promql">promQL</h2>
-<p>promQL中有两个非常常见，但又相对复杂的query，一个是计算占比（ratio），一个是计算百分位（quantile）</p>
-<h3 id="计算ratio">计算ratio</h3>
-<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="ln">1</span><span class="c"># ratio of api server requests over 5m</span><span class="w">
-</span><span class="ln">2</span><span class="w"></span>- <span class="nt">record</span><span class="p">:</span><span class="w"> </span><span class="l">job_verb_code_instance:apiserver_request:ratio_rate5m</span><span class="w">
-</span><span class="ln">3</span><span class="w">    </span><span class="nt">expr</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
-</span><span class="ln">4</span><span class="sd">    sum by(job, verb, instance) (rate(apiserver_request_total[5m]))
-</span><span class="ln">5</span><span class="sd">        / ignoring (verb) group_left()
-</span><span class="ln">6</span><span class="sd">    sum by(job, instance) (rate(apiserver_request_total[5m]))</span><span class="w">    
-</span></code></pre></div><p>首先通过<code>apiserver_request_total[5m]</code>得到5m内的全部采样点，即<code>range vector</code>，然后用rate计算每秒增长速率，最后用sum聚合，两边做除法就得到比例关系。</p>
-<p>如果只执行左边：
-<figure>
-    <img src="/prometheus/1.png" width="1000px"/> 
-</figure>
-</p>
-<p>如果只执行右边：
-<figure>
-    <img src="/prometheus/2.png" width="1000px"/> 
-</figure>
-</p>
-<p>可以看到因为左边的query带上了更多的label，因此可以查到更多的数据。</p>
-<p>我们想计算每一种verb在所有请求中的占比，先使用 <a href="https://prometheus.io/docs/prometheus/latest/querying/operators/#vector-matching-keywords">ignoring</a> 忽略掉<code>verb</code>label，这样两边label一致才能做除法；</p>
-<p>因为左边的数据多(many)，右边的数据只有一条(one)，这属于<a href="https://prometheus.io/docs/prometheus/latest/querying/operators/#many-to-one-and-one-to-many-vector-matches">Many-to-one matches</a>，所以接着用<code>group_left()</code>让左边的每一条数据依次除以右边，得到最终结果：</p>
-<figure>
-    <img src="/prometheus/3.png" width="1000px"/> 
-</figure>
-
-<h3 id="计算quantile">计算quantile</h3>
-<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="ln">1</span><span class="c"># 99th percentile latency</span><span class="w">
-</span><span class="ln">2</span><span class="w"></span>- <span class="nt">record</span><span class="p">:</span><span class="w"> </span><span class="l">job:apiserver_request_latency:99pctlrate5m</span><span class="w">
-</span><span class="ln">3</span><span class="w">  </span><span class="nt">expr</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
-</span><span class="ln">4</span><span class="sd">    </span><span class="w">    </span><span class="l">histogram_quantile(0.99, sum by (le, job)(rate(apiserver_request_duration_seconds_bucket{verb=~&#34;GET|POST|DELETE|PATCH&#34;}[5m]))) * 1000 &gt; 0</span><span class="w">
-</span></code></pre></div><p>首先<code>apiserver_request_duration_seconds_bucket</code>是一个bucket，通过<code>[5m]</code>得到每一个bucket在5m内的采样值，然后计算每一个bucket中的增长rate，再按照le(less equal，即桶的上边界)进行sum聚合。最后通过<a href="https://prometheus.io/docs/prometheus/latest/querying/functions/#histogram_quantile">histogram_quantile</a>函数计算百分位。</p>
-<blockquote>
-<p><strong>⚠️注意，histogram不会记录真实数据，只记录每个 bucket 下的 count 和 sum，然后假定数据在桶中是均匀分布的来计算百分位。如果 bucket 设置的不合理，会产生不符合预期的 quantile 结果:</strong></p>
-<p>比如bucket 是 100ms ~ 1000ms，而大部分记录都在 100ms ~ 200ms 之间，但是由于prometheus假定数据是均匀分布的，因此计算 P99 时会得到接近于 1000ms 的值。<a href="https://prometheus.io/docs/practices/histograms/#errors-of-quantile-estimation">官方文档</a>里描述了这个问题。</p>
-</blockquote>
-<h2 id="几种时间的理解">几种时间的理解</h2>
-<p>Prometheus里还涉及到几种时间概念，必须搞清楚才能知道怎么样设置rule才能正确触发告警</p>
-<h3 id="evaluation_interval-scrape_interval和alerting-rules中的for">evaluation_interval, scrape_interval和alerting rules中的for</h3>
-<ul>
-<li><strong>evaluation_interval</strong>：只有当它 &gt;= scrape_interval时，才能确保每次evaluation时，promQL查询到的都是新数据。</li>
-<li><strong>alerting rule中的for</strong>：和上面同理，只有当它 &gt;= scrape_interval时，才能确保告警发出时至少覆盖了两次sample。</li>
-</ul>
-<blockquote>
-<ol>
-<li>
-<p>当for &lt; evaluation_interval 时，必须要Pending到第二次evaluation发生时才能判断是否真的要fire alert</p>
-</li>
-<li>
-<p>evaluation_interval和for，其中任何一个 &gt;= scrape_interval，就可以保证告警发出时至少覆盖了两次sample，不会有false alert。</p>
-</li>
-</ol>
-</blockquote>
-<h3 id="range-vector中的time-duration">range vector中的[time duration]</h3>
-<p>以<code>[10m]</code>为例，意思是从查询时刻算起，往前推10m，时序数据库里存了多少数据就查多少数据出来，意味着：</p>
-<ul>
-<li><strong>if scrape_interval == 10m</strong>，那么基本上可以保证你刚好只能查出来一条数据；</li>
-<li><strong>if scrape_interval &gt; 10m</strong>，那么你有可能查不出来任何数据；</li>
-<li><strong>if scrape_interval &lt; 10m</strong>，你可能可以查出来多条数据。采样间隔小于5m，你肯定可以查出来2条数据，依次类推</li>
-</ul>
-<blockquote>
-<p>在写prometheus的ut时，如果promQL计算的是range vector的数据类型，最好避免evaluation_interval和input_series的interval（即scrape_interval）成<strong>倍数关系</strong>。</p>
-<p>这是因为在ut中，evaluation_interval和scrape_interval的开始时间都是0，如果这两个interval是倍数关系，那么在evaluation的时候，总是会有时刻，evaluation时刚好产生一个input，计算时会把这个input也带进去，这可能会产生让人困惑的ut结果。这种情况在真实场景中很难发生。</p>
-</blockquote>
-]]></content>
-		</item>
 		
 		<item>
 			<title>Ginkgo源码</title>
@@ -328,6 +200,134 @@
 </li>
 </ol>
 <p>运行AfterSuiteCleanup Node</p>
+]]></content>
+		</item>
+		
+		<item>
+			<title>Prometheus试玩</title>
+			<link>https://cvvz.github.io/post/prometheus/</link>
+			<pubDate>Mon, 20 Feb 2023 09:26:59 +0800</pubDate>
+			
+			<guid>https://cvvz.github.io/post/prometheus/</guid>
+			<description>Mental Model Prometheus的配置文件中，scrape_config 部分定义的是job —— 也就是去哪个target instance scrape metrics —— 但是配置文件里不关心</description>
+			<content type="html"><![CDATA[<h2 id="mental-model">Mental Model</h2>
+<ol>
+<li>
+<p>Prometheus的<a href="https://prometheus.io/docs/prometheus/latest/configuration/configuration/">配置文件</a>中，<a href="https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config">scrape_config</a> 部分定义的是<a href="https://prometheus.io/docs/concepts/jobs_instances/#jobs-and-instances">job</a> —— 也就是去哪个target <a href="https://prometheus.io/docs/concepts/jobs_instances/#jobs-and-instances">instance</a> scrape metrics —— 但是<strong>配置文件里不关心也没法关心具体抓哪些指标</strong>。</p>
+</li>
+<li>
+<p>具体有哪些指标可以抓，也就是 <strong><a href="https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels">metrics name + label</a> 和 <a href="https://prometheus.io/docs/concepts/metric_types/">metrics type</a>，都在客户端源代码中定义</strong>。</p>
+</li>
+</ol>
+<blockquote>
+<p>如果configuration没有配置对，相当于找不到抓的地方。</p>
+<p>如果client代码不正确，相当于抓的地方对了，但是什么东西都抓不到。</p>
+</blockquote>
+<ol start="3">
+<li>抓到metrics以后，就可以定义rules —— 通过<a href="https://prometheus.io/docs/prometheus/latest/querying/basics/">promQL查询</a>，然后处理查询结果 —— <a href="https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/">alerting</a>或是<a href="https://prometheus.io/docs/prometheus/latest/configuration/recording_rules/">recording</a></li>
+</ol>
+<blockquote>
+<p>报警无法触发的原因有两种：</p>
+<ul>
+<li>client或configuration没写对</li>
+<li>promQL没写对，可以使用ut测试rules规则是否正确。</li>
+</ul>
+</blockquote>
+<h2 id="configuration">configuration</h2>
+<p>除了直接配置target instance之外，scrape_config还支持多种服务发现机制，<a href="https://prometheus.io/docs/prometheus/latest/configuration/configuration/#kubernetes_sd_config">kubernetes_sd_config</a>是k8s的服务发现配置</p>
+<p>服务发现机制会给metrics额外设置一些<code>__meta__</code>开头的label，可以通过<a href="https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config">relabel_config</a>来过滤出具体的instance，比如：</p>
+<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="ln"> 1</span><span class="nt">relabel_configs</span><span class="p">:</span><span class="w">
+</span><span class="ln"> 2</span><span class="w">  </span>- <span class="nt">target_label</span><span class="p">:</span><span class="w"> </span><span class="l">__address__</span><span class="w">
+</span><span class="ln"> 3</span><span class="w">    </span><span class="nt">replacement</span><span class="p">:</span><span class="w"> </span><span class="l">$(FQDN):443</span><span class="w">
+</span><span class="ln"> 4</span><span class="w">  </span>- <span class="nt">source_labels</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="l">__meta_kubernetes_namespace, __meta_kubernetes_pod_label_component,     __meta_kubernetes_pod_container_name]</span><span class="w">
+</span><span class="ln"> 5</span><span class="w">    </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l">keep</span><span class="w">
+</span><span class="ln"> 6</span><span class="w">    </span><span class="nt">regex</span><span class="p">:</span><span class="w"> </span><span class="l">kube-system;kube-proxy;kube-proxy</span><span class="w">
+</span><span class="ln"> 7</span><span class="w">  </span>- <span class="nt">source_labels</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="l">__meta_kubernetes_namespace, __meta_kubernetes_pod_name]</span><span class="w">
+</span><span class="ln"> 8</span><span class="w">    </span><span class="nt">regex</span><span class="p">:</span><span class="w"> </span><span class="l">(.+);(.+)</span><span class="w">
+</span><span class="ln"> 9</span><span class="w">    </span><span class="nt">target_label</span><span class="p">:</span><span class="w"> </span><span class="l">__metrics_path__</span><span class="w">
+</span><span class="ln">10</span><span class="w">    </span><span class="nt">replacement</span><span class="p">:</span><span class="w"> </span><span class="l">/api/v1/namespaces/${1}/pods/${2}:10249/proxy/metrics</span><span class="w">
+</span><span class="ln">11</span><span class="w">  </span>- <span class="nt">source_labels</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="l">__meta_kubernetes_pod_name]</span><span class="w">
+</span><span class="ln">12</span><span class="w">    </span><span class="nt">regex</span><span class="p">:</span><span class="w"> </span><span class="l">(.*)</span><span class="w">
+</span><span class="ln">13</span><span class="w">    </span><span class="nt">target_label</span><span class="p">:</span><span class="w"> </span><span class="l">pod</span><span class="w">
+</span><span class="ln">14</span><span class="w">    </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l">replace</span><span class="w">
+</span><span class="ln">15</span><span class="w">  </span>- <span class="nt">source_labels</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="l">__meta_kubernetes_namespace]</span><span class="w">
+</span><span class="ln">16</span><span class="w">    </span><span class="nt">regex</span><span class="p">:</span><span class="w"> </span><span class="l">(.*)</span><span class="w">
+</span><span class="ln">17</span><span class="w">    </span><span class="nt">target_label</span><span class="p">:</span><span class="w"> </span><span class="l">namespace</span><span class="w">
+</span><span class="ln">18</span><span class="w">    </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l">replace</span><span class="w">
+</span></code></pre></div><p>prometheus会抓取 <code>kube-system/kube-proxy</code>的metrics，target instance是<code>$(FQDN):443</code>，metrics api path是<code>/api/v1/namespaces/kube-system/pods/kube-proxy:10249/proxy/metrics</code></p>
+<blockquote>
+<p>说明kube-proxy的metrics并不是直接从pod的/metrics接口获取的，而是通过<a href="https://kubernetes.io/docs/tasks/access-application-cluster/access-cluster-services/#manually-constructing-apiserver-proxy-urls">apiserver的proxy api</a>)</p>
+</blockquote>
+<p>并且给metrics加上<code>namespace</code>和<code>pod</code>这两个label，比如：</p>
+<figure>
+    <img src="/prometheus/kubeproxy.png" width="1000px"/> 
+</figure>
+
+<h2 id="promql">promQL</h2>
+<p>promQL中有两个非常常见，但又相对复杂的query，一个是计算占比（ratio），一个是计算百分位（quantile）</p>
+<h3 id="计算ratio">计算ratio</h3>
+<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="ln">1</span><span class="c"># ratio of api server requests over 5m</span><span class="w">
+</span><span class="ln">2</span><span class="w"></span>- <span class="nt">record</span><span class="p">:</span><span class="w"> </span><span class="l">job_verb_code_instance:apiserver_request:ratio_rate5m</span><span class="w">
+</span><span class="ln">3</span><span class="w">    </span><span class="nt">expr</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span><span class="ln">4</span><span class="sd">    sum by(job, verb, instance) (rate(apiserver_request_total[5m]))
+</span><span class="ln">5</span><span class="sd">        / ignoring (verb) group_left()
+</span><span class="ln">6</span><span class="sd">    sum by(job, instance) (rate(apiserver_request_total[5m]))</span><span class="w">    
+</span></code></pre></div><p>首先通过<code>apiserver_request_total[5m]</code>得到5m内的全部采样点，即<code>range vector</code>，然后用rate计算每秒增长速率，最后用sum聚合，两边做除法就得到比例关系。</p>
+<p>如果只执行左边：
+<figure>
+    <img src="/prometheus/1.png" width="1000px"/> 
+</figure>
+</p>
+<p>如果只执行右边：
+<figure>
+    <img src="/prometheus/2.png" width="1000px"/> 
+</figure>
+</p>
+<p>可以看到因为左边的query带上了更多的label，因此可以查到更多的数据。</p>
+<p>我们想计算每一种verb在所有请求中的占比，先使用 <a href="https://prometheus.io/docs/prometheus/latest/querying/operators/#vector-matching-keywords">ignoring</a> 忽略掉<code>verb</code>label，这样两边label一致才能做除法；</p>
+<p>因为左边的数据多(many)，右边的数据只有一条(one)，这属于<a href="https://prometheus.io/docs/prometheus/latest/querying/operators/#many-to-one-and-one-to-many-vector-matches">Many-to-one matches</a>，所以接着用<code>group_left()</code>让左边的每一条数据依次除以右边，得到最终结果：</p>
+<figure>
+    <img src="/prometheus/3.png" width="1000px"/> 
+</figure>
+
+<h3 id="计算quantile">计算quantile</h3>
+<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="ln">1</span><span class="c"># 99th percentile latency</span><span class="w">
+</span><span class="ln">2</span><span class="w"></span>- <span class="nt">record</span><span class="p">:</span><span class="w"> </span><span class="l">job:apiserver_request_latency:99pctlrate5m</span><span class="w">
+</span><span class="ln">3</span><span class="w">  </span><span class="nt">expr</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span><span class="ln">4</span><span class="sd">    </span><span class="w">    </span><span class="l">histogram_quantile(0.99, sum by (le, job)(rate(apiserver_request_duration_seconds_bucket{verb=~&#34;GET|POST|DELETE|PATCH&#34;}[5m]))) * 1000 &gt; 0</span><span class="w">
+</span></code></pre></div><p>首先<code>apiserver_request_duration_seconds_bucket</code>是一个bucket，通过<code>[5m]</code>得到每一个bucket在5m内的采样值，然后计算每一个bucket中的增长rate，再按照le(less equal，即桶的上边界)进行sum聚合。最后通过<a href="https://prometheus.io/docs/prometheus/latest/querying/functions/#histogram_quantile">histogram_quantile</a>函数计算百分位。</p>
+<blockquote>
+<p><strong>⚠️注意，histogram不会记录真实数据，只记录每个 bucket 下的 count 和 sum，然后假定数据在桶中是均匀分布的来计算百分位。如果 bucket 设置的不合理，会产生不符合预期的 quantile 结果:</strong></p>
+<p>比如bucket 是 100ms ~ 1000ms，而大部分记录都在 100ms ~ 200ms 之间，但是由于prometheus假定数据是均匀分布的，因此计算 P99 时会得到接近于 1000ms 的值。<a href="https://prometheus.io/docs/practices/histograms/#errors-of-quantile-estimation">官方文档</a>里描述了这个问题。</p>
+</blockquote>
+<h2 id="几种时间的理解">几种时间的理解</h2>
+<p>Prometheus里还涉及到几种时间概念，必须搞清楚才能知道怎么样设置rule才能正确触发告警</p>
+<h3 id="evaluation_interval-scrape_interval和alerting-rules中的for">evaluation_interval, scrape_interval和alerting rules中的for</h3>
+<ul>
+<li><strong>evaluation_interval</strong>：只有当它 &gt;= scrape_interval时，才能确保每次evaluation时，promQL查询到的都是新数据。</li>
+<li><strong>alerting rule中的for</strong>：和上面同理，只有当它 &gt;= scrape_interval时，才能确保告警发出时至少覆盖了两次sample。</li>
+</ul>
+<blockquote>
+<ol>
+<li>
+<p>当for &lt; evaluation_interval 时，必须要Pending到第二次evaluation发生时才能判断是否真的要fire alert</p>
+</li>
+<li>
+<p>evaluation_interval和for，其中任何一个 &gt;= scrape_interval，就可以保证告警发出时至少覆盖了两次sample，不会有false alert。</p>
+</li>
+</ol>
+</blockquote>
+<h3 id="range-vector中的time-duration">range vector中的[time duration]</h3>
+<p>以<code>[10m]</code>为例，意思是从查询时刻算起，往前推10m，时序数据库里存了多少数据就查多少数据出来，意味着：</p>
+<ul>
+<li><strong>if scrape_interval == 10m</strong>，那么基本上可以保证你刚好只能查出来一条数据；</li>
+<li><strong>if scrape_interval &gt; 10m</strong>，那么你有可能查不出来任何数据；</li>
+<li><strong>if scrape_interval &lt; 10m</strong>，你可能可以查出来多条数据。采样间隔小于5m，你肯定可以查出来2条数据，依次类推</li>
+</ul>
+<blockquote>
+<p>在写prometheus的ut时，如果promQL计算的是range vector的数据类型，最好避免evaluation_interval和input_series的interval（即scrape_interval）成<strong>倍数关系</strong>。</p>
+<p>这是因为在ut中，evaluation_interval和scrape_interval的开始时间都是0，如果这两个interval是倍数关系，那么在evaluation的时候，总是会有时刻，evaluation时刚好产生一个input，计算时会把这个input也带进去，这可能会产生让人困惑的ut结果。这种情况在真实场景中很难发生。</p>
+</blockquote>
 ]]></content>
 		</item>
 		
