@@ -19,7 +19,7 @@
 			<content type="html"><![CDATA[<h1 id="ginkgo-cmd">ginkgo cmd</h1>
 <p>执行ginkgo cmd默认运行的是ginkgo run</p>
 <figure>
-    <img src="/ginkgo/Untitled.png" width="800px"/> 
+    <img src="/ginkgo/Untitled.png" width="700px"/> 
 </figure>
 
 <p>入口函数</p>
@@ -27,26 +27,30 @@
 </code></pre></div><p>主要做两件事，编译和运行suite</p>
 <h2 id="编译">编译</h2>
 <figure>
-    <img src="/ginkgo/Untitled%201.png" width="800px"/> 
+    <img src="/ginkgo/Untitled%201.png" width="700px"/> 
 </figure>
 
 <p>使用 <code>go test -c -o</code> 得到<code>.test</code>可执行文件</p>
-<p>要理解怎么编译出.test文件的，就要理解ginkgo是怎么构造specs tree的</p>
+<figure>
+    <img src="/ginkgo/gotest.png" width="700px"/> 
+</figure>
+
+<p>要理解.test文件中的测试用例（spec）是怎么执行的，就要理解ginkgo是怎么构造specs tree的</p>
 <h3 id="构造specs-tree">构造specs tree</h3>
 <p><code>Describe</code>等是container Node，<code>BeforeXXX</code>和<code>AfterXXX</code>等是setup Node，<code>It</code>是subject Node。<code>Describe</code>通过<code>var _ = Describe</code>的方式实现在golang源文件顶层执行函数，这会使得在编译时最先执行Describe。</p>
 <p>他们底层都是通过<code>pushNode</code>，从外向内一层一层的push Node，然后在<code>RunSpecs</code>入口中的<code>BuildTree</code>构造出如下的specs tree数据结构：</p>
 <figure>
-    <img src="/ginkgo/image3.png" width="800px"/> 
+    <img src="/ginkgo/image3.png" width="1000px"/> 
 </figure>
 
 <h2 id="运行">运行</h2>
 <h3 id="ginkgo">ginkgo</h3>
 <p>在SUITE_LOOP中循环运行每一个编译出来的<code>.test</code>：</p>
 <div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln">1</span><span class="nx">suites</span><span class="p">[</span><span class="nx">suiteIdx</span><span class="p">]</span> <span class="p">=</span> <span class="nx">internal</span><span class="p">.</span><span class="nf">RunCompiledSuite</span><span class="p">(</span><span class="nx">suites</span><span class="p">[</span><span class="nx">suiteIdx</span><span class="p">],</span> <span class="nx">r</span><span class="p">.</span><span class="nx">suiteConfig</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">reporterConfig</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">cliConfig</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">goFlagsConfig</span><span class="p">,</span> <span class="nx">additionalArgs</span><span class="p">)</span>
-</code></pre></div><p>每个suite都会编译成一个<code>.test</code>，如果有多个test suite，一个一个的运行</p>
+</code></pre></div><p>每个suite都会编译成一个<code>.test</code>，如果有多个test suite，一个一个的编译运行</p>
 <p>如果以parallel的模式运行，则启动server</p>
 <div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="ln">1</span><span class="nx">server</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">parallel_support</span><span class="p">.</span><span class="nf">NewServer</span><span class="p">(</span><span class="nx">numProcs</span><span class="p">,</span> <span class="nx">reporters</span><span class="p">.</span><span class="nf">NewDefaultReporter</span><span class="p">(</span><span class="nx">reporterConfig</span><span class="p">,</span> <span class="nx">formatter</span><span class="p">.</span><span class="nx">ColorableStdOut</span><span class="p">))</span>
-</code></pre></div><p>生成flag并运行多个.test进程</p>
+</code></pre></div><p>生成go test flag，如果运行在parallel模式，启动多个.test进程并发执行测试用例。ginkgo会根据机器的核心数决定启动多少个test进程，每个test进程运行的都是同一组specs，但是test具体运行哪一个spec由ginkgo server决定。</p>
 <figure>
     <img src="/ginkgo/Untitled%202.png" width="1000px"/> 
 </figure>
@@ -182,7 +186,7 @@
 <li>在运行Serial的Node或者cleanup Node时，会先检查一下状态，再决定是否运行。但是可能当时server端已经设置为需要abort了，可是还需要等500ms才能拿到实际状态。这个时候会去运行Node，但是实际上是应该skip的。</li>
 <li>cleanup Node应该直接忽略Abort的channel。</li>
 </ol>
-<p>具体可以参考：<a href="https://github.com/onsi/ginkgo/pull/1178">https://github.com/onsi/ginkgo/pull/1178</a></p>
+<p>我在提交了一个PR <a href="https://github.com/onsi/ginkgo/pull/1178">https://github.com/onsi/ginkgo/pull/1178</a> 解决这个问题</p>
 </blockquote>
 </li>
 <li>
