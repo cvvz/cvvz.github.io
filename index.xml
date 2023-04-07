@@ -18,6 +18,24 @@
     </item>
     
     <item>
+      <title>go-daemon 源码</title>
+      <link>https://cvvz.github.io/post/go-daemon/</link>
+      <pubDate>Sun, 19 Mar 2023 09:38:40 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/go-daemon/</guid>
+      <description>go-daemon是golang的fork问题的一种解决方案，在解决blobfuse2 mount问题时看了一遍go-daemon源码，在这里</description>
+    </item>
+    
+    <item>
+      <title>Blobfuse2实现background mount</title>
+      <link>https://cvvz.github.io/post/blobfuse2/</link>
+      <pubDate>Sat, 18 Mar 2023 14:27:04 +0800</pubDate>
+      
+      <guid>https://cvvz.github.io/post/blobfuse2/</guid>
+      <description>Blobfuse2 is an open source project developed to provide a virtual filesystem backed by the Azure Storage. It uses the libfuse open source library (fuse3) to communicate with the Linux FUSE kernel module, and implements the filesystem operations using the Azure Storage REST APIs. This is the next generation blobfuse blob csi driver 最近从blobfuse v1切换到 v</description>
+    </item>
+    
+    <item>
       <title>Prometheus试玩</title>
       <link>https://cvvz.github.io/post/prometheus/</link>
       <pubDate>Mon, 20 Feb 2023 09:26:59 +0800</pubDate>
@@ -168,24 +186,6 @@
       
       <guid>https://cvvz.github.io/read/the-underlying-logic/</guid>
       <description>来自朋友圈的推荐，作者刘润。内容挺有趣，读起来不费劲，用故事和案例使得自己的观点变得容易理解，思考问题的角度也令人耳目一新。 不过没有专业性，</description>
-    </item>
-    
-    <item>
-      <title>谈谈kubernetes中的etcd</title>
-      <link>https://cvvz.github.io/post/etcd-and-kubernetes/</link>
-      <pubDate>Thu, 10 Feb 2022 08:19:53 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/post/etcd-and-kubernetes/</guid>
-      <description>revision revision是etcd中资源的全局版本号，可以看作一个全局逻辑时钟。etcd 启动的时候默认revision是 1，对任何一个key的增、</description>
-    </item>
-    
-    <item>
-      <title>有效管理你的健康</title>
-      <link>https://cvvz.github.io/read/effectively-health-management/</link>
-      <pubDate>Tue, 01 Feb 2022 09:33:55 +0800</pubDate>
-      
-      <guid>https://cvvz.github.io/read/effectively-health-management/</guid>
-      <description>很早之前在得到上学的一门课，带有科普性质的一门很短小的健康课。扫除了我很多关于健康方面的错误观念，今天跑步的时候又想起里面的一些知识，补充一</description>
     </item>
     
   </channel>

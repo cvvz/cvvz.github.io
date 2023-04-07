@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="google-site-verification" content="Wp3QtEkIlF0ZvtKx90lPmoXyH39d-pmBhiTyTbba9L4" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta itemprop="name" content="Blobfuse2实现background mount">
+<meta itemprop="description" content="Blobfuse2 is an open source project developed to provide a virtual filesystem backed by the Azure Storage. It uses the libfuse open source library (fuse3) to communicate with the Linux FUSE kernel module, and implements the filesystem operations using the Azure Storage REST APIs. This is the next generation blobfuse blob csi driver 最近从blobfuse v1切换到 v">
+<meta itemprop="datePublished" content="2023-03-18T14:27:04+08:00" />
+<meta itemprop="dateModified" content="2023-04-07T14:36:38+08:00" />
+<meta itemprop="wordCount" content="2590">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta property="og:title" content="Blobfuse2实现background mount" />
+<meta property="og:description" content="Blobfuse2 is an open source project developed to provide a virtual filesystem backed by the Azure Storage. It uses the libfuse open source library (fuse3) to communicate with the Linux FUSE kernel module, and implements the filesystem operations using the Azure Storage REST APIs. This is the next generation blobfuse blob csi driver 最近从blobfuse v1切换到 v" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://cvvz.github.io/post/blobfuse2/" />
+<meta property="article:published_time" content="2023-03-18T14:27:04+08:00" />
+<meta property="article:modified_time" content="2023-04-07T14:36:38+08:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Blobfuse2实现background mount"/>
+<meta name="twitter:description" content="Blobfuse2 is an open source project developed to provide a virtual filesystem backed by the Azure Storage. It uses the libfuse open source library (fuse3) to communicate with the Linux FUSE kernel module, and implements the filesystem operations using the Azure Storage REST APIs. This is the next generation blobfuse blob csi driver 最近从blobfuse v1切换到 v"/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>Blobfuse2实现background mount</title>
+	<link rel="stylesheet" href="https://cvvz.github.io/css/style.min.7a1ec200e9f3394f73c6eda58011808507a3b24318de81e1e343f22a2470caef.css">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp faster">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://cvvz.github.io">cvvz&#39;s Blog</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					<a href="https://cvvz.github.io/post/">Technology</a>
+					<a href="https://cvvz.github.io/read/">Reading</a>
+					<a href="https://cvvz.github.io/thinking/">Thoughts</a>
+					<a href="https://cvvz.github.io/running/">Running</a>
+					<a href="https://cvvz.github.io/aboutme/resume.pdf">AboutMe</a>
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<button id="toc-btn" class="hdr-btn desktop-only-ib" title="目录"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-list"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3" y2="6"></line><line x1="3" y1="12" x2="3" y2="12"></line><line x1="3" y1="18" x2="3" y2="18"></line></svg></button><span class="hdr-social hide-in-mobile"><a href="https://github.com/cvvz" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="mailto:ftdchenwz@gmail.com" target="_blank" rel="noopener me" title="Email"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a></span><button id="menu-btn" class="hdr-btn" title="菜单"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://cvvz.github.io/post/">Technology</a></li>
+			<li><a href="https://cvvz.github.io/read/">Reading</a></li>
+			<li><a href="https://cvvz.github.io/thinking/">Thoughts</a></li>
+			<li><a href="https://cvvz.github.io/running/">Running</a></li>
+			<li><a href="https://cvvz.github.io/aboutme/resume.pdf">AboutMe</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<h1>Blobfuse2实现background mount</h1>
+			</header>
+			<div class="content">
+				<blockquote>
+<p><a href="https://github.com/Azure/azure-storage-fuse#blobfuse2---a-microsoft-supported-azure-storage-fuse-driver">Blobfuse2</a> is an open source project developed to provide a virtual filesystem backed by the Azure Storage. It uses the libfuse open source library (fuse3) to communicate with the Linux FUSE kernel module, and implements the filesystem operations using the Azure Storage REST APIs. This is the next generation <a href="https://github.com/Azure/azure-storage-fuse/tree/master">blobfuse</a></p>
+</blockquote>
+<p><a href="https://github.com/kubernetes-sigs/blob-csi-driver">blob csi driver</a> 最近从blobfuse v1切换到 v2，我们碰到了一个background mount的问题，作了一番调查后帮storage team解决了这个问题：<a href="https://github.com/Azure/azure-storage-fuse/pull/1088">#1088</a>。PR里提到了问题原因和解决办法，这里也记录一下整个过程。</p>
+<h2 id="问题现象">问题现象<a href="#问题现象" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>我们先后碰到过两个issue，问题表象不同，但是底层的根因是同一个：</p>
+<ol>
+<li>
+<p>blobfuse2 mount实际失败，但没有在终端或者日志里提示任何错误信息，而且errno是0。但是v1可以提示错误且返回非0 errno： <a href="https://github.com/Azure/azure-storage-fuse/issues/1081">#1081</a></p>
+</li>
+<li>
+<p>blob csi driver 删除Pod后，新Pod中无数据：<a href="https://github.com/Azure/azure-storage-fuse/issues/1079#issuecomment-1462302216">#1079</a>。</p>
+<ol>
+<li>
+<p>首先排查到问题原因是在<code>NodeUnPublishVolume</code>阶段，unmount bind mountpoint时，会将original mountpoint也一并unmount掉，从而导致blobfuse mountpoint丢失；</p>
+</li>
+<li>
+<p>进一步分析时，发现在删除老Pod前，第一次<code>NodePublishVolume</code>阶段执行bind mount时，目录被同时mount到了两个文件系统：</p>
+<figure>
+    <img src="/blobfuse2/1.jpeg" width="1000px"/> 
+</figure>
+
+</li>
+<li>
+<p>而unmount这种不正常状态的mountpoint时就会导致original mountpoint也被unmount掉。虽然fuse的这个行为也很奇怪，但是问题的根因还是在于不应该同时bind mount两个不同的文件系统。</p>
+</li>
+</ol>
+</li>
+</ol>
+<h2 id="问题原因">问题原因<a href="#问题原因" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>libfuse提供了<a href="https://github.com/libfuse/libfuse/blob/master/lib/helper.c#L135">-f参数</a>来决定是否要让用户态的fuse进程运行在前台。默认是以background模式运行——fork出子进程被1号进程接管。</p>
+<p>blobfuse2本身是用golang写的，通过cgo调用libfuse库函数，但是<a href="https://github.com/golang/go/issues/227">golang没法很好的支持fork</a>，实际测试时发现如果blobfuse2直接依赖libfuse库中的fork来启动子进程，任何文件系统的读写命令都会被卡住且无法退出。blobfuse2借助了开源项目<a href="https://github.com/sevlyar/go-daemon">go-daemon</a>来实现在golang中fork。我会在下一篇<a href="https://cvvz.github.io/post/go-daemon/">博客</a>中分析一下go-daemon的源码。</p>
+<p>具体的做法(<a href="https://github.com/Azure/azure-storage-fuse/blob/5e06d431845e46a2df4bca187a863b71f6e7cb0b/cmd/mount.go#L405-L421">代码在这</a>)是在start fuse之前，通过go-daemon的<code>Reborn()</code>函数fork出子进程，然后子进程<a href="https://github.com/Azure/azure-storage-fuse/blob/8f655cf9e1b501c574b1a217bdb57a9e717bb712/component/libfuse/libfuse2_handler.go#L212-L218">以foreground方式start fuse</a>：</p>
+<figure>
+    <img src="/blobfuse2/f.png" width="800px"/> 
+</figure>
+
+<p>并且父进程退出：</p>
+<figure>
+    <img src="/blobfuse2/fork1.png" width="700px"/> 
+</figure>
+
+<p>这样做会导致问题的原因是，其实<a href="https://github.com/libfuse/libfuse/blob/master/lib/helper.c#L351-L359">libfuse在daemonize fork之前还有很多逻辑，其中就包括fuse mount</a>：</p>
+<figure>
+    <img src="/blobfuse2/fusemount.png" width="600px"/> 
+</figure>
+
+<p>执行daemonize之前还可能发生其他错误导致fuse进程直接报错退出。</p>
+<figure>
+    <img src="/blobfuse2/beforemount.png" width="600px"/> 
+</figure>
+
+<p>但是现在blobfuse2的fork发生在libfuse的入口点<a href="https://github.com/libfuse/libfuse/blob/master/lib/helper.c#L307">fuse_main</a>之前，而且父进程直接退出了，这就导致fuse daemonize之前发生的错误都无法被父进程捕捉到。</p>
+<p>第一个问题的原因已经清楚了。第二个问题的原因也是异步mount导致的，blob csi driver在<code>NodeStageVolume</code>阶段，调用<code>blobfuse2</code>执行fuse mount。blobfuse2虽然返回了，但是实际上mount操作仍然在子进程中异步的执行。而blob csi driver则认为blobfuse2返回了即代表mount成功了，kubelet接着调用<code>NodePublishVolume</code>执行bind mount，但在bind mount时，其实fuse mount仍在进行中，因此首先bind mount到了还未被初始化的ext4文件系统上，等到fuse mount成功，目录被初始化为fuse文件系统，又bind mount到了初始化后的fuse文件系统，因此同一个dir出现了两个mountpoint。</p>
+<h2 id="调研">调研<a href="#调研" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>因为golang的fork的限制，上述问题只会在使用golang的fuse项目中出现。</p>
+<p><a href="https://github.com/winfsp/cgofuse">cgofuse</a>也是一个通过cgo+libfuse实现的fuse项目，<a href="https://github.com/winfsp/cgofuse/blob/master/fuse/host.go#L648-L652">只支持foreground fuse mount</a>:</p>
+<figure>
+    <img src="/blobfuse2/cgofuse.png" width="700px"/> 
+</figure>
+
+<p>blobfuse v1和<a href="https://github.com/s3fs-fuse/s3fs-fuse">s3fs-fuse</a>上层都是用c++写的，<a href="https://github.com/s3fs-fuse/s3fs-fuse/blob/master/src/s3fs.cpp#L5574">直接调用fuse_main</a>，没有问题。</p>
+<h2 id="解决方案">解决方案<a href="#解决方案" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>搞清楚了libfuse底层原理，解决方案似乎很容易想到了，这就是一个父子进程间IPC的场景，但是实际上要完全解决还是要想一些办法的。</p>
+<p>第一个要解决的问题是父进程如何知道子进程mount失败。子进程mount失败时是会导致进程退出的，因此只要能捕获子进程退出事件即可。直接在父进程中使用<code>wait</code> syscall或者监听<code>SIGCHLD</code>信号都可以。</p>
+<p>第二个问题是，子进程异常退出时，父进程没有在终端和日志里打印错误信息。<a href="https://github.com/libfuse/libfuse/blob/master/lib/fuse_log.c#L16-L21">libfuse默认是直接将错误日志输出到stderr</a>，那么我们将子进程的stderr重定向输出到父进程即可。如果是通过直接fork产生的子进程，因为父子进程共享open fd，因此只需要在父进程中创建PIPE，然后在子进程中把stderr重定向到PIPE的write fd，并在父进程从PIPE read fd读就可以了。可是go-daemon其实是先fork，然后exec覆盖子进程，父子进程并不共享open fd，所以子进程创建出来后是拿不到父进程创建出的PIPE fd的。所以得绕一下，最后想到的办法是，先在父进程创建PIPE，然后在创建子进程的时候直接设置子进程attribute，将他的stdout/stderr设置为PIPE write fd。这个功能go-daemon还不支持，顺手做了一下：<a href="https://github.com/sevlyar/go-daemon/pull/90">https://github.com/sevlyar/go-daemon/pull/90</a>。</p>
+<p>现在父进程能感知到子进程mount失败的事件了，接下来怎样才能感知子进程mount成功的事件呢？fuse mount成功后是不会以任何形式通知父进程的，除非修改libfuse代码，所以这里碰到了一些困难。</p>
+<p>libfuse提供了很多<a href="https://github.com/libfuse/libfuse/blob/master/include/fuse.h#L324-L828">callback</a>钩子函数，涵盖了所有的文件系统命令。简单来说，就是用户在执行<code>cd</code>,<code>ls</code>,<code>rm</code>, <code>mkdir</code>等文件系统命令时，kernel会调用相应的callback与用户态fuse进程通信，<a href="https://github.com/Azure/azure-storage-fuse/blob/7d86acbc95871a4e513b0087bdb7b68f23b7d5db/component/libfuse/libfuse_wrapper.h#L60-L119">blobfuse2也注册了很多对应的callback</a>。libfuse在mount成功后kernel自动执行的第一个callback是<a href="https://github.com/libfuse/libfuse/blob/master/include/fuse.h#L608-L617">init</a>，用于初始化文件系统。所以最后想到的解决办法就是当用户态的fuse进程在执行<code>init</code> callback时，给父进程发送一个<code>SIGUSR1</code>的信号，当父进程收到这个信号，就知道fuse mount阶段肯定成功了，可以成功退出了。</p>
+
+			</div>
+			<hr class="post-end">
+			<footer class="post-info">
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2590 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/703dba208b34551de62fe38ae2628c938cdc9cff" target="_blank" rel="noopener">703dba2</a> @ 2023-04-07</p>
+			</footer>
+		</article>
+		<aside id="toc" class="show-toc">
+			<div class="toc-title">目录</div>
+			<nav id="TableOfContents">
+  <ul>
+    <li><a href="#问题现象">问题现象</a></li>
+    <li><a href="#问题原因">问题原因</a></li>
+    <li><a href="#调研">调研</a></li>
+    <li><a href="#解决方案">解决方案</a></li>
+  </ul>
+</nav>
+		</aside>
+		<div class="post-nav thin">
+			<a class="next-post" href="https://cvvz.github.io/post/go-daemon/">
+				<span class="post-nav-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>&nbsp;新</span><br><span>go-daemon 源码</span>
+			</a>
+			<a class="prev-post" href="https://cvvz.github.io/post/prometheus/">
+				<span class="post-nav-label">旧&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>Prometheus试玩</span>
+			</a>
+		</div>
+		<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+		<div id="gitalk-container" class="thin"></div>     
+		<script type="text/javascript">
+			var gitalk = new Gitalk({
+				clientID: '0f8bdcbe6b4973f9b206',
+				clientSecret: '4939e64d59c93fc5eb7eaf74469a746e4535700d',
+				repo: 'cvvz.github.io',
+				owner: 'cvvz',
+				admin: ['cvvz'],
+				id: location.pathname,      
+				distractionFreeMode: true 
+			});
+  			gitalk.render('gitalk-container');
+		</script>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2023 <a href="https://cvvz.github.io">陈维志</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://cvvz.github.io/post/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+	<script src="https://cvvz.github.io/js/main.min.784417f5847151f848c339cf0acb13a06cbb648b1483435a28ed4556c4ead69b.js"></script>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-M8Q3DKDEVL', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>
