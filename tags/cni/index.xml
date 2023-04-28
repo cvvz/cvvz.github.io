@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>CNI on cvvz&#39;s Blog</title>
-    <link>https://cvvz.github.io/tags/cni/</link>
+    <link>https://cvvz.fun/tags/cni/</link>
     <description>Recent content in CNI on cvvz&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Wed, 30 Dec 2020 09:51:44 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/cni/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 30 Dec 2020 09:51:44 +0800</lastBuildDate><atom:link href="https://cvvz.fun/tags/cni/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>kubernetes网络之CNI与跨节点通信原理</title>
-      <link>https://cvvz.github.io/post/k8s-network-cross-host/</link>
+      <link>https://cvvz.fun/post/k8s-network-cross-host/</link>
       <pubDate>Wed, 30 Dec 2020 09:51:44 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/post/k8s-network-cross-host/</guid>
+      <guid>https://cvvz.fun/post/k8s-network-cross-host/</guid>
       <description>初始化infra容器网络环境 当kubelet通过调用CRI的RunPodSandbox创建好PodSandbox，即infra容器后，就需要</description>
     </item>
     

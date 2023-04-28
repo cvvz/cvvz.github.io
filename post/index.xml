@@ -1,20 +1,20 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
 		<title>Posts on cvvz&#39;s Blog</title>
-		<link>https://cvvz.github.io/post/</link>
+		<link>https://cvvz.fun/post/</link>
 		<description>Recent content in Posts on cvvz&#39;s Blog</description>
 		<generator>Hugo -- gohugo.io</generator>
 		<language>zh-hans</language>
 		<copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
 		<lastBuildDate>Wed, 05 Apr 2023 08:56:03 +0800</lastBuildDate>
-		<atom:link href="https://cvvz.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+		<atom:link href="https://cvvz.fun/post/index.xml" rel="self" type="application/rss+xml" />
 		
 		<item>
 			<title>Ginkgo源码</title>
-			<link>https://cvvz.github.io/post/ginkgo/</link>
+			<link>https://cvvz.fun/post/ginkgo/</link>
 			<pubDate>Wed, 05 Apr 2023 08:56:03 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/ginkgo/</guid>
+			<guid>https://cvvz.fun/post/ginkgo/</guid>
 			<description>ginkgo cmd 执行ginkgo cmd默认运行的是ginkgo run 入口函数 1func (r *SpecRunner) RunSpecs(args []string, additionalArgs []string) { 主要做两件事，编译和运行suite 编译 使用 go test -c -o 得到.test</description>
 			<content type="html"><![CDATA[<h1 id="ginkgo-cmd">ginkgo cmd</h1>
 <p>执行ginkgo cmd默认运行的是ginkgo run</p>
@@ -209,10 +209,10 @@
 		
 		<item>
 			<title>go-daemon 源码</title>
-			<link>https://cvvz.github.io/post/go-daemon/</link>
+			<link>https://cvvz.fun/post/go-daemon/</link>
 			<pubDate>Sun, 19 Mar 2023 09:38:40 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/go-daemon/</guid>
+			<guid>https://cvvz.fun/post/go-daemon/</guid>
 			<description>go-daemon是golang的fork问题的一种解决方案，在解决blobfuse2 mount问题时看了一遍go-daemon源码，在这里</description>
 			<content type="html"><![CDATA[<blockquote>
 <p><a href="https://github.com/sevlyar/go-daemon">go-daemon</a>是golang的<a href="https://github.com/golang/go/issues/227">fork问题</a>的一种解决方案，在解决<a href="https://cvvz.github.io/post/blobfuse2/">blobfuse2 mount问题</a>时看了一遍go-daemon源码，在这里记录一下。</p>
@@ -258,10 +258,10 @@
 		
 		<item>
 			<title>Blobfuse2实现background mount</title>
-			<link>https://cvvz.github.io/post/blobfuse2/</link>
+			<link>https://cvvz.fun/post/blobfuse2/</link>
 			<pubDate>Sat, 18 Mar 2023 14:27:04 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/blobfuse2/</guid>
+			<guid>https://cvvz.fun/post/blobfuse2/</guid>
 			<description>Blobfuse2 is an open source project developed to provide a virtual filesystem backed by the Azure Storage. It uses the libfuse open source library (fuse3) to communicate with the Linux FUSE kernel module, and implements the filesystem operations using the Azure Storage REST APIs. This is the next generation blobfuse blob csi driver 最近从blobfuse v1切换到 v</description>
 			<content type="html"><![CDATA[<blockquote>
 <p><a href="https://github.com/Azure/azure-storage-fuse#blobfuse2---a-microsoft-supported-azure-storage-fuse-driver">Blobfuse2</a> is an open source project developed to provide a virtual filesystem backed by the Azure Storage. It uses the libfuse open source library (fuse3) to communicate with the Linux FUSE kernel module, and implements the filesystem operations using the Azure Storage REST APIs. This is the next generation <a href="https://github.com/Azure/azure-storage-fuse/tree/master">blobfuse</a></p>
@@ -336,10 +336,10 @@
 		
 		<item>
 			<title>Prometheus试玩</title>
-			<link>https://cvvz.github.io/post/prometheus/</link>
+			<link>https://cvvz.fun/post/prometheus/</link>
 			<pubDate>Mon, 20 Feb 2023 09:26:59 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/prometheus/</guid>
+			<guid>https://cvvz.fun/post/prometheus/</guid>
 			<description>Mental Model Prometheus的配置文件中，scrape_config 部分定义的是job —— 也就是去哪个target instance scrape metrics —— 但是配置文件里不关心</description>
 			<content type="html"><![CDATA[<h2 id="mental-model">Mental Model</h2>
 <ol>
@@ -464,10 +464,10 @@
 		
 		<item>
 			<title>通过read-ahead优化NFS性能</title>
-			<link>https://cvvz.github.io/post/nfs-read-ahead/</link>
+			<link>https://cvvz.fun/post/nfs-read-ahead/</link>
 			<pubDate>Sun, 16 Oct 2022 22:58:42 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/nfs-read-ahead/</guid>
+			<guid>https://cvvz.fun/post/nfs-read-ahead/</guid>
 			<description>问题 agent node操作系统版本Ubuntu 18.04，客户使用blob csi driver，使用NFS协议进行挂载，对一个25GB的文件执行sha25</description>
 			<content type="html"><![CDATA[<h2 id="问题">问题</h2>
 <p>agent node操作系统版本Ubuntu 18.04，客户使用<a href="https://github.com/kubernetes-sigs/blob-csi-driver">blob csi driver</a>，使用NFS协议进行挂载，对一个25GB的文件执行sha256sum耗时20多分钟，性能远低于使用本地磁盘。</p>
@@ -532,10 +532,10 @@
 		
 		<item>
 			<title>VolumeBindingMode</title>
-			<link>https://cvvz.github.io/post/volumebindingmode/</link>
+			<link>https://cvvz.fun/post/volumebindingmode/</link>
 			<pubDate>Sun, 16 Oct 2022 21:02:59 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/volumebindingmode/</guid>
+			<guid>https://cvvz.fun/post/volumebindingmode/</guid>
 			<description>VolumeBindingMode是storageclass的一个字段，这个字段可以设置为两个值：Immediate 或者 WaitForFir</description>
 			<content type="html"><![CDATA[<p><a href="https://kubernetes.io/docs/concepts/storage/storage-classes/#volume-binding-mode">VolumeBindingMode</a>是storageclass的一个字段，这个字段可以设置为两个值：<code>Immediate</code> 或者 <code>WaitForFirstConsumer</code>，<code>WaitForFirstConsumer</code>的作用有两个：</p>
 <ul>
@@ -624,10 +624,10 @@
 		
 		<item>
 			<title>WSL: VPN的网络问题</title>
-			<link>https://cvvz.github.io/post/wsl-vpn-issue/</link>
+			<link>https://cvvz.fun/post/wsl-vpn-issue/</link>
 			<pubDate>Mon, 22 Aug 2022 09:23:12 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/wsl-vpn-issue/</guid>
+			<guid>https://cvvz.fun/post/wsl-vpn-issue/</guid>
 			<description>最近由于工作原因，不得不将工作机切换到Windows系统，准备装个WSL作为overlay的工作环境。安装、配置都没什么问题，但是发现主机接</description>
 			<content type="html"><![CDATA[<p>最近由于工作原因，不得不将工作机切换到Windows系统，准备装个WSL作为overlay的工作环境。安装、配置都没什么问题，但是发现主机接了VPN以后，虚拟机没法科学上网了。利用周末时间折腾了一下，在这里记录一下调查和解决问题的过程。</p>
 <h2 id="基本信息">基本信息</h2>
@@ -737,10 +737,10 @@
 		
 		<item>
 			<title>k8s存储演进过程</title>
-			<link>https://cvvz.github.io/post/kubernetes-storage-history/</link>
+			<link>https://cvvz.fun/post/kubernetes-storage-history/</link>
 			<pubDate>Wed, 15 Jun 2022 13:22:45 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/kubernetes-storage-history/</guid>
+			<guid>https://cvvz.fun/post/kubernetes-storage-history/</guid>
 			<description>最近在做一些CSI相关的工作，重新看了一下之前的笔记和资料，发现kubernetes从最初简单的Volume到现在复杂的CSI的设计，有一个</description>
 			<content type="html"><![CDATA[<p>最近在做一些CSI相关的工作，重新看了一下之前的笔记和资料，发现kubernetes从最初简单的Volume到现在复杂的CSI的设计，有一个逐步演进的过程，搞清楚一个技术的历史可以帮助我们更好的理解和掌握它。</p>
 <h2 id="volume">Volume</h2>
@@ -861,10 +861,10 @@
 		
 		<item>
 			<title>谈谈kubernetes中的etcd</title>
-			<link>https://cvvz.github.io/post/etcd-and-kubernetes/</link>
+			<link>https://cvvz.fun/post/etcd-and-kubernetes/</link>
 			<pubDate>Thu, 10 Feb 2022 08:19:53 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/etcd-and-kubernetes/</guid>
+			<guid>https://cvvz.fun/post/etcd-and-kubernetes/</guid>
 			<description>revision revision是etcd中资源的全局版本号，可以看作一个全局逻辑时钟。etcd 启动的时候默认revision是 1，对任何一个key的增、</description>
 			<content type="html"><![CDATA[<h2 id="revision">revision</h2>
 <p>revision是etcd中资源的全局版本号，可以看作一个全局逻辑时钟。etcd 启动的时候默认revision是 1，对<strong>任何一个key</strong>的增、删、更新操作时都会导致其<strong>全局单调递增</strong>。</p>
@@ -934,10 +934,10 @@
 		
 		<item>
 			<title>浅谈开源集群联邦的设计和实现原理</title>
-			<link>https://cvvz.github.io/post/kube-federation/</link>
+			<link>https://cvvz.fun/post/kube-federation/</link>
 			<pubDate>Tue, 11 Jan 2022 19:47:01 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/kube-federation/</guid>
+			<guid>https://cvvz.fun/post/kube-federation/</guid>
 			<description>集群联邦 集群联邦是为了解决单k8s集群节点数量有限的问题而出现的多集群管理方案。更具体一点，集群联邦要解决三类问题： 多k8s集群管理。这一块</description>
 			<content type="html"><![CDATA[<h2 id="集群联邦">集群联邦</h2>
 <p>集群联邦是为了解决单k8s集群节点数量有限的问题而出现的多集群管理方案。更具体一点，集群联邦要解决三类问题：</p>
@@ -1049,10 +1049,10 @@
 		
 		<item>
 			<title>不同上下文中的并发问题</title>
-			<link>https://cvvz.github.io/post/atomic-in-different-context/</link>
+			<link>https://cvvz.fun/post/atomic-in-different-context/</link>
 			<pubDate>Mon, 29 Nov 2021 15:37:20 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/atomic-in-different-context/</guid>
+			<guid>https://cvvz.fun/post/atomic-in-different-context/</guid>
 			<description>问这个问题的起因是我在进行code review时，对一个读map前加读锁的代码留下了如下comment： 单独给一个读操作加锁没有必要。 但随后</description>
 			<content type="html"><![CDATA[<p>问这个问题的起因是我在进行code review时，对一个读map前加读锁的代码留下了如下comment：</p>
 <p><code>单独给一个读操作加锁没有必要。</code></p>
@@ -1106,10 +1106,10 @@
 		
 		<item>
 			<title>怎么让controller周期性的reconcile</title>
-			<link>https://cvvz.github.io/post/controller-reconcile/</link>
+			<link>https://cvvz.fun/post/controller-reconcile/</link>
 			<pubDate>Sat, 20 Nov 2021 14:17:23 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/controller-reconcile/</guid>
+			<guid>https://cvvz.fun/post/controller-reconcile/</guid>
 			<description>问题 怎么让controller每隔1分钟进行一次reconcile，而不需要借助任何外部事件触发？ 虽然解决的方法看似很简单，但是知其然还要知</description>
 			<content type="html"><![CDATA[<h2 id="问题">问题</h2>
 <p>怎么让controller每隔1分钟进行一次reconcile，而不需要借助任何外部事件触发？</p>
@@ -1246,10 +1246,10 @@
 		
 		<item>
 			<title>浅谈云原生数据库</title>
-			<link>https://cvvz.github.io/post/the-difficulty-of-distributed-db-on-cloud/</link>
+			<link>https://cvvz.fun/post/the-difficulty-of-distributed-db-on-cloud/</link>
 			<pubDate>Sun, 25 Jul 2021 08:58:26 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/the-difficulty-of-distributed-db-on-cloud/</guid>
+			<guid>https://cvvz.fun/post/the-difficulty-of-distributed-db-on-cloud/</guid>
 			<description>云原生数据库、shared-nothing、算存分离&amp;hellip; 这些概念性的东西，网上资料一大把，看完以后感觉懂了，但是尝试用自己的话复</description>
 			<content type="html"><![CDATA[<p><code>云原生数据库</code>、<code>shared-nothing</code>、<code>算存分离</code>&hellip; 这些概念性的东西，网上资料一大把，看完以后感觉懂了，但是尝试用自己的话复述出来时，又感觉没懂。</p>
 <blockquote>
@@ -1280,10 +1280,10 @@
 		
 		<item>
 			<title>重学数据结构和算法</title>
-			<link>https://cvvz.github.io/post/data-structure-and-algorithm/</link>
+			<link>https://cvvz.fun/post/data-structure-and-algorithm/</link>
 			<pubDate>Sun, 18 Jul 2021 21:14:55 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/data-structure-and-algorithm/</guid>
+			<guid>https://cvvz.fun/post/data-structure-and-algorithm/</guid>
 			<description>我的题库 我的leetcode 常见数据结构 数组 数组的时间效率很高，但是空间效率很低，而且不安全，比如访问越界造成踩内存。 很多高级语言都基于基础</description>
 			<content type="html"><![CDATA[<blockquote>
 <p><a href="https://github.com/cvvz/go-algorithm">我的题库</a></p>
@@ -1474,10 +1474,10 @@
 		
 		<item>
 			<title>重学设计模式</title>
-			<link>https://cvvz.github.io/post/design-pattern/</link>
+			<link>https://cvvz.fun/post/design-pattern/</link>
 			<pubDate>Sun, 18 Jul 2021 20:40:19 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/design-pattern/</guid>
+			<guid>https://cvvz.fun/post/design-pattern/</guid>
 			<description>设计模式和设计原则的合理应用非常依赖个人经验，用不好有时候会适得其反。学生时代时学习设计模式觉得枯燥，是因为没有实践经验。要多实践，然后再温</description>
 			<content type="html"><![CDATA[<blockquote>
 <p>设计模式和设计原则的合理应用非常依赖个人经验，用不好有时候会适得其反。学生时代时学习设计模式觉得枯燥，是因为没有实践经验。要多实践，然后再温故知新。</p>
@@ -1601,10 +1601,10 @@
 		
 		<item>
 			<title>容器2</title>
-			<link>https://cvvz.github.io/post/container2/</link>
+			<link>https://cvvz.fun/post/container2/</link>
 			<pubDate>Fri, 23 Apr 2021 16:52:20 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/container2/</guid>
+			<guid>https://cvvz.fun/post/container2/</guid>
 			<description>进程 单进程模型 容器中的1号进程对于宿主机而言就是一个普通的进程，它的父进程是runC，runC的父进程是containerd-shim。这个</description>
 			<content type="html"><![CDATA[<h2 id="进程">进程</h2>
 <h3 id="单进程模型">单进程模型</h3>
@@ -1693,10 +1693,10 @@
 		
 		<item>
 			<title>kubernetes网络之service</title>
-			<link>https://cvvz.github.io/post/k8s-network-service/</link>
+			<link>https://cvvz.fun/post/k8s-network-service/</link>
 			<pubDate>Wed, 30 Dec 2020 15:42:01 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/k8s-network-service/</guid>
+			<guid>https://cvvz.fun/post/k8s-network-service/</guid>
 			<description>在kubernetes中，service其实只是一个保存在etcd里的API对象，并不对应任何具体的实例。service即k8s中的“微服务</description>
 			<content type="html"><![CDATA[<p>在kubernetes中，service其实只是一个保存在etcd里的API对象，并不对应任何具体的实例。service即k8s中的“微服务”，而它的服务注册与发现、健康检查、负载均衡等功能其实是底层watch service、endpoint、pod等资源的DNS、kube-proxy，以及iptables等共同配合实现的。</p>
 <h2 id="从集群内部访问clusterip服务">从集群内部访问ClusterIP服务</h2>
@@ -1801,10 +1801,10 @@
 		
 		<item>
 			<title>kubernetes网络之CNI与跨节点通信原理</title>
-			<link>https://cvvz.github.io/post/k8s-network-cross-host/</link>
+			<link>https://cvvz.fun/post/k8s-network-cross-host/</link>
 			<pubDate>Wed, 30 Dec 2020 09:51:44 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/k8s-network-cross-host/</guid>
+			<guid>https://cvvz.fun/post/k8s-network-cross-host/</guid>
 			<description>初始化infra容器网络环境 当kubelet通过调用CRI的RunPodSandbox创建好PodSandbox，即infra容器后，就需要</description>
 			<content type="html"><![CDATA[<h2 id="初始化infra容器网络环境">初始化infra容器网络环境</h2>
 <p>当kubelet通过调用CRI的<a href="https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/cri-api/pkg/apis/services.go#L66">RunPodSandbox</a>创建好<code>PodSandbox</code>，即infra容器后，就需要调用<a href="https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/dockershim/network/plugins.go#L73">SetUpPod</a>方法为Pod（infra容器）创建网络环境，底层是调用CNI的<a href="https://github.com/containernetworking/cni/blob/master/libcni/api.go#L80">AddNetwork</a>为infra容器配置网络环境。</p>
@@ -1888,10 +1888,10 @@
 		
 		<item>
 			<title>kubernetes网络之DNS</title>
-			<link>https://cvvz.github.io/post/k8s-network-dns/</link>
+			<link>https://cvvz.fun/post/k8s-network-dns/</link>
 			<pubDate>Wed, 30 Dec 2020 09:41:51 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/k8s-network-dns/</guid>
+			<guid>https://cvvz.fun/post/k8s-network-dns/</guid>
 			<description>默认DNS策略 Pod默认的dns策略是 ClusterFirst，意思是先通过kubernetes的权威DNS服务器（如CoreDNS）直接解</description>
 			<content type="html"><![CDATA[<h2 id="默认dns策略">默认DNS策略</h2>
 <p>Pod默认的<a href="https://kubernetes.io/zh/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy">dns策略</a>是 <code>ClusterFirst</code>，意思是先通过kubernetes的<strong>权威DNS服务器</strong>（如CoreDNS）直接解析出A记录或CNAME记录；如果解析失败，再根据配置，将其转发给<strong>上游DNS服务器</strong>。以CoreDNS为例，它的配置文件Corefile如下所示：</p>
@@ -2023,10 +2023,10 @@
 		
 		<item>
 			<title>容器</title>
-			<link>https://cvvz.github.io/post/container/</link>
+			<link>https://cvvz.fun/post/container/</link>
 			<pubDate>Thu, 24 Dec 2020 10:33:00 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/container/</guid>
+			<guid>https://cvvz.fun/post/container/</guid>
 			<description>容器镜像 容器镜像就是容器的rootfs。通过 Dockerfile 制作容器镜像时，就相当于增加 rootfs 层。通过容器镜像运行一个容器时，操作系统内核先将镜像中的每一层联</description>
 			<content type="html"><![CDATA[<h2 id="容器镜像">容器镜像</h2>
 <p>容器镜像就是容器的rootfs。通过 Dockerfile 制作容器镜像时，就相当于增加 rootfs 层。通过容器镜像运行一个容器时，操作系统内核先将镜像中的每一层<strong>联合挂载</strong>在一个统一的目录下，然后再通过<code>chroot</code>把容器的根目录挂载到这个统一的目录下。</p>
@@ -2147,10 +2147,10 @@
 		
 		<item>
 			<title>为什么删除Pod时webhook收到三次delete请求</title>
-			<link>https://cvvz.github.io/post/k8s-3-deletion-webhook/</link>
+			<link>https://cvvz.fun/post/k8s-3-deletion-webhook/</link>
 			<pubDate>Sun, 13 Dec 2020 19:26:15 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/k8s-3-deletion-webhook/</guid>
+			<guid>https://cvvz.fun/post/k8s-3-deletion-webhook/</guid>
 			<description>最近在玩admission webhook时，发现一个奇怪的现象：我配置了validatingWebhookConfiguration使其监听</description>
 			<content type="html"><![CDATA[<p>最近在玩admission webhook时，发现一个奇怪的现象：我配置了validatingWebhookConfiguration使其监听pod的删除操作，结果发现每次删除Pod的时候，webhook会收到三次delete请求：</p>
 <figure>
@@ -2379,10 +2379,10 @@
 		
 		<item>
 			<title>Kubernetes存储之Volume实现原理</title>
-			<link>https://cvvz.github.io/post/k8s-volume/</link>
+			<link>https://cvvz.fun/post/k8s-volume/</link>
 			<pubDate>Sat, 12 Dec 2020 12:32:33 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/k8s-volume/</guid>
+			<guid>https://cvvz.fun/post/k8s-volume/</guid>
 			<description>容器运行时挂载卷的过程 如果CRI是通过dockershim实现的话，kubelet通过CRI接口去拉起一个容器，就好比是通过docker-d</description>
 			<content type="html"><![CDATA[<h2 id="容器运行时挂载卷的过程">容器运行时挂载卷的过程</h2>
 <p>如果CRI是通过dockershim实现的话，kubelet通过CRI接口去拉起一个容器，就好比是通过docker-daemon执行<code>docker run</code>命令。</p>
@@ -2463,10 +2463,10 @@
 		
 		<item>
 			<title>kubernetes网络之浅谈单机容器网络</title>
-			<link>https://cvvz.github.io/post/container-network/</link>
+			<link>https://cvvz.fun/post/container-network/</link>
 			<pubDate>Thu, 03 Dec 2020 00:16:18 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/container-network/</guid>
+			<guid>https://cvvz.fun/post/container-network/</guid>
 			<description>容器网络环境隔离怎么理解？ 容器的网络环境是隔离的，这个隔离就体现在不共用内核网络协议栈，即不共用网络协议栈要用到的数据和设备了： 传输层：端口</description>
 			<content type="html"><![CDATA[<h2 id="容器网络环境隔离怎么理解">容器网络环境隔离怎么理解？</h2>
 <p>容器的网络环境是隔离的，这个隔离就体现在不共用内核网络协议栈，即<strong>不共用网络协议栈要用到的数据和设备</strong>了：</p>
@@ -2536,10 +2536,10 @@
 		
 		<item>
 			<title>以aggregated apiserver的方式部署admission webhook</title>
-			<link>https://cvvz.github.io/post/why-aggregated-api-server-webhook/</link>
+			<link>https://cvvz.fun/post/why-aggregated-api-server-webhook/</link>
 			<pubDate>Tue, 01 Dec 2020 07:19:06 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/why-aggregated-api-server-webhook/</guid>
+			<guid>https://cvvz.fun/post/why-aggregated-api-server-webhook/</guid>
 			<description>热身概念：apiserver认证客户端的方式 apiserver为客户端提供三种认证方式： https双向认证（注意是双向认证，例如kubeco</description>
 			<content type="html"><![CDATA[<h2 id="热身概念apiserver认证客户端的方式">热身概念：apiserver认证客户端的方式</h2>
 <p>apiserver为客户端提供三种认证方式：</p>
@@ -2609,10 +2609,10 @@
 		
 		<item>
 			<title>kubectl patch</title>
-			<link>https://cvvz.github.io/post/k8s-kubectl-patch/</link>
+			<link>https://cvvz.fun/post/k8s-kubectl-patch/</link>
 			<pubDate>Sun, 22 Nov 2020 23:16:44 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/k8s-kubectl-patch/</guid>
+			<guid>https://cvvz.fun/post/k8s-kubectl-patch/</guid>
 			<description>kubectl patch 用来修改 Kubernetes API 对象的字段。可以通过 --type 参数指定三种不同类型的 patch 方式： strategic：strategic merge patch merge： json merge patch json： json</description>
 			<content type="html"><![CDATA[<p><code>kubectl patch</code> 用来修改 Kubernetes API 对象的字段。可以通过 <code>--type</code> 参数指定三种不同类型的 patch 方式：</p>
 <ul>
@@ -2661,10 +2661,10 @@
 		
 		<item>
 			<title>浅谈kubernetes监控体系</title>
-			<link>https://cvvz.github.io/post/k8s-monitor/</link>
+			<link>https://cvvz.fun/post/k8s-monitor/</link>
 			<pubDate>Fri, 20 Nov 2020 00:24:35 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/k8s-monitor/</guid>
+			<guid>https://cvvz.fun/post/k8s-monitor/</guid>
 			<description>监控和指标 理解监控 我们可以把监控系统划分为：采集指标、存储、展示和告警四个部分。 存储使用时序数据库TSDB、前端展示使用grafana、告警</description>
 			<content type="html"><![CDATA[<h2 id="监控和指标">监控和指标</h2>
 <h3 id="理解监控">理解监控</h3>
@@ -2735,10 +2735,10 @@
 		
 		<item>
 			<title>【问题定位】Celery Worker产生僵尸进程</title>
-			<link>https://cvvz.github.io/post/celery-worker-zombie/</link>
+			<link>https://cvvz.fun/post/celery-worker-zombie/</link>
 			<pubDate>Mon, 30 Mar 2020 10:36:36 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/celery-worker-zombie/</guid>
+			<guid>https://cvvz.fun/post/celery-worker-zombie/</guid>
 			<description>组内有一个基于Flask + rabbitMQ + Celery搭建的web平台，最近在上面开发需求时碰到了一个比较有趣的问题，在这里记录下来。 问题背景 web平台</description>
 			<content type="html"><![CDATA[<blockquote>
 <p>组内有一个基于Flask + rabbitMQ + Celery搭建的web平台，最近在上面开发需求时碰到了一个比较有趣的问题，在这里记录下来。</p>
@@ -2818,10 +2818,10 @@
 		
 		<item>
 			<title>用树莓派分析函数调用栈</title>
-			<link>https://cvvz.github.io/post/call-stack/</link>
+			<link>https://cvvz.fun/post/call-stack/</link>
 			<pubDate>Tue, 03 Sep 2019 18:44:12 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/call-stack/</guid>
+			<guid>https://cvvz.fun/post/call-stack/</guid>
 			<description>理解本篇文章需要具备一些GDB、汇编、寄存器的基础知识。可以在阅读的过程中碰到不理解的地方再针对性的学习。 寄存器 分析函数调用栈涉及到的几个特</description>
 			<content type="html"><![CDATA[<blockquote>
 <p>理解本篇文章需要具备一些GDB、汇编、寄存器的基础知识。可以在阅读的过程中碰到不理解的地方再针对性的学习。</p>
@@ -3093,10 +3093,10 @@
 		
 		<item>
 			<title>安全知识总结</title>
-			<link>https://cvvz.github.io/post/about-computer-security/</link>
+			<link>https://cvvz.fun/post/about-computer-security/</link>
 			<pubDate>Thu, 22 Aug 2019 12:38:04 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/about-computer-security/</guid>
+			<guid>https://cvvz.fun/post/about-computer-security/</guid>
 			<description>加解密算法 对称加密： 用同一个秘钥进行加密和解密，代表算法有AES/DES/RC2/RC5等； 非对称加密： 一次产生公钥和私钥两个秘钥，任意一个</description>
 			<content type="html"><![CDATA[<h2 id="加解密算法">加解密算法</h2>
 <p><strong>对称加密：</strong> 用同一个秘钥进行加密和解密，代表算法有<code>AES/DES/RC2/RC5</code>等；</p>
@@ -3155,10 +3155,10 @@
 		
 		<item>
 			<title>抓包解读smtp和tls协议</title>
-			<link>https://cvvz.github.io/post/smtp-with-tls/</link>
+			<link>https://cvvz.fun/post/smtp-with-tls/</link>
 			<pubDate>Sat, 22 Jun 2019 23:21:54 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/smtp-with-tls/</guid>
+			<guid>https://cvvz.fun/post/smtp-with-tls/</guid>
 			<description>背景：某进程调用 libcurl 提供的 curl_easy_perform 接口与邮箱服务器进行smtp通信时，服务端返回56(CURLE_RECV_ERROR)错误。由于服务端日志信息不足</description>
 			<content type="html"><![CDATA[<blockquote>
 <p>背景：某进程调用 <code>libcurl</code> 提供的 <code>curl_easy_perform</code> 接口与邮箱服务器进行smtp通信时，服务端返回56(<code>CURLE_RECV_ERROR</code>)错误。由于服务端日志信息不足，于是想到可以通过抓包查看建立smtp连接时的错误信息。</p>
@@ -3194,10 +3194,10 @@
 		
 		<item>
 			<title>【问题定位】异步回调函数造成踩内存</title>
-			<link>https://cvvz.github.io/post/coredump/</link>
+			<link>https://cvvz.fun/post/coredump/</link>
 			<pubDate>Thu, 13 Jun 2019 03:54:36 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/coredump/</guid>
+			<guid>https://cvvz.fun/post/coredump/</guid>
 			<description>问题现象 进程概率性coredump 分析过程 分析core文件，堆栈栈顶函数为strncmp，coredump的原因是给strncmp传递的字符</description>
 			<content type="html"><![CDATA[<h2 id="问题现象">问题现象</h2>
 <p>进程概率性coredump</p>
@@ -3223,10 +3223,10 @@
 		
 		<item>
 			<title>gdb中的多线程和信号处理</title>
-			<link>https://cvvz.github.io/post/gdb-muti-process-and-signal-handle/</link>
+			<link>https://cvvz.fun/post/gdb-muti-process-and-signal-handle/</link>
 			<pubDate>Mon, 10 Jun 2019 11:44:52 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/gdb-muti-process-and-signal-handle/</guid>
+			<guid>https://cvvz.fun/post/gdb-muti-process-and-signal-handle/</guid>
 			<description>多线程调试 使用GDB调试多线程时，控制程序的执行模式主要分两种：all-stop 模式和 non-stop 模式。 All-Stop 任何一个线程在断点处hang住时，所有其他线</description>
 			<content type="html"><![CDATA[<h2 id="多线程调试">多线程调试</h2>
 <p>使用GDB调试多线程时，控制程序的执行模式主要分两种：all-stop 模式和 non-stop 模式。</p>
@@ -3282,10 +3282,10 @@
 		
 		<item>
 			<title>解剖进程虚拟内存空间</title>
-			<link>https://cvvz.github.io/post/anatomy-of-a-program-in-memory/</link>
+			<link>https://cvvz.fun/post/anatomy-of-a-program-in-memory/</link>
 			<pubDate>Fri, 07 Jun 2019 23:14:03 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/anatomy-of-a-program-in-memory/</guid>
+			<guid>https://cvvz.fun/post/anatomy-of-a-program-in-memory/</guid>
 			<description>对于32位 x86 Linux操作系统，典型的进程地址空间如下图所示： 每一个进程运行在各自独立的虚拟内存空间中，从0x00000000到0xFFFF</description>
 			<content type="html"><![CDATA[<p>对于<strong>32位 x86 Linux操作系统</strong>，典型的进程地址空间如下图所示：</p>
 <figure>
@@ -3335,10 +3335,10 @@
 		
 		<item>
 			<title>system系统调用探秘</title>
-			<link>https://cvvz.github.io/post/system-and-shell/</link>
+			<link>https://cvvz.fun/post/system-and-shell/</link>
 			<pubDate>Thu, 30 May 2019 00:28:40 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/system-and-shell/</guid>
+			<guid>https://cvvz.fun/post/system-and-shell/</guid>
 			<description>6月3日更新 新的实验又发现使用/bin/sh和书中行为一致，但使用/bin/bash的行为和本文中的实验一致，看来是不同shell的底层的实</description>
 			<content type="html"><![CDATA[<blockquote>
 <p><strong>6月3日更新</strong></p>
@@ -3407,10 +3407,10 @@
 		
 		<item>
 			<title>【问题定位】串口登录失败</title>
-			<link>https://cvvz.github.io/post/arm-login-failed/</link>
+			<link>https://cvvz.fun/post/arm-login-failed/</link>
 			<pubDate>Fri, 24 May 2019 02:45:41 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/arm-login-failed/</guid>
+			<guid>https://cvvz.fun/post/arm-login-failed/</guid>
 			<description>问题现象 通过串口无法正常登录ARM设备，shell闪退。 问题分析 首先梳理一下SSH登录和串口登录两种方式的流程： 两种登录方式首先都要经过PA</description>
 			<content type="html"><![CDATA[<h2 id="问题现象">问题现象</h2>
 <p>通过串口无法正常登录ARM设备，shell闪退。</p>
@@ -3430,10 +3430,10 @@
 		
 		<item>
 			<title>【问题定位】/bin/bash无权限导致SSH登录失败</title>
-			<link>https://cvvz.github.io/post/login-permission-denied/</link>
+			<link>https://cvvz.fun/post/login-permission-denied/</link>
 			<pubDate>Thu, 23 May 2019 02:21:56 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/login-permission-denied/</guid>
+			<guid>https://cvvz.fun/post/login-permission-denied/</guid>
 			<description>问题现象 SSH登录主机失败，提示错误：/bin/bash: Permission denied。 分析过程 Linux处理SSH远程登录的流程如下： SSHD进程后台监</description>
 			<content type="html"><![CDATA[<h2 id="问题现象">问题现象</h2>
 <p>SSH登录主机失败，提示错误：<code>/bin/bash: Permission denied</code>。</p>
@@ -3453,10 +3453,10 @@
 		
 		<item>
 			<title>记一次编译错误的解决过程</title>
-			<link>https://cvvz.github.io/post/compile-error/</link>
+			<link>https://cvvz.fun/post/compile-error/</link>
 			<pubDate>Thu, 01 Nov 2018 20:31:15 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/compile-error/</guid>
+			<guid>https://cvvz.fun/post/compile-error/</guid>
 			<description>最近开发新的需求需要使用某个外部模块的库文件，该模块在文档中提供了一个demo，但makefile文件编译报错。通过摸索和学习最终把demo</description>
 			<content type="html"><![CDATA[<p>最近开发新的需求需要使用某个外部模块的库文件，该模块在文档中提供了一个demo，但makefile文件编译报错。通过摸索和学习最终把demo编译成功并运行起来，下面记录一下过程中碰到的问题并进行总结。</p>
 <h2 id="so-not-found">so not found</h2>
@@ -3493,10 +3493,10 @@
 		
 		<item>
 			<title>动态链接库的版本控制</title>
-			<link>https://cvvz.github.io/post/version-control-of-shared-object/</link>
+			<link>https://cvvz.fun/post/version-control-of-shared-object/</link>
 			<pubDate>Sat, 20 Oct 2018 21:00:51 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/version-control-of-shared-object/</guid>
+			<guid>https://cvvz.fun/post/version-control-of-shared-object/</guid>
 			<description>DLL Hell DLL Hell：同一台机器上，运行着A和B两个程序，他们使用了同一个so；程序A在升级时使用新的so直接覆盖老的so，此时可能会造成程序B无</description>
 			<content type="html"><![CDATA[<h2 id="dll-hell">DLL Hell</h2>
 <p><strong><a href="https://en.wikipedia.org/wiki/DLL_Hell">DLL Hell</a></strong>：同一台机器上，运行着A和B两个程序，他们使用了同一个so；程序A在升级时使用新的so<strong>直接覆盖</strong>老的so，此时可能会造成程序B无法正常运行。</p>
@@ -3543,10 +3543,10 @@
 		
 		<item>
 			<title>关于进程和线程的一些思考</title>
-			<link>https://cvvz.github.io/post/process-and-thread/</link>
+			<link>https://cvvz.fun/post/process-and-thread/</link>
 			<pubDate>Sat, 23 Jun 2018 20:34:56 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/process-and-thread/</guid>
+			<guid>https://cvvz.fun/post/process-and-thread/</guid>
 			<description>从“程序”开始 对于UNIX操作系统，程序是存放在磁盘上的ELF文件（可以通过file命令查看文件类型） 对于windows操作系统，程序是存放</description>
 			<content type="html"><![CDATA[<h2 id="从程序开始">从“程序”开始</h2>
 <ul>
@@ -3580,10 +3580,10 @@
 		
 		<item>
 			<title>Git笔记</title>
-			<link>https://cvvz.github.io/post/usage-of-git/</link>
+			<link>https://cvvz.fun/post/usage-of-git/</link>
 			<pubDate>Sat, 02 Jun 2018 23:41:24 +0800</pubDate>
 			
-			<guid>https://cvvz.github.io/post/usage-of-git/</guid>
+			<guid>https://cvvz.fun/post/usage-of-git/</guid>
 			<description>整理一下最近学习的git知识，以及平时常用的git功能。 .git 使用git init或clone一个远端仓，会在本地建立一个.git目录。这个目录是</description>
 			<content type="html"><![CDATA[<blockquote>
 <p>整理一下最近学习的git知识，以及平时常用的git功能。</p>

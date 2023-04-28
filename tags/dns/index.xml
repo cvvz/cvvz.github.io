@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>DNS on cvvz&#39;s Blog</title>
-    <link>https://cvvz.github.io/tags/dns/</link>
+    <link>https://cvvz.fun/tags/dns/</link>
     <description>Recent content in DNS on cvvz&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Wed, 30 Dec 2020 09:41:51 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/dns/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 30 Dec 2020 09:41:51 +0800</lastBuildDate><atom:link href="https://cvvz.fun/tags/dns/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>kubernetes网络之DNS</title>
-      <link>https://cvvz.github.io/post/k8s-network-dns/</link>
+      <link>https://cvvz.fun/post/k8s-network-dns/</link>
       <pubDate>Wed, 30 Dec 2020 09:41:51 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/post/k8s-network-dns/</guid>
+      <guid>https://cvvz.fun/post/k8s-network-dns/</guid>
       <description>默认DNS策略 Pod默认的dns策略是 ClusterFirst，意思是先通过kubernetes的权威DNS服务器（如CoreDNS）直接解</description>
     </item>
     

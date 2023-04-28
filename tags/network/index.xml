@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>network on cvvz&#39;s Blog</title>
-    <link>https://cvvz.github.io/tags/network/</link>
+    <link>https://cvvz.fun/tags/network/</link>
     <description>Recent content in network on cvvz&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Mon, 22 Aug 2022 09:23:12 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/network/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 22 Aug 2022 09:23:12 +0800</lastBuildDate><atom:link href="https://cvvz.fun/tags/network/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>WSL: VPN的网络问题</title>
-      <link>https://cvvz.github.io/post/wsl-vpn-issue/</link>
+      <link>https://cvvz.fun/post/wsl-vpn-issue/</link>
       <pubDate>Mon, 22 Aug 2022 09:23:12 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/post/wsl-vpn-issue/</guid>
+      <guid>https://cvvz.fun/post/wsl-vpn-issue/</guid>
       <description>最近由于工作原因，不得不将工作机切换到Windows系统，准备装个WSL作为overlay的工作环境。安装、配置都没什么问题，但是发现主机接</description>
     </item>
     

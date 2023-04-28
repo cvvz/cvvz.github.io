@@ -2,36 +2,36 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>golang on cvvz&#39;s Blog</title>
-    <link>https://cvvz.github.io/tags/golang/</link>
+    <link>https://cvvz.fun/tags/golang/</link>
     <description>Recent content in golang on cvvz&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Mon, 29 Nov 2021 15:37:20 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/golang/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 29 Nov 2021 15:37:20 +0800</lastBuildDate><atom:link href="https://cvvz.fun/tags/golang/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>不同上下文中的并发问题</title>
-      <link>https://cvvz.github.io/post/atomic-in-different-context/</link>
+      <link>https://cvvz.fun/post/atomic-in-different-context/</link>
       <pubDate>Mon, 29 Nov 2021 15:37:20 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/post/atomic-in-different-context/</guid>
+      <guid>https://cvvz.fun/post/atomic-in-different-context/</guid>
       <description>问这个问题的起因是我在进行code review时，对一个读map前加读锁的代码留下了如下comment： 单独给一个读操作加锁没有必要。 但随后</description>
     </item>
     
     <item>
       <title>重学数据结构和算法</title>
-      <link>https://cvvz.github.io/post/data-structure-and-algorithm/</link>
+      <link>https://cvvz.fun/post/data-structure-and-algorithm/</link>
       <pubDate>Sun, 18 Jul 2021 21:14:55 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/post/data-structure-and-algorithm/</guid>
+      <guid>https://cvvz.fun/post/data-structure-and-algorithm/</guid>
       <description>我的题库 我的leetcode 常见数据结构 数组 数组的时间效率很高，但是空间效率很低，而且不安全，比如访问越界造成踩内存。 很多高级语言都基于基础</description>
     </item>
     
     <item>
       <title>重学设计模式</title>
-      <link>https://cvvz.github.io/post/design-pattern/</link>
+      <link>https://cvvz.fun/post/design-pattern/</link>
       <pubDate>Sun, 18 Jul 2021 20:40:19 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/post/design-pattern/</guid>
+      <guid>https://cvvz.fun/post/design-pattern/</guid>
       <description>设计模式和设计原则的合理应用非常依赖个人经验，用不好有时候会适得其反。学生时代时学习设计模式觉得枯燥，是因为没有实践经验。要多实践，然后再温</description>
     </item>
     

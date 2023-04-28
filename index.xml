@@ -2,189 +2,189 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>cvvz&#39;s Blog</title>
-    <link>https://cvvz.github.io/</link>
+    <link>https://cvvz.fun/</link>
     <description>Recent content on cvvz&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Wed, 05 Apr 2023 08:56:03 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 05 Apr 2023 08:56:03 +0800</lastBuildDate><atom:link href="https://cvvz.fun/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Ginkgo源码</title>
-      <link>https://cvvz.github.io/post/ginkgo/</link>
+      <link>https://cvvz.fun/post/ginkgo/</link>
       <pubDate>Wed, 05 Apr 2023 08:56:03 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/post/ginkgo/</guid>
+      <guid>https://cvvz.fun/post/ginkgo/</guid>
       <description>ginkgo cmd 执行ginkgo cmd默认运行的是ginkgo run 入口函数 1func (r *SpecRunner) RunSpecs(args []string, additionalArgs []string) { 主要做两件事，编译和运行suite 编译 使用 go test -c -o 得到.test</description>
     </item>
     
     <item>
       <title>go-daemon 源码</title>
-      <link>https://cvvz.github.io/post/go-daemon/</link>
+      <link>https://cvvz.fun/post/go-daemon/</link>
       <pubDate>Sun, 19 Mar 2023 09:38:40 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/post/go-daemon/</guid>
+      <guid>https://cvvz.fun/post/go-daemon/</guid>
       <description>go-daemon是golang的fork问题的一种解决方案，在解决blobfuse2 mount问题时看了一遍go-daemon源码，在这里</description>
     </item>
     
     <item>
       <title>Blobfuse2实现background mount</title>
-      <link>https://cvvz.github.io/post/blobfuse2/</link>
+      <link>https://cvvz.fun/post/blobfuse2/</link>
       <pubDate>Sat, 18 Mar 2023 14:27:04 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/post/blobfuse2/</guid>
+      <guid>https://cvvz.fun/post/blobfuse2/</guid>
       <description>Blobfuse2 is an open source project developed to provide a virtual filesystem backed by the Azure Storage. It uses the libfuse open source library (fuse3) to communicate with the Linux FUSE kernel module, and implements the filesystem operations using the Azure Storage REST APIs. This is the next generation blobfuse blob csi driver 最近从blobfuse v1切换到 v</description>
     </item>
     
     <item>
       <title>Prometheus试玩</title>
-      <link>https://cvvz.github.io/post/prometheus/</link>
+      <link>https://cvvz.fun/post/prometheus/</link>
       <pubDate>Mon, 20 Feb 2023 09:26:59 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/post/prometheus/</guid>
+      <guid>https://cvvz.fun/post/prometheus/</guid>
       <description>Mental Model Prometheus的配置文件中，scrape_config 部分定义的是job —— 也就是去哪个target instance scrape metrics —— 但是配置文件里不关心</description>
     </item>
     
     <item>
       <title>少有人走的路</title>
-      <link>https://cvvz.github.io/read/the-road-less-traveled/</link>
+      <link>https://cvvz.fun/read/the-road-less-traveled/</link>
       <pubDate>Wed, 21 Dec 2022 14:28:19 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/read/the-road-less-traveled/</guid>
+      <guid>https://cvvz.fun/read/the-road-less-traveled/</guid>
       <description>最近决定重读两本对我人生影响很大的书：《少有人走的路》和《亲密关系》。 《少有人走的路》是在上大学时看的，那时我一直饱受一些心理问题的困扰，比</description>
     </item>
     
     <item>
       <title>技术和知识</title>
-      <link>https://cvvz.github.io/thinking/skill-and-knowledge/</link>
+      <link>https://cvvz.fun/thinking/skill-and-knowledge/</link>
       <pubDate>Sun, 16 Oct 2022 23:07:37 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/thinking/skill-and-knowledge/</guid>
+      <guid>https://cvvz.fun/thinking/skill-and-knowledge/</guid>
       <description>最近看了一部很有意思的小短片，一位工程师创造了一辆自行车，和普通自行车唯一的区别是把手的转向和车轮的转向是相反的：当你向左（右）转，车轮会向</description>
     </item>
     
     <item>
       <title>通过read-ahead优化NFS性能</title>
-      <link>https://cvvz.github.io/post/nfs-read-ahead/</link>
+      <link>https://cvvz.fun/post/nfs-read-ahead/</link>
       <pubDate>Sun, 16 Oct 2022 22:58:42 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/post/nfs-read-ahead/</guid>
+      <guid>https://cvvz.fun/post/nfs-read-ahead/</guid>
       <description>问题 agent node操作系统版本Ubuntu 18.04，客户使用blob csi driver，使用NFS协议进行挂载，对一个25GB的文件执行sha25</description>
     </item>
     
     <item>
       <title>VolumeBindingMode</title>
-      <link>https://cvvz.github.io/post/volumebindingmode/</link>
+      <link>https://cvvz.fun/post/volumebindingmode/</link>
       <pubDate>Sun, 16 Oct 2022 21:02:59 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/post/volumebindingmode/</guid>
+      <guid>https://cvvz.fun/post/volumebindingmode/</guid>
       <description>VolumeBindingMode是storageclass的一个字段，这个字段可以设置为两个值：Immediate 或者 WaitForFir</description>
     </item>
     
     <item>
       <title>刻意练习</title>
-      <link>https://cvvz.github.io/read/ke-yi-lian-xi/</link>
+      <link>https://cvvz.fun/read/ke-yi-lian-xi/</link>
       <pubDate>Wed, 12 Oct 2022 10:43:51 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/read/ke-yi-lian-xi/</guid>
+      <guid>https://cvvz.fun/read/ke-yi-lian-xi/</guid>
       <description></description>
     </item>
     
     <item>
       <title>终身成长</title>
-      <link>https://cvvz.github.io/read/growth-mindset/</link>
+      <link>https://cvvz.fun/read/growth-mindset/</link>
       <pubDate>Thu, 01 Sep 2022 17:46:14 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/read/growth-mindset/</guid>
+      <guid>https://cvvz.fun/read/growth-mindset/</guid>
       <description>永远不要定性：不要定性自己，不要定性别人，不要放大定性的声音。把一切都看轻一点，重要的只是你是放弃还是继续。 人生的两种闭环：可以通过自我封闭</description>
     </item>
     
     <item>
       <title>WSL: VPN的网络问题</title>
-      <link>https://cvvz.github.io/post/wsl-vpn-issue/</link>
+      <link>https://cvvz.fun/post/wsl-vpn-issue/</link>
       <pubDate>Mon, 22 Aug 2022 09:23:12 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/post/wsl-vpn-issue/</guid>
+      <guid>https://cvvz.fun/post/wsl-vpn-issue/</guid>
       <description>最近由于工作原因，不得不将工作机切换到Windows系统，准备装个WSL作为overlay的工作环境。安装、配置都没什么问题，但是发现主机接</description>
     </item>
     
     <item>
       <title>富爸爸穷爸爸</title>
-      <link>https://cvvz.github.io/read/rich-dad/</link>
+      <link>https://cvvz.fun/read/rich-dad/</link>
       <pubDate>Tue, 05 Jul 2022 22:03:58 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/read/rich-dad/</guid>
+      <guid>https://cvvz.fun/read/rich-dad/</guid>
       <description>从很多渠道都听过这本书，很多人推荐这本书作为投资理财类的入门书籍。本书目的在于影响和改变世界观（金钱观），而不讲方法论。我把这本书的主要内容</description>
     </item>
     
     <item>
       <title>弱传播</title>
-      <link>https://cvvz.github.io/read/weak-communication/</link>
+      <link>https://cvvz.fun/read/weak-communication/</link>
       <pubDate>Tue, 28 Jun 2022 08:47:07 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/read/weak-communication/</guid>
+      <guid>https://cvvz.fun/read/weak-communication/</guid>
       <description>一本关于舆论和传播的书。没有读完，看完了80%的内容，认真看了的部分可能只有50%。理论和泛泛而谈的东西太多了，自创了很多概念、定理，八股文</description>
     </item>
     
     <item>
       <title>k8s存储演进过程</title>
-      <link>https://cvvz.github.io/post/kubernetes-storage-history/</link>
+      <link>https://cvvz.fun/post/kubernetes-storage-history/</link>
       <pubDate>Wed, 15 Jun 2022 13:22:45 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/post/kubernetes-storage-history/</guid>
+      <guid>https://cvvz.fun/post/kubernetes-storage-history/</guid>
       <description>最近在做一些CSI相关的工作，重新看了一下之前的笔记和资料，发现kubernetes从最初简单的Volume到现在复杂的CSI的设计，有一个</description>
     </item>
     
     <item>
       <title>黑天鹅</title>
-      <link>https://cvvz.github.io/read/black-swan/</link>
+      <link>https://cvvz.fun/read/black-swan/</link>
       <pubDate>Sun, 05 Jun 2022 22:47:51 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/read/black-swan/</guid>
+      <guid>https://cvvz.fun/read/black-swan/</guid>
       <description>这也是一本很经典的书。kindle给我推荐这本书可能是因为我读了《思考，快与慢》，这两本书的作者都很赞同对方的理论和观点，在各自的书里也都引</description>
     </item>
     
     <item>
       <title>思考，快与慢</title>
-      <link>https://cvvz.github.io/read/thinking-fast-and-slow/</link>
+      <link>https://cvvz.fun/read/thinking-fast-and-slow/</link>
       <pubDate>Wed, 04 May 2022 17:57:56 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/read/thinking-fast-and-slow/</guid>
+      <guid>https://cvvz.fun/read/thinking-fast-and-slow/</guid>
       <description>心理学的经典著作。这本书前前后后花了大半年时间才看完，一是内容太多，二是有些概念要花些时间才能理解，三是中文翻译实在很生硬，很多地方和机翻差</description>
     </item>
     
     <item>
       <title>呐喊</title>
-      <link>https://cvvz.github.io/read/na-han/</link>
+      <link>https://cvvz.fun/read/na-han/</link>
       <pubDate>Fri, 15 Apr 2022 19:24:10 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/read/na-han/</guid>
+      <guid>https://cvvz.fun/read/na-han/</guid>
       <description>看完《沉默的大多数》，再重新看《呐喊》（上一次看是上小学的时候，完全没看懂，也不知道可以问谁）。我有些悲观的觉得，有着5000年悠久历史的中</description>
     </item>
     
     <item>
       <title>沉默的大多数</title>
-      <link>https://cvvz.github.io/read/the-silent-majority/</link>
+      <link>https://cvvz.fun/read/the-silent-majority/</link>
       <pubDate>Wed, 13 Apr 2022 08:16:59 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/read/the-silent-majority/</guid>
+      <guid>https://cvvz.fun/read/the-silent-majority/</guid>
       <description>大学的时候看了王小波的《白银时代》，以前从来没有看过这样的小说，感觉很不传统，这让一直接受传统教育的我很喜欢。然后又去看了序言里提到的乔治奥</description>
     </item>
     
     <item>
       <title>贪婪的多巴胺</title>
-      <link>https://cvvz.github.io/read/the-molecule-of-more/</link>
+      <link>https://cvvz.fun/read/the-molecule-of-more/</link>
       <pubDate>Tue, 29 Mar 2022 14:28:19 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/read/the-molecule-of-more/</guid>
+      <guid>https://cvvz.fun/read/the-molecule-of-more/</guid>
       <description>Kindle精准推送的一本书。作为一名行为心理学爱好者，看完书的前言就被立刻吸引住了。以前自以为知道多巴胺是什么 —— 吃甜食就会释放多巴胺，让</description>
     </item>
     
     <item>
       <title>底层逻辑</title>
-      <link>https://cvvz.github.io/read/the-underlying-logic/</link>
+      <link>https://cvvz.fun/read/the-underlying-logic/</link>
       <pubDate>Fri, 18 Feb 2022 09:07:55 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/read/the-underlying-logic/</guid>
+      <guid>https://cvvz.fun/read/the-underlying-logic/</guid>
       <description>来自朋友圈的推荐，作者刘润。内容挺有趣，读起来不费劲，用故事和案例使得自己的观点变得容易理解，思考问题的角度也令人耳目一新。 不过没有专业性，</description>
     </item>
     

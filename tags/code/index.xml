@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>code on cvvz&#39;s Blog</title>
-    <link>https://cvvz.github.io/tags/code/</link>
+    <link>https://cvvz.fun/tags/code/</link>
     <description>Recent content in code on cvvz&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Mon, 29 Nov 2021 15:37:20 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/code/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 29 Nov 2021 15:37:20 +0800</lastBuildDate><atom:link href="https://cvvz.fun/tags/code/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>不同上下文中的并发问题</title>
-      <link>https://cvvz.github.io/post/atomic-in-different-context/</link>
+      <link>https://cvvz.fun/post/atomic-in-different-context/</link>
       <pubDate>Mon, 29 Nov 2021 15:37:20 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/post/atomic-in-different-context/</guid>
+      <guid>https://cvvz.fun/post/atomic-in-different-context/</guid>
       <description>问这个问题的起因是我在进行code review时，对一个读map前加读锁的代码留下了如下comment： 单独给一个读操作加锁没有必要。 但随后</description>
     </item>
     

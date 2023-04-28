@@ -2,27 +2,27 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>存储 on cvvz&#39;s Blog</title>
-    <link>https://cvvz.github.io/tags/%E5%AD%98%E5%82%A8/</link>
+    <link>https://cvvz.fun/tags/%E5%AD%98%E5%82%A8/</link>
     <description>Recent content in 存储 on cvvz&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Sun, 16 Oct 2022 22:58:42 +0800</lastBuildDate><atom:link href="https://cvvz.github.io/tags/%E5%AD%98%E5%82%A8/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 16 Oct 2022 22:58:42 +0800</lastBuildDate><atom:link href="https://cvvz.fun/tags/%E5%AD%98%E5%82%A8/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>通过read-ahead优化NFS性能</title>
-      <link>https://cvvz.github.io/post/nfs-read-ahead/</link>
+      <link>https://cvvz.fun/post/nfs-read-ahead/</link>
       <pubDate>Sun, 16 Oct 2022 22:58:42 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/post/nfs-read-ahead/</guid>
+      <guid>https://cvvz.fun/post/nfs-read-ahead/</guid>
       <description>问题 agent node操作系统版本Ubuntu 18.04，客户使用blob csi driver，使用NFS协议进行挂载，对一个25GB的文件执行sha25</description>
     </item>
     
     <item>
       <title>浅谈云原生数据库</title>
-      <link>https://cvvz.github.io/post/the-difficulty-of-distributed-db-on-cloud/</link>
+      <link>https://cvvz.fun/post/the-difficulty-of-distributed-db-on-cloud/</link>
       <pubDate>Sun, 25 Jul 2021 08:58:26 +0800</pubDate>
       
-      <guid>https://cvvz.github.io/post/the-difficulty-of-distributed-db-on-cloud/</guid>
+      <guid>https://cvvz.fun/post/the-difficulty-of-distributed-db-on-cloud/</guid>
       <description>云原生数据库、shared-nothing、算存分离&amp;hellip; 这些概念性的东西，网上资料一大把，看完以后感觉懂了，但是尝试用自己的话复</description>
     </item>
     
