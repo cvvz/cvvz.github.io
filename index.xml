@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Wed, 05 Apr 2023 08:56:03 +0800</lastBuildDate><atom:link href="https://cvvz.fun/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 28 Apr 2023 23:14:10 +0800</lastBuildDate><atom:link href="https://cvvz.fun/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>科学上网--k8s版</title>
+      <link>https://cvvz.fun/post/kexueshangwang/</link>
+      <pubDate>Fri, 28 Apr 2023 23:14:10 +0800</pubDate>
+      
+      <guid>https://cvvz.fun/post/kexueshangwang/</guid>
+      <description>昨天折腾了一下，把自建机场迁移到了自己建的aks集群上，公司每个月150刀的羊毛薅的太爽了🤣 原文地址：https://github.com/</description>
+    </item>
+    
     <item>
       <title>Ginkgo源码</title>
       <link>https://cvvz.fun/post/ginkgo/</link>
@@ -177,15 +186,6 @@
       
       <guid>https://cvvz.fun/read/the-molecule-of-more/</guid>
       <description>Kindle精准推送的一本书。作为一名行为心理学爱好者，看完书的前言就被立刻吸引住了。以前自以为知道多巴胺是什么 —— 吃甜食就会释放多巴胺，让</description>
-    </item>
-    
-    <item>
-      <title>底层逻辑</title>
-      <link>https://cvvz.fun/read/the-underlying-logic/</link>
-      <pubDate>Fri, 18 Feb 2022 09:07:55 +0800</pubDate>
-      
-      <guid>https://cvvz.fun/read/the-underlying-logic/</guid>
-      <description>来自朋友圈的推荐，作者刘润。内容挺有趣，读起来不费劲，用故事和案例使得自己的观点变得容易理解，思考问题的角度也令人耳目一新。 不过没有专业性，</description>
     </item>
     
   </channel>

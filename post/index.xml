@@ -6,8 +6,153 @@
 		<generator>Hugo -- gohugo.io</generator>
 		<language>zh-hans</language>
 		<copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-		<lastBuildDate>Wed, 05 Apr 2023 08:56:03 +0800</lastBuildDate>
+		<lastBuildDate>Fri, 28 Apr 2023 23:14:10 +0800</lastBuildDate>
 		<atom:link href="https://cvvz.fun/post/index.xml" rel="self" type="application/rss+xml" />
+		
+		<item>
+			<title>科学上网--k8s版</title>
+			<link>https://cvvz.fun/post/kexueshangwang/</link>
+			<pubDate>Fri, 28 Apr 2023 23:14:10 +0800</pubDate>
+			
+			<guid>https://cvvz.fun/post/kexueshangwang/</guid>
+			<description>昨天折腾了一下，把自建机场迁移到了自己建的aks集群上，公司每个月150刀的羊毛薅的太爽了🤣 原文地址：https://github.com/</description>
+			<content type="html"><![CDATA[<blockquote>
+<p>昨天折腾了一下，把自建机场迁移到了自己建的aks集群上，公司每个月150刀的羊毛薅的太爽了🤣</p>
+<p>原文地址：<a href="https://github.com/cvvz/k8s-playground/tree/master/gost#%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91-k8s%E7%89%88">https://github.com/cvvz/k8s-playground/tree/master/gost#科学上网-k8s版</a></p>
+</blockquote>
+<h2 id="pre-requisite">pre-requisite</h2>
+<ol>
+<li>购买域名</li>
+<li>准备好以下命令行工具: <code>envsubst</code>, <code>cmctl</code>, <code>kubectl</code>, <code>az</code>, <code>helm</code></li>
+</ol>
+<h2 id="step-1-配置dns">step 1: 配置DNS</h2>
+<h3 id="step-11-创建-azure-dns-zone">step 1.1: 创建 azure dns zone</h3>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span><span class="nb">export</span> <span class="nv">AZURE_DEFAULTS_GROUP</span><span class="o">=</span>your-resource-group
+<span class="ln">2</span><span class="nb">export</span> <span class="nv">DOMAIN_NAME</span><span class="o">=</span>your-domain-name 
+<span class="ln">3</span>az network dns zone create --name <span class="nv">$DOMAIN_NAME</span>
+</code></pre></div><h3 id="step-12-在域名提供商的控制台中设置域名dns的ns-records为azure-authoritative-dns-servers">step 1.2: 在域名提供商的控制台中设置域名DNS的<code>NS records</code>为<code>Azure authoritative DNS servers</code></h3>
+<p>执行以下命令获取 azure authoritative DNS servers 列表：</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>az network dns zone show --name <span class="nv">$DOMAIN_NAME</span> --query nameServers -o tsv
+</code></pre></div><h3 id="step-13-等待ns-record-传播完成可能需要几个小时">step 1.3: 等待ns record 传播完成，可能需要几个小时。</h3>
+<p>通过以下命令验证是否能成功解析到ns record：</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>dig <span class="nv">$DOMAIN_NAME</span> ns +trace +nodnssec
+</code></pre></div><h2 id="step-2-enable-workload-identity-feature">step 2: Enable workload identity feature</h2>
+<blockquote>
+<p>cert-manager 需要调用azure api，使用<a href="https://learn.microsoft.com/en-us/azure/aks/workload-identity-overview">workload identity</a>进行鉴权</p>
+</blockquote>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>az extension add --name aks-preview
+<span class="ln">2</span>
+<span class="ln">3</span>az feature register --namespace <span class="s2">&#34;Microsoft.ContainerService&#34;</span> --name <span class="s2">&#34;EnableWorkloadIdentityPreview&#34;</span>
+<span class="ln">4</span>
+<span class="ln">5</span><span class="c1"># 执行以下命令，直到状态变为 Registered：</span>
+<span class="ln">6</span>az feature list -o table --query <span class="s2">&#34;[?contains(name, &#39;Microsoft.ContainerService/EnableWorkloadIdentityPreview&#39;)].{Name:name,State:properties.state}&#34;</span>
+<span class="ln">7</span>
+<span class="ln">8</span>az provider register --namespace Microsoft.ContainerService
+</code></pre></div><h2 id="step-3-创建aks集群">step 3： 创建aks集群</h2>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln"> 1</span><span class="nb">export</span> <span class="nv">CLUSTER</span><span class="o">=</span>your-aks-cluster-name
+<span class="ln"> 2</span><span class="c1"># region建议选择east asia，香港机房，网络延迟相对更小</span>
+<span class="ln"> 3</span><span class="nb">export</span> <span class="nv">AZURE_DEFAULTS_LOCATION</span><span class="o">=</span>eastasia
+<span class="ln"> 4</span>
+<span class="ln"> 5</span><span class="c1"># 创建集群</span>
+<span class="ln"> 6</span>az aks create -n <span class="si">${</span><span class="nv">CLUSTER</span><span class="si">}</span> <span class="se">\
+</span><span class="ln"> 7</span><span class="se"></span>--enable-oidc-issuer <span class="se">\
+</span><span class="ln"> 8</span><span class="se"></span>--enable-workload-identity 
+<span class="ln"> 9</span>
+<span class="ln">10</span>az aks get-credentials -n <span class="si">${</span><span class="nv">CLUSTER</span><span class="si">}</span>
+</code></pre></div><h2 id="step-4-部署cert-manager">step 4: 部署cert-manager</h2>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln"> 1</span>cat <span class="s">&lt;&lt;EOF &gt; /tmp/values.yaml
+</span><span class="ln"> 2</span><span class="s">podLabels:
+</span><span class="ln"> 3</span><span class="s">  azure.workload.identity/use: &#34;true&#34;
+</span><span class="ln"> 4</span><span class="s">serviceAccount:
+</span><span class="ln"> 5</span><span class="s">  labels:
+</span><span class="ln"> 6</span><span class="s">    azure.workload.identity/use: &#34;true&#34;
+</span><span class="ln"> 7</span><span class="s">EOF</span>
+<span class="ln"> 8</span>
+<span class="ln"> 9</span>helm repo add jetstack https://charts.jetstack.io
+<span class="ln">10</span>helm repo update
+<span class="ln">11</span>helm upgrade cert-manager jetstack/cert-manager <span class="se">\
+</span><span class="ln">12</span><span class="se"></span>    --install <span class="se">\
+</span><span class="ln">13</span><span class="se"></span>    --create-namespace <span class="se">\
+</span><span class="ln">14</span><span class="se"></span>    --wait <span class="se">\
+</span><span class="ln">15</span><span class="se"></span>    --namespace cert-manager <span class="se">\
+</span><span class="ln">16</span><span class="se"></span>    --set <span class="nv">installCRDs</span><span class="o">=</span><span class="nb">true</span> <span class="se">\
+</span><span class="ln">17</span><span class="se"></span>    --reuse-values <span class="se">\
+</span><span class="ln">18</span><span class="se"></span>    --values /tmp/values.yaml
+</code></pre></div><h2 id="step-5-为cert-manager配置federated-workload-identity">step 5: 为cert-manager配置federated workload identity</h2>
+<blockquote>
+<p>eastasia region不支持 workload identity，参考：<a href="https://learn.microsoft.com/en-us/azure/active-directory/workload-identities/workload-identity-federation-considerations#unsupported-regions-user-assigned-managed-identities">https://learn.microsoft.com/en-us/azure/active-directory/workload-identities/workload-identity-federation-considerations#unsupported-regions-user-assigned-managed-identities</a></p>
+<p>选择一个支持的region（比如japaneast）中创建workload identity</p>
+</blockquote>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln"> 1</span><span class="nb">export</span> <span class="nv">USER_ASSIGNED_IDENTITY_NAME</span><span class="o">=</span>your-cert-manager-identity-name
+<span class="ln"> 2</span><span class="nb">export</span> <span class="nv">IDENTITY_RG</span><span class="o">=</span>your-identity-group
+<span class="ln"> 3</span><span class="nb">export</span> <span class="nv">IDENTITY_RG_LOCATION</span><span class="o">=</span>your-identity-group-location
+<span class="ln"> 4</span>
+<span class="ln"> 5</span>az group create -n <span class="si">${</span><span class="nv">IDENTITY_RG</span><span class="si">}</span> -l <span class="si">${</span><span class="nv">IDENTITY_RG_LOCATION</span><span class="si">}</span>
+<span class="ln"> 6</span>az identity create --name <span class="s2">&#34;</span><span class="si">${</span><span class="nv">USER_ASSIGNED_IDENTITY_NAME</span><span class="si">}</span><span class="s2">&#34;</span> -g <span class="si">${</span><span class="nv">IDENTITY_RG</span><span class="si">}</span> -l <span class="si">${</span><span class="nv">IDENTITY_RG_LOCATION</span><span class="si">}</span>
+<span class="ln"> 7</span>
+<span class="ln"> 8</span><span class="nb">export</span> <span class="nv">USER_ASSIGNED_IDENTITY_CLIENT_ID</span><span class="o">=</span><span class="k">$(</span>az identity show --name <span class="s2">&#34;</span><span class="si">${</span><span class="nv">USER_ASSIGNED_IDENTITY_NAME</span><span class="si">}</span><span class="s2">&#34;</span> --query <span class="s1">&#39;clientId&#39;</span> -o tsv -g <span class="si">${</span><span class="nv">IDENTITY_RG</span><span class="si">}</span><span class="k">)</span>
+<span class="ln"> 9</span>az role assignment create <span class="se">\
+</span><span class="ln">10</span><span class="se"></span>    --role <span class="s2">&#34;DNS Zone Contributor&#34;</span> <span class="se">\
+</span><span class="ln">11</span><span class="se"></span>    --assignee <span class="nv">$USER_ASSIGNED_IDENTITY_CLIENT_ID</span> <span class="se">\
+</span><span class="ln">12</span><span class="se"></span>    --scope <span class="k">$(</span>az network dns zone show --name <span class="nv">$DOMAIN_NAME</span> -o tsv --query id<span class="k">)</span>
+<span class="ln">13</span>
+<span class="ln">14</span><span class="c1"># cert-manager的service account和namespace</span>
+<span class="ln">15</span><span class="nb">export</span> <span class="nv">SERVICE_ACCOUNT_NAME</span><span class="o">=</span>cert-manager 
+<span class="ln">16</span><span class="nb">export</span> <span class="nv">SERVICE_ACCOUNT_NAMESPACE</span><span class="o">=</span>cert-manager 
+<span class="ln">17</span>
+<span class="ln">18</span><span class="nb">export</span> <span class="nv">SERVICE_ACCOUNT_ISSUER</span><span class="o">=</span><span class="k">$(</span>az aks show --name <span class="nv">$CLUSTER</span> --query <span class="s2">&#34;oidcIssuerProfile.issuerUrl&#34;</span> -o tsv<span class="k">)</span>
+<span class="ln">19</span>az identity federated-credential create <span class="se">\
+</span><span class="ln">20</span><span class="se"></span>  --name <span class="s2">&#34;cert-manager&#34;</span> <span class="se">\
+</span><span class="ln">21</span><span class="se"></span>  --identity-name <span class="s2">&#34;</span><span class="si">${</span><span class="nv">USER_ASSIGNED_IDENTITY_NAME</span><span class="si">}</span><span class="s2">&#34;</span> <span class="se">\
+</span><span class="ln">22</span><span class="se"></span>  --issuer <span class="s2">&#34;</span><span class="si">${</span><span class="nv">SERVICE_ACCOUNT_ISSUER</span><span class="si">}</span><span class="s2">&#34;</span> <span class="se">\
+</span><span class="ln">23</span><span class="se"></span>  --subject <span class="s2">&#34;system:serviceaccount:</span><span class="si">${</span><span class="nv">SERVICE_ACCOUNT_NAMESPACE</span><span class="si">}</span><span class="s2">:</span><span class="si">${</span><span class="nv">SERVICE_ACCOUNT_NAME</span><span class="si">}</span><span class="s2">&#34;</span> <span class="se">\
+</span><span class="ln">24</span><span class="se"></span>  -g <span class="si">${</span><span class="nv">IDENTITY_RG</span><span class="si">}</span>
+</code></pre></div><h2 id="step-6-生成证书">step 6: 生成证书</h2>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln"> 1</span><span class="nb">export</span> <span class="nv">GOST_NS</span><span class="o">=</span>gost
+<span class="ln"> 2</span>kubectl create ns <span class="nv">$GOST_NS</span>
+<span class="ln"> 3</span>
+<span class="ln"> 4</span><span class="c1"># 创建issuer</span>
+<span class="ln"> 5</span><span class="nb">export</span> <span class="nv">EMAIL_ADDRESS</span><span class="o">=</span>&lt;email-address&gt; 
+<span class="ln"> 6</span><span class="nb">export</span> <span class="nv">AZURE_SUBSCRIPTION_ID</span><span class="o">=</span>&lt;your-subscription-id&gt;  
+<span class="ln"> 7</span>wget https://raw.githubusercontent.com/cvvz/k8s-playground/master/gost/clusterissuer-lets-encrypt.yaml 
+<span class="ln"> 8</span>envsubst &lt; clusterissuer-lets-encrypt.yaml <span class="p">|</span> kubectl apply -f  -
+<span class="ln"> 9</span>kubectl describe clusterissuer letsencrypt-production
+<span class="ln">10</span>
+<span class="ln">11</span><span class="c1"># 创建Certificate</span>
+<span class="ln">12</span>wget https://raw.githubusercontent.com/cvvz/k8s-playground/master/gost/certificate.yaml 
+<span class="ln">13</span>envsubst &lt; certificate.yaml <span class="p">|</span> kubectl apply -f -
+<span class="ln">14</span>
+<span class="ln">15</span><span class="c1"># 验证证书状态</span>
+<span class="ln">16</span>cmctl status certificate www -n <span class="nv">$GOST_NS</span>
+<span class="ln">17</span>cmctl inspect secret www-tls -n <span class="nv">$GOST_NS</span>
+</code></pre></div><h2 id="step-7-部署gost服务">step 7: 部署gost服务</h2>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln"> 1</span><span class="nb">export</span> <span class="nv">AZURE_LOADBALANCER_DNS_LABEL_NAME</span><span class="o">=</span>lb-<span class="k">$(</span>uuidgen<span class="k">)</span> 
+<span class="ln"> 2</span><span class="nb">export</span> <span class="nv">USER</span><span class="o">=</span>your-user-name
+<span class="ln"> 3</span><span class="nb">export</span> <span class="nv">PASSWORD</span><span class="o">=</span>your-password
+<span class="ln"> 4</span>
+<span class="ln"> 5</span><span class="c1"># deployment</span>
+<span class="ln"> 6</span>wget https://raw.githubusercontent.com/cvvz/k8s-playground/master/gost/deployment.yaml
+<span class="ln"> 7</span>envsubst &lt; deployment.yaml <span class="p">|</span> kubectl apply -f -
+<span class="ln"> 8</span><span class="c1"># service</span>
+<span class="ln"> 9</span>wget https://raw.githubusercontent.com/cvvz/k8s-playground/master/gost/service.yaml
+<span class="ln">10</span>envsubst &lt; service.yaml <span class="p">|</span> kubectl apply -f -
+</code></pre></div><h2 id="step-8-设置dns-record">step 8: 设置dns record</h2>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span><span class="c1"># 设置www A record</span>
+<span class="ln">2</span>az network dns record-set cname set-record <span class="se">\
+</span><span class="ln">3</span><span class="se"></span>    --zone-name <span class="nv">$DOMAIN_NAME</span> <span class="se">\
+</span><span class="ln">4</span><span class="se"></span>    --cname <span class="nv">$AZURE_LOADBALANCER_DNS_LABEL_NAME</span>.<span class="nv">$AZURE_DEFAULTS_LOCATION</span>.cloudapp.azure.com <span class="se">\
+</span><span class="ln">5</span><span class="se"></span>    --record-set-name www
+<span class="ln">6</span>
+<span class="ln">7</span><span class="c1"># 验证可以解析到service external ip</span>
+<span class="ln">8</span>dig www.<span class="nv">$DOMAIN_NAME</span> A
+</code></pre></div><blockquote>
+<p>不管pod和service ip怎么变化，只要<code>$AZURE_LOADBALANCER_DNS_LABEL_NAME</code>不变，域名始终会解析到service的public ip。</p>
+<p>所以就算ip被封禁，重新创建一个service生成新的public ip就行了。</p>
+</blockquote>
+<h2 id="step-9验证">step 9：验证</h2>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>curl -v <span class="s2">&#34;https://www.google.com&#34;</span> --proxy <span class="s2">&#34;https://www.</span><span class="nv">$DOMAIN_NAME</span><span class="s2">&#34;</span> --proxy-user <span class="nv">$USER</span>:<span class="nv">$PASSWORD</span>
+</code></pre></div>]]></content>
+		</item>
 		
 		<item>
 			<title>Ginkgo源码</title>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="google-site-verification" content="Wp3QtEkIlF0ZvtKx90lPmoXyH39d-pmBhiTyTbba9L4" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta itemprop="name" content="科学上网--k8s版">
+<meta itemprop="description" content="昨天折腾了一下，把自建机场迁移到了自己建的aks集群上，公司每个月150刀的羊毛薅的太爽了🤣 原文地址：https://github.com/">
+<meta itemprop="datePublished" content="2023-04-28T23:14:10+08:00" />
+<meta itemprop="dateModified" content="2023-05-07T21:03:04+08:00" />
+<meta itemprop="wordCount" content="1226">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta property="og:title" content="科学上网--k8s版" />
+<meta property="og:description" content="昨天折腾了一下，把自建机场迁移到了自己建的aks集群上，公司每个月150刀的羊毛薅的太爽了🤣 原文地址：https://github.com/" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://cvvz.fun/post/kexueshangwang/" />
+<meta property="article:published_time" content="2023-04-28T23:14:10+08:00" />
+<meta property="article:modified_time" content="2023-05-07T21:03:04+08:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="科学上网--k8s版"/>
+<meta name="twitter:description" content="昨天折腾了一下，把自建机场迁移到了自己建的aks集群上，公司每个月150刀的羊毛薅的太爽了🤣 原文地址：https://github.com/"/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>科学上网--k8s版</title>
+	<link rel="stylesheet" href="https://cvvz.fun/css/style.min.7a1ec200e9f3394f73c6eda58011808507a3b24318de81e1e343f22a2470caef.css">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp faster">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://cvvz.fun">cvvz&#39;s Blog</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					<a href="https://cvvz.fun/post/">Posts</a>
+					<a href="https://cvvz.fun/read/">Reading</a>
+					<a href="https://cvvz.fun/thinking/">Thoughts</a>
+					<a href="https://cvvz.fun/running/">Running</a>
+					<a href="https://cvvz.fun/aboutme/resume.pdf">About Me</a>
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<button id="toc-btn" class="hdr-btn desktop-only-ib" title="目录"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-list"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3" y2="6"></line><line x1="3" y1="12" x2="3" y2="12"></line><line x1="3" y1="18" x2="3" y2="18"></line></svg></button><span class="hdr-social hide-in-mobile"><a href="https://github.com/cvvz" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="mailto:ftdchenwz@gmail.com" target="_blank" rel="noopener me" title="Email"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a><a href="https://twitter.com/cvvz717" target="_blank" rel="noopener me" title="Twitter"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-twitter"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg></a></span><button id="menu-btn" class="hdr-btn" title="菜单"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://cvvz.fun/post/">Posts</a></li>
+			<li><a href="https://cvvz.fun/read/">Reading</a></li>
+			<li><a href="https://cvvz.fun/thinking/">Thoughts</a></li>
+			<li><a href="https://cvvz.fun/running/">Running</a></li>
+			<li><a href="https://cvvz.fun/aboutme/resume.pdf">About Me</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<h1>科学上网--k8s版</h1>
+			</header>
+			<div class="content">
+				<blockquote>
+<p>昨天折腾了一下，把自建机场迁移到了自己建的aks集群上，公司每个月150刀的羊毛薅的太爽了🤣</p>
+<p>原文地址：<a href="https://github.com/cvvz/k8s-playground/tree/master/gost#%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91-k8s%E7%89%88">https://github.com/cvvz/k8s-playground/tree/master/gost#科学上网-k8s版</a></p>
+</blockquote>
+<h2 id="pre-requisite">pre-requisite<a href="#pre-requisite" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<ol>
+<li>购买域名</li>
+<li>准备好以下命令行工具: <code>envsubst</code>, <code>cmctl</code>, <code>kubectl</code>, <code>az</code>, <code>helm</code></li>
+</ol>
+<h2 id="step-1-配置dns">step 1: 配置DNS<a href="#step-1-配置dns" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<h3 id="step-11-创建-azure-dns-zone">step 1.1: 创建 azure dns zone<a href="#step-11-创建-azure-dns-zone" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span><span class="nb">export</span> <span class="nv">AZURE_DEFAULTS_GROUP</span><span class="o">=</span>your-resource-group
+<span class="ln">2</span><span class="nb">export</span> <span class="nv">DOMAIN_NAME</span><span class="o">=</span>your-domain-name 
+<span class="ln">3</span>az network dns zone create --name <span class="nv">$DOMAIN_NAME</span>
+</code></pre></div><h3 id="step-12-在域名提供商的控制台中设置域名dns的ns-records为azure-authoritative-dns-servers">step 1.2: 在域名提供商的控制台中设置域名DNS的<code>NS records</code>为<code>Azure authoritative DNS servers</code><a href="#step-12-在域名提供商的控制台中设置域名dns的ns-records为azure-authoritative-dns-servers" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>执行以下命令获取 azure authoritative DNS servers 列表：</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>az network dns zone show --name <span class="nv">$DOMAIN_NAME</span> --query nameServers -o tsv
+</code></pre></div><h3 id="step-13-等待ns-record-传播完成可能需要几个小时">step 1.3: 等待ns record 传播完成，可能需要几个小时。<a href="#step-13-等待ns-record-传播完成可能需要几个小时" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>通过以下命令验证是否能成功解析到ns record：</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>dig <span class="nv">$DOMAIN_NAME</span> ns +trace +nodnssec
+</code></pre></div><h2 id="step-2-enable-workload-identity-feature">step 2: Enable workload identity feature<a href="#step-2-enable-workload-identity-feature" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<blockquote>
+<p>cert-manager 需要调用azure api，使用<a href="https://learn.microsoft.com/en-us/azure/aks/workload-identity-overview">workload identity</a>进行鉴权</p>
+</blockquote>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>az extension add --name aks-preview
+<span class="ln">2</span>
+<span class="ln">3</span>az feature register --namespace <span class="s2">&#34;Microsoft.ContainerService&#34;</span> --name <span class="s2">&#34;EnableWorkloadIdentityPreview&#34;</span>
+<span class="ln">4</span>
+<span class="ln">5</span><span class="c1"># 执行以下命令，直到状态变为 Registered：</span>
+<span class="ln">6</span>az feature list -o table --query <span class="s2">&#34;[?contains(name, &#39;Microsoft.ContainerService/EnableWorkloadIdentityPreview&#39;)].{Name:name,State:properties.state}&#34;</span>
+<span class="ln">7</span>
+<span class="ln">8</span>az provider register --namespace Microsoft.ContainerService
+</code></pre></div><h2 id="step-3-创建aks集群">step 3： 创建aks集群<a href="#step-3-创建aks集群" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln"> 1</span><span class="nb">export</span> <span class="nv">CLUSTER</span><span class="o">=</span>your-aks-cluster-name
+<span class="ln"> 2</span><span class="c1"># region建议选择east asia，香港机房，网络延迟相对更小</span>
+<span class="ln"> 3</span><span class="nb">export</span> <span class="nv">AZURE_DEFAULTS_LOCATION</span><span class="o">=</span>eastasia
+<span class="ln"> 4</span>
+<span class="ln"> 5</span><span class="c1"># 创建集群</span>
+<span class="ln"> 6</span>az aks create -n <span class="si">${</span><span class="nv">CLUSTER</span><span class="si">}</span> <span class="se">\
+</span><span class="ln"> 7</span><span class="se"></span>--enable-oidc-issuer <span class="se">\
+</span><span class="ln"> 8</span><span class="se"></span>--enable-workload-identity 
+<span class="ln"> 9</span>
+<span class="ln">10</span>az aks get-credentials -n <span class="si">${</span><span class="nv">CLUSTER</span><span class="si">}</span>
+</code></pre></div><h2 id="step-4-部署cert-manager">step 4: 部署cert-manager<a href="#step-4-部署cert-manager" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln"> 1</span>cat <span class="s">&lt;&lt;EOF &gt; /tmp/values.yaml
+</span><span class="ln"> 2</span><span class="s">podLabels:
+</span><span class="ln"> 3</span><span class="s">  azure.workload.identity/use: &#34;true&#34;
+</span><span class="ln"> 4</span><span class="s">serviceAccount:
+</span><span class="ln"> 5</span><span class="s">  labels:
+</span><span class="ln"> 6</span><span class="s">    azure.workload.identity/use: &#34;true&#34;
+</span><span class="ln"> 7</span><span class="s">EOF</span>
+<span class="ln"> 8</span>
+<span class="ln"> 9</span>helm repo add jetstack https://charts.jetstack.io
+<span class="ln">10</span>helm repo update
+<span class="ln">11</span>helm upgrade cert-manager jetstack/cert-manager <span class="se">\
+</span><span class="ln">12</span><span class="se"></span>    --install <span class="se">\
+</span><span class="ln">13</span><span class="se"></span>    --create-namespace <span class="se">\
+</span><span class="ln">14</span><span class="se"></span>    --wait <span class="se">\
+</span><span class="ln">15</span><span class="se"></span>    --namespace cert-manager <span class="se">\
+</span><span class="ln">16</span><span class="se"></span>    --set <span class="nv">installCRDs</span><span class="o">=</span><span class="nb">true</span> <span class="se">\
+</span><span class="ln">17</span><span class="se"></span>    --reuse-values <span class="se">\
+</span><span class="ln">18</span><span class="se"></span>    --values /tmp/values.yaml
+</code></pre></div><h2 id="step-5-为cert-manager配置federated-workload-identity">step 5: 为cert-manager配置federated workload identity<a href="#step-5-为cert-manager配置federated-workload-identity" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<blockquote>
+<p>eastasia region不支持 workload identity，参考：<a href="https://learn.microsoft.com/en-us/azure/active-directory/workload-identities/workload-identity-federation-considerations#unsupported-regions-user-assigned-managed-identities">https://learn.microsoft.com/en-us/azure/active-directory/workload-identities/workload-identity-federation-considerations#unsupported-regions-user-assigned-managed-identities</a></p>
+<p>选择一个支持的region（比如japaneast）中创建workload identity</p>
+</blockquote>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln"> 1</span><span class="nb">export</span> <span class="nv">USER_ASSIGNED_IDENTITY_NAME</span><span class="o">=</span>your-cert-manager-identity-name
+<span class="ln"> 2</span><span class="nb">export</span> <span class="nv">IDENTITY_RG</span><span class="o">=</span>your-identity-group
+<span class="ln"> 3</span><span class="nb">export</span> <span class="nv">IDENTITY_RG_LOCATION</span><span class="o">=</span>your-identity-group-location
+<span class="ln"> 4</span>
+<span class="ln"> 5</span>az group create -n <span class="si">${</span><span class="nv">IDENTITY_RG</span><span class="si">}</span> -l <span class="si">${</span><span class="nv">IDENTITY_RG_LOCATION</span><span class="si">}</span>
+<span class="ln"> 6</span>az identity create --name <span class="s2">&#34;</span><span class="si">${</span><span class="nv">USER_ASSIGNED_IDENTITY_NAME</span><span class="si">}</span><span class="s2">&#34;</span> -g <span class="si">${</span><span class="nv">IDENTITY_RG</span><span class="si">}</span> -l <span class="si">${</span><span class="nv">IDENTITY_RG_LOCATION</span><span class="si">}</span>
+<span class="ln"> 7</span>
+<span class="ln"> 8</span><span class="nb">export</span> <span class="nv">USER_ASSIGNED_IDENTITY_CLIENT_ID</span><span class="o">=</span><span class="k">$(</span>az identity show --name <span class="s2">&#34;</span><span class="si">${</span><span class="nv">USER_ASSIGNED_IDENTITY_NAME</span><span class="si">}</span><span class="s2">&#34;</span> --query <span class="s1">&#39;clientId&#39;</span> -o tsv -g <span class="si">${</span><span class="nv">IDENTITY_RG</span><span class="si">}</span><span class="k">)</span>
+<span class="ln"> 9</span>az role assignment create <span class="se">\
+</span><span class="ln">10</span><span class="se"></span>    --role <span class="s2">&#34;DNS Zone Contributor&#34;</span> <span class="se">\
+</span><span class="ln">11</span><span class="se"></span>    --assignee <span class="nv">$USER_ASSIGNED_IDENTITY_CLIENT_ID</span> <span class="se">\
+</span><span class="ln">12</span><span class="se"></span>    --scope <span class="k">$(</span>az network dns zone show --name <span class="nv">$DOMAIN_NAME</span> -o tsv --query id<span class="k">)</span>
+<span class="ln">13</span>
+<span class="ln">14</span><span class="c1"># cert-manager的service account和namespace</span>
+<span class="ln">15</span><span class="nb">export</span> <span class="nv">SERVICE_ACCOUNT_NAME</span><span class="o">=</span>cert-manager 
+<span class="ln">16</span><span class="nb">export</span> <span class="nv">SERVICE_ACCOUNT_NAMESPACE</span><span class="o">=</span>cert-manager 
+<span class="ln">17</span>
+<span class="ln">18</span><span class="nb">export</span> <span class="nv">SERVICE_ACCOUNT_ISSUER</span><span class="o">=</span><span class="k">$(</span>az aks show --name <span class="nv">$CLUSTER</span> --query <span class="s2">&#34;oidcIssuerProfile.issuerUrl&#34;</span> -o tsv<span class="k">)</span>
+<span class="ln">19</span>az identity federated-credential create <span class="se">\
+</span><span class="ln">20</span><span class="se"></span>  --name <span class="s2">&#34;cert-manager&#34;</span> <span class="se">\
+</span><span class="ln">21</span><span class="se"></span>  --identity-name <span class="s2">&#34;</span><span class="si">${</span><span class="nv">USER_ASSIGNED_IDENTITY_NAME</span><span class="si">}</span><span class="s2">&#34;</span> <span class="se">\
+</span><span class="ln">22</span><span class="se"></span>  --issuer <span class="s2">&#34;</span><span class="si">${</span><span class="nv">SERVICE_ACCOUNT_ISSUER</span><span class="si">}</span><span class="s2">&#34;</span> <span class="se">\
+</span><span class="ln">23</span><span class="se"></span>  --subject <span class="s2">&#34;system:serviceaccount:</span><span class="si">${</span><span class="nv">SERVICE_ACCOUNT_NAMESPACE</span><span class="si">}</span><span class="s2">:</span><span class="si">${</span><span class="nv">SERVICE_ACCOUNT_NAME</span><span class="si">}</span><span class="s2">&#34;</span> <span class="se">\
+</span><span class="ln">24</span><span class="se"></span>  -g <span class="si">${</span><span class="nv">IDENTITY_RG</span><span class="si">}</span>
+</code></pre></div><h2 id="step-6-生成证书">step 6: 生成证书<a href="#step-6-生成证书" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln"> 1</span><span class="nb">export</span> <span class="nv">GOST_NS</span><span class="o">=</span>gost
+<span class="ln"> 2</span>kubectl create ns <span class="nv">$GOST_NS</span>
+<span class="ln"> 3</span>
+<span class="ln"> 4</span><span class="c1"># 创建issuer</span>
+<span class="ln"> 5</span><span class="nb">export</span> <span class="nv">EMAIL_ADDRESS</span><span class="o">=</span>&lt;email-address&gt; 
+<span class="ln"> 6</span><span class="nb">export</span> <span class="nv">AZURE_SUBSCRIPTION_ID</span><span class="o">=</span>&lt;your-subscription-id&gt;  
+<span class="ln"> 7</span>wget https://raw.githubusercontent.com/cvvz/k8s-playground/master/gost/clusterissuer-lets-encrypt.yaml 
+<span class="ln"> 8</span>envsubst &lt; clusterissuer-lets-encrypt.yaml <span class="p">|</span> kubectl apply -f  -
+<span class="ln"> 9</span>kubectl describe clusterissuer letsencrypt-production
+<span class="ln">10</span>
+<span class="ln">11</span><span class="c1"># 创建Certificate</span>
+<span class="ln">12</span>wget https://raw.githubusercontent.com/cvvz/k8s-playground/master/gost/certificate.yaml 
+<span class="ln">13</span>envsubst &lt; certificate.yaml <span class="p">|</span> kubectl apply -f -
+<span class="ln">14</span>
+<span class="ln">15</span><span class="c1"># 验证证书状态</span>
+<span class="ln">16</span>cmctl status certificate www -n <span class="nv">$GOST_NS</span>
+<span class="ln">17</span>cmctl inspect secret www-tls -n <span class="nv">$GOST_NS</span>
+</code></pre></div><h2 id="step-7-部署gost服务">step 7: 部署gost服务<a href="#step-7-部署gost服务" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln"> 1</span><span class="nb">export</span> <span class="nv">AZURE_LOADBALANCER_DNS_LABEL_NAME</span><span class="o">=</span>lb-<span class="k">$(</span>uuidgen<span class="k">)</span> 
+<span class="ln"> 2</span><span class="nb">export</span> <span class="nv">USER</span><span class="o">=</span>your-user-name
+<span class="ln"> 3</span><span class="nb">export</span> <span class="nv">PASSWORD</span><span class="o">=</span>your-password
+<span class="ln"> 4</span>
+<span class="ln"> 5</span><span class="c1"># deployment</span>
+<span class="ln"> 6</span>wget https://raw.githubusercontent.com/cvvz/k8s-playground/master/gost/deployment.yaml
+<span class="ln"> 7</span>envsubst &lt; deployment.yaml <span class="p">|</span> kubectl apply -f -
+<span class="ln"> 8</span><span class="c1"># service</span>
+<span class="ln"> 9</span>wget https://raw.githubusercontent.com/cvvz/k8s-playground/master/gost/service.yaml
+<span class="ln">10</span>envsubst &lt; service.yaml <span class="p">|</span> kubectl apply -f -
+</code></pre></div><h2 id="step-8-设置dns-record">step 8: 设置dns record<a href="#step-8-设置dns-record" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span><span class="c1"># 设置www A record</span>
+<span class="ln">2</span>az network dns record-set cname set-record <span class="se">\
+</span><span class="ln">3</span><span class="se"></span>    --zone-name <span class="nv">$DOMAIN_NAME</span> <span class="se">\
+</span><span class="ln">4</span><span class="se"></span>    --cname <span class="nv">$AZURE_LOADBALANCER_DNS_LABEL_NAME</span>.<span class="nv">$AZURE_DEFAULTS_LOCATION</span>.cloudapp.azure.com <span class="se">\
+</span><span class="ln">5</span><span class="se"></span>    --record-set-name www
+<span class="ln">6</span>
+<span class="ln">7</span><span class="c1"># 验证可以解析到service external ip</span>
+<span class="ln">8</span>dig www.<span class="nv">$DOMAIN_NAME</span> A
+</code></pre></div><blockquote>
+<p>不管pod和service ip怎么变化，只要<code>$AZURE_LOADBALANCER_DNS_LABEL_NAME</code>不变，域名始终会解析到service的public ip。</p>
+<p>所以就算ip被封禁，重新创建一个service生成新的public ip就行了。</p>
+</blockquote>
+<h2 id="step-9验证">step 9：验证<a href="#step-9验证" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="ln">1</span>curl -v <span class="s2">&#34;https://www.google.com&#34;</span> --proxy <span class="s2">&#34;https://www.</span><span class="nv">$DOMAIN_NAME</span><span class="s2">&#34;</span> --proxy-user <span class="nv">$USER</span>:<span class="nv">$PASSWORD</span>
+</code></pre></div>
+			</div>
+			<hr class="post-end">
+			<footer class="post-info">
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1226 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/3e12f9647e03e65d3865dba245762c0c376b6b56" target="_blank" rel="noopener">3e12f96</a> @ 2023-05-07</p>
+			</footer>
+		</article>
+		<aside id="toc" class="show-toc">
+			<div class="toc-title">目录</div>
+			<nav id="TableOfContents">
+  <ul>
+    <li><a href="#pre-requisite">pre-requisite</a></li>
+    <li><a href="#step-1-配置dns">step 1: 配置DNS</a>
+      <ul>
+        <li><a href="#step-11-创建-azure-dns-zone">step 1.1: 创建 azure dns zone</a></li>
+        <li><a href="#step-12-在域名提供商的控制台中设置域名dns的ns-records为azure-authoritative-dns-servers">step 1.2: 在域名提供商的控制台中设置域名DNS的<code>NS records</code>为<code>Azure authoritative DNS servers</code></a></li>
+        <li><a href="#step-13-等待ns-record-传播完成可能需要几个小时">step 1.3: 等待ns record 传播完成，可能需要几个小时。</a></li>
+      </ul>
+    </li>
+    <li><a href="#step-2-enable-workload-identity-feature">step 2: Enable workload identity feature</a></li>
+    <li><a href="#step-3-创建aks集群">step 3： 创建aks集群</a></li>
+    <li><a href="#step-4-部署cert-manager">step 4: 部署cert-manager</a></li>
+    <li><a href="#step-5-为cert-manager配置federated-workload-identity">step 5: 为cert-manager配置federated workload identity</a></li>
+    <li><a href="#step-6-生成证书">step 6: 生成证书</a></li>
+    <li><a href="#step-7-部署gost服务">step 7: 部署gost服务</a></li>
+    <li><a href="#step-8-设置dns-record">step 8: 设置dns record</a></li>
+    <li><a href="#step-9验证">step 9：验证</a></li>
+  </ul>
+</nav>
+		</aside>
+		<div class="post-nav thin">
+			<a class="prev-post" href="https://cvvz.fun/post/ginkgo/">
+				<span class="post-nav-label">旧&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>Ginkgo源码</span>
+			</a>
+		</div>
+		<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+		<div id="gitalk-container" class="thin"></div>     
+		<script type="text/javascript">
+			var gitalk = new Gitalk({
+				clientID: '0f8bdcbe6b4973f9b206',
+				clientSecret: '4939e64d59c93fc5eb7eaf74469a746e4535700d',
+				repo: 'cvvz.github.io',
+				owner: 'cvvz',
+				admin: ['cvvz'],
+				id: location.pathname,      
+				distractionFreeMode: true 
+			});
+  			gitalk.render('gitalk-container');
+		</script>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2023 <a href="https://cvvz.fun">陈维志</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://cvvz.fun/post/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+	<script src="https://cvvz.fun/js/main.min.784417f5847151f848c339cf0acb13a06cbb648b1483435a28ed4556c4ead69b.js"></script>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-M8Q3DKDEVL', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>
