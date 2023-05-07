@@ -14,7 +14,7 @@
       <pubDate>Fri, 28 Apr 2023 23:14:10 +0800</pubDate>
       
       <guid>https://cvvz.fun/post/kexueshangwang/</guid>
-      <description>昨天折腾了一下，把自建机场迁移到了自己建的aks集群上，公司每个月150刀的羊毛薅的太爽了🤣 原文地址：https://github.com/</description>
+      <description>昨天折腾了一下，在自建的aks集群上搭好了出国的机场，用cert-manager自动签发和续期证书、域名动态的解析到service public ip，所</description>
     </item>
     
     <item>
