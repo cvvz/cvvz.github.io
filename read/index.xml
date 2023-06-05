@@ -6,8 +6,22 @@
 		<generator>Hugo -- gohugo.io</generator>
 		<language>zh-hans</language>
 		<copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-		<lastBuildDate>Wed, 21 Dec 2022 14:28:19 +0800</lastBuildDate>
+		<lastBuildDate>Mon, 05 Jun 2023 15:43:20 +0800</lastBuildDate>
 		<atom:link href="https://cvvz.fun/read/index.xml" rel="self" type="application/rss+xml" />
+		
+		<item>
+			<title>我们为什么要睡觉</title>
+			<link>https://cvvz.fun/read/why-we-sleep/</link>
+			<pubDate>Mon, 05 Jun 2023 15:43:20 +0800</pubDate>
+			
+			<guid>https://cvvz.fun/read/why-we-sleep/</guid>
+			<description></description>
+			<content type="html"><![CDATA[<figure>
+    <img src="/why%20we%20sleep.png" width="2000px"/> 
+</figure>
+
+]]></content>
+		</item>
 		
 		<item>
 			<title>少有人走的路</title>
