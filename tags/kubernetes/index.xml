@@ -45,12 +45,12 @@
     </item>
     
     <item>
-      <title>怎么让controller周期性的reconcile</title>
+      <title>informer和controller-runtime源码</title>
       <link>https://cvvz.fun/post/controller-reconcile/</link>
       <pubDate>Sat, 20 Nov 2021 14:17:23 +0800</pubDate>
       
       <guid>https://cvvz.fun/post/controller-reconcile/</guid>
-      <description>问题 怎么让controller每隔1分钟进行一次reconcile，而不需要借助任何外部事件触发？ 虽然解决的方法看似很简单，但是知其然还要知</description>
+      <description>问题 最近在写operator时，碰到一个场景需要让controller每隔1分钟做一次reconcile，而不需要借助外部事件触发。 虽然cl</description>
     </item>
     
     <item>
