@@ -6,8 +6,124 @@
 		<generator>Hugo -- gohugo.io</generator>
 		<language>zh-hans</language>
 		<copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-		<lastBuildDate>Fri, 28 Apr 2023 23:14:10 +0800</lastBuildDate>
+		<lastBuildDate>Thu, 17 Aug 2023 15:13:22 +0800</lastBuildDate>
 		<atom:link href="https://cvvz.fun/post/index.xml" rel="self" type="application/rss+xml" />
+		
+		<item>
+			<title>k8s storage 生命周期全流程</title>
+			<link>https://cvvz.fun/post/volume-lifecycle/</link>
+			<pubDate>Thu, 17 Aug 2023 15:13:22 +0800</pubDate>
+			
+			<guid>https://cvvz.fun/post/volume-lifecycle/</guid>
+			<description>本篇不涉及代码细节，但是全是对应的业务逻辑代码。。这篇笔记可以作为k8s storage的运维手册，忘记了细节的时候再拿出来重新过一遍。 从Pe</description>
+			<content type="html"><![CDATA[<blockquote>
+<p>本篇不涉及代码细节，但是全是对应的业务逻辑代码。。这篇笔记可以作为k8s storage的运维手册，忘记了细节的时候再拿出来重新过一遍。</p>
+</blockquote>
+<h2 id="从pending-到containercreating">从Pending 到ContainerCreating</h2>
+<h3 id="调度">调度</h3>
+<p>Pod被创建出来后，调度器开始进行调度，调度时需要判断Pod使用的PVC的状态，PVC对应的storage class的<code>VolumeBindingMode</code> 字段，和PVC的<code>VolumeName</code>字段：</p>
+<ol>
+<li>
+<p>如果Pod对应的PVC已经和某个PV bound好了，那么调度时，Node除了需要满足Pod的topo要求，还需要满足bound PV的affinity要求。这种情况后续不再讨论。</p>
+</li>
+<li>
+<p>如果<code>VolumeBindingMode==Immediate</code>，或者PVC的<code>VolumeName</code>已经设置（static provision）那么就必须等待PVC和PV完成双向绑定才能进行Pod的调度。</p>
+</li>
+<li>
+<p>如果为<code>VolumeBindingMode == WaitForFirstConsumer</code> ，且PVC的<code>VolumeName</code>没有设置，那么调度器会为这个Pod完整的走一遍调度流程：</p>
+<ol>
+<li>如果集群里已经有创建好的或者残留的PV满足PVC的要求，调度器会设置满足要求的PV的<code>claimRef</code>字段，相当于完成PV → PVC的绑定</li>
+<li>如果没有，调度器则会找到合适的Node设置pvc annotation<code>&quot;volume.kubernetes.io/selected-node&quot;</code></li>
+</ol>
+<p><strong>注意，此时Pod仍然处于Pending状态，等待PVC和PV完成双向绑定。</strong></p>
+</li>
+</ol>
+<h3 id="双向绑定">双向绑定</h3>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<p>如果集群里已经有创建好的或者残留的PV满足PVC的要求：</p>
+<ol>
+<li>如果<code>VolumeBindingMode==Immediate</code> ， 或者PVC的VolumeName已经设置，那么persistentvolumecontroller 会找到满足要求的那个PV完成双向绑定，完成后PVC和PV的status均为Bound。调度器则会继续调度，此时调度时会将PV的affinity考虑在内。</li>
+<li>如果为<code>VolumeBindingMode == WaitForFirstConsumer</code> ，且PVC的<code>VolumeName</code>没有设置，在调度阶段，调度器会设置满足要求的PV的<code>claimRef</code>字段，persistentvolumecontroller只可能找到在调度阶段设置了PV <code>claimRef</code>字段且等于PVC的，设置PVC的<code>volumeName</code>字段和<code>pv.kubernetes.io/bind-completed: &quot;yes&quot;</code> annotation。也就是说这种情况下双向绑定是由调度器和persistentvolumecontroller配合完成。</li>
+</ol>
+<p>假如集群里没有任何现成的PV可以满足PVC的要求：</p>
+<ol>
+<li>如果PVC的<code>VolumeName</code>已经设置，persistentvolumecontroller 则什么都不会做。此时PVC会一直<code>Pending</code>，Pod也<code>Pending</code>，无事发生，直到有人手动创建一个和<code>VolumeName</code>同名的PV为止。</li>
+<li>如果<code>VolumeBindingMode==Immediate</code> ，persistentvolumecontroller 会设置PVC的<code>volume.kubernetes.io/storage-provisioner</code> annotation</li>
+<li>如果为<code>VolumeBindingMode == WaitForFirstConsumer</code> ，也会设置PVC的<code>volume.kubernetes.io/storage-provisioner</code> annotation。</li>
+</ol>
+<h3 id="provision">Provision</h3>
+<p>external-provisioner 发现PVC里有了<code>volume.kubernetes.io/storage-provisioner</code> 这个annotation，并且和自己name一致，才可能开始Provision volume。</p>
+<ol>
+<li>如果<code>VolumeBindingMode==Immediate</code> ，那么可以直接调用csi进行provision</li>
+<li>如果<code>VolumeBindingMode == WaitForFirstConsumer</code> ，那么还需要有<code>&quot;volume.kubernetes.io/selected-node&quot;</code> annotation才能provision，这个是前面调度器设置的。<code>WaitForFirstConsumer</code> 是用来支持volume topology 特性的，这里设置的node的topo信息，后续会作为参数传给csi，csi在创建volume时将会满足这个node的topo要求，避免出现跨az的情况。另外如果创建volume失败，external provisioner还可能删除这个annotation，触发调度器重新调度。</li>
+</ol>
+<p>provision成功（或者有现成的PV可用）并且双向绑定也做完，Pod就正式被调度到节点上，<strong>此时Pod从<code>Pending</code>状态变成了<code>ContainerCreating</code>状态</strong>。</p>
+<p>kubelet watch到pod事件，缓存到pod信息到podmanager，volumemanager根据收到的pod信息构造出DSW，然后开始进行reconcile。</p>
+<h2 id="从containercreating到running">从ContainerCreating到Running</h2>
+<h3 id="attach">attach</h3>
+<p>reconcile流程首先会<code>waitForVolumeAttach</code> 。默认attach/detach操作是由attachdetach controller做的，除非显式的设置kubelet参数<code>enable-controller-attach-detach=false</code> （kubelet启动时会默认设置为true）。当<code>enable-controller-attach-detach=true</code> 时，kubelet会设置一个annotation：</p>
+<p><code>volumes.kubernetes.io/controller-managed-attach-detach: &quot;true&quot;</code> ，attachdetach controller 发现有这个annotation时就知道自己应该负责该node上的volume的attach/detach操作。</p>
+<p>如果volume plugin是attachable的，并且<code>enable-controller-attach-detach=false</code>，那么就是由kubelet进行attach volume：</p>
+<ul>
+<li>首先判断是否支持multi attach（只有access mode是<code>ReadWriteMany</code>或者<code>ReadOnlyMany</code>才支持同时attach到多个节点，否则只允许attach到一个节点上），如果不支持，那么同一时刻只会有一个attach操作。</li>
+<li>对于csi plugin，attach操作就是创建<code>volumeattachment</code>，然后一直卡着等到<code>volumeattachment</code>的status变为<code>attached: true</code>才算attach成功，成功后，才会更新到ASW中。</li>
+</ul>
+<p><strong>值得一提的是，attach/detach还有后面的mount/unmount操作，都是用的operationexecutor框架，实现上是单独起一个goroutine异步处理的，不会卡住任何reconcile流程。</strong></p>
+<p>如果volume plugin不是attachable的或者<code>enable-controller-attach-detach=true</code> ，也就是由attachdetach controller负责attach操作，那么会走到<code>VerifyControllerAttachedVolume</code>流程中。在这个流程里：</p>
+<ul>
+<li>首先如果volume不是attachable的，那么直接更新ASW，相当于直接认为attach成功；</li>
+<li>如果是attachable的，先判断volume是否<code>ReportedInUse</code>，如果不是就直接返回；</li>
+<li>获取节点的<code>status.VolumesAttached</code>字段，如果volume在这个字段中，就说明attachdetach  controller的attach操作已经成功了，就可以更新到ASW中。</li>
+</ul>
+<p>当由attachdetach controller负责attach操作时：</p>
+<ul>
+<li>首先会判断是否已经attach了，因为controller本身有缓存，所以是查看ASW而不是像kubelet那样查看node status；</li>
+<li>接着如果不支持multiattach，会从ASW里查询是否有别的节点attached了这个volume，如果是则不允许再attach，报错返回</li>
+<li>接着执行attach volume，attach volume操作本身和kubelet是使用的同一个package（内部有些接口实现有些不同，但是大部分一样），上面已经有介绍。</li>
+<li>attach/detach成功后controller会更新node status里的<code>VolumesAttached</code>字段，这样volumemanager就可以通过节点上的这个字段来判断某个volume是否已经attach成功。</li>
+</ul>
+<p>创建<code>volumeattachment</code>之后，被external-attacher watch到后会调用csi进行attach，成功后会更新<code>volumeattachment</code>的status为<code>attached: true</code> ，如果失败了也会在status里更新错误原因。</p>
+<p>前面提到的<code>ReportedInUse</code>是这样来的：<strong>kubelet会周期性的调用volume manager的<code>GetVolumesInUse</code> 方法来获取所有attachable的并且应该被attach到这个节点上的volume（只要volume在DSW，就应该attach。必须等到volume既不在DSW也不在ASW就会被从node status里删掉。</strong>），更新到node status的<code>VolumesInUse</code>字段。更新完了之后，又会调用volume manager的<code>MarkVolumesAsReportedInUse</code> 方法，在DSW中进行标注，设置<code>reportedInUse = true</code>，表示volume已经更新到 node status 的<code>VolumesInUse</code>字段里去了。</p>
+<p><code>ReportedInUse</code> 有两个作用：</p>
+<ol>
+<li>volumemanager在执行<code>VerifyControllerAttachedVolume</code>里要先判断是否已经设置了<code>ReportedInUse</code> 才会去决定是否应该设置volume为attached。</li>
+<li>attachdetach controller依赖node status里的 <code>ReportedInUse</code>来判断volume是不是已经被kubelet感知到在进行mount操作了，这决定了controller是否可以安全的detach volume，后续也有提到这一点。</li>
+</ol>
+<h3 id="mount-device-和mount-volume">mount device 和mount volume</h3>
+<p>kubelet等待attach成功，并将volume信息更新到ASW中后，接着进行mount。先mount device，即global mount point，然后mount volume，即将Pod volume bind mount到global mount point。kubelet等待volume mount成功以后会更新<strong>Pod状态从<code>ContainerCreating</code>到<code>Running</code></strong>。</p>
+<h2 id="从terminating到pod被彻底删除">从Terminating到Pod被彻底删除</h2>
+<p>删除pod时，pod进入<code>Terminating</code>状态，kubelet开始杀掉所有的容器。必须要确保所有容器都已经被杀死，DSWP才会从DSW中删除pod和volume信息，这样就触发reconcile流程进行unmount/unattach。<strong>注意这时Pod仍然处于Terminating状态。</strong></p>
+<h3 id="unmount-volume">unmount volume</h3>
+<p>第一步是unmount pod volume，并删除vol.data文件。unmount成功后，pod的volume目录就是空的了，pod就可以彻底的从etcd中删除了，这个时候集群里就查询不到这个pod了。如果pod一直卡在<code>Terminaing</code>状态，要么是容器删除不掉，要么是unmount一直没有成功，很可能是kernel出bug了。</p>
+<p><strong>pod被彻底删除以后，只代表unmount volume成功了。unmount device和detach volume还会在后台继续进行。</strong></p>
+<h2 id="pod被彻底删除以后">Pod被彻底删除以后</h2>
+<h3 id="unmount-device">unmount device</h3>
+<p>unmount device以后，节点上就完全不存在任何mount point了。</p>
+<h3 id="detach-volume">detach volume</h3>
+<p>如果不需要unmount device，或者unmount device 成功之后，volumemanager开始进行detach volume。</p>
+<p>如果plugin不是attachable的，或者是由controller负责attach/detach，就直接把volume信息从ASW里删掉了。<strong>注意这一步会触发kubelet更新node status中的<code>ReportedInUse</code> ，将volume从<code>ReportedInUse</code> 中删除掉。这意味着从现在开始attachdetach controller可以开始安全的执行detach操作了。</strong></p>
+<p>如果是由kubelet负责attach/detach，kubelet就执行detach volume操作。对于csi，detach就是删除<code>volumeattachment</code>，然后等待<code>volumeattachment</code>被彻底从etcd中删除掉，才算detach成功。由于<code>volumeattachment</code>中定义了finalizer，所以不会直接被删除，需要等到external-attacher调用csi执行detach并成功，才会被彻底从集群中删除，<code>volumeattachment</code>被彻底删除了，才算是detach成功。</p>
+<p>如果是controller负责attach/detach，controller进行detach 的前提有两个：</p>
+<ol>
+<li>是volume在ASW中存在而在DSW中不存在（这里提到的ASW和DSW指的是atachdetach controller的，不是kublet的），只有<strong>当Pod在集群中被彻底删掉了，DSWP才会将volume从DSW中删除，controller才能开始reconcile；</strong></li>
+<li><strong>detach前还需要确保volume已经被从节点unmounted了才能进行</strong>。controller怎么知道volume已经被unmounted成功了呢？当节点上的<code>ReportedInUse</code> 字段被增加或者删除时，controller就会相应的设置ASW中volume的<code>MountedByNode</code>字段，这个字段就代表着controller是否可以安全detach。又如前面描述的，只有当kubelet unmount已经成功，彻底从volumemanager的ASW中删除后，才会触发更新node status，将volume从节点的<code>ReportedInUse</code> 里删除掉。</li>
+</ol>
+<p>detach的流程是：</p>
+<ul>
+<li>首先从ASW中删除该volume；</li>
+<li>然后更新node status 的<code>VolumesAttached</code>，将volume从中去掉；</li>
+<li>然后执行detach volume，csi 的 detach volume实现和上面kubelet是同一个，已经说过了。</li>
+<li>如果detach失败了，会重新把volume加回到ASW中。</li>
+<li>接下来的<code>UpdateNodeStatuese</code> 函数又会把volume也重新加回到node status的<code>VolumesAttached</code> 。</li>
+</ul>
+<p>另外，除了unmount成功后controller会detach volume以外，还有一些情况，即使<code>ReportedInUse</code>仍然存在，也就是说volume没有完成unmount也会进行detach volume（但是仍然要保证Pod已经被彻底删除掉了）：</p>
+<ol>
+<li>节点状态不健康，并且已经等待了一个超时时间<code>maxWaitForUnmountDuration</code>。</li>
+<li>节点被打上了<code>node.kubernetes.io/out-of-service</code>污点（<strong>节点被打上</strong><code>node.kubernetes.io/out-of-service</code><strong>污点后，会force delete掉那个节点上不能容忍该污点的pod</strong>）</li>
+</ol>
+]]></content>
+		</item>
 		
 		<item>
 			<title>科学上网--k8s版</title>

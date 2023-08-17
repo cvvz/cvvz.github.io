@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="google-site-verification" content="Wp3QtEkIlF0ZvtKx90lPmoXyH39d-pmBhiTyTbba9L4" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta itemprop="name" content="k8s storage 生命周期全流程">
+<meta itemprop="description" content="本篇不涉及代码细节，但是全是对应的业务逻辑代码。。这篇笔记可以作为k8s storage的运维手册，忘记了细节的时候再拿出来重新过一遍。 从Pe">
+<meta itemprop="datePublished" content="2023-08-17T15:13:22+08:00" />
+<meta itemprop="dateModified" content="2023-08-17T16:20:49+08:00" />
+<meta itemprop="wordCount" content="6177">
+
+
+
+<meta itemprop="keywords" content="kubernetes," />
+<meta property="og:title" content="k8s storage 生命周期全流程" />
+<meta property="og:description" content="本篇不涉及代码细节，但是全是对应的业务逻辑代码。。这篇笔记可以作为k8s storage的运维手册，忘记了细节的时候再拿出来重新过一遍。 从Pe" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://cvvz.fun/post/volume-lifecycle/" />
+<meta property="article:published_time" content="2023-08-17T15:13:22+08:00" />
+<meta property="article:modified_time" content="2023-08-17T16:20:49+08:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="k8s storage 生命周期全流程"/>
+<meta name="twitter:description" content="本篇不涉及代码细节，但是全是对应的业务逻辑代码。。这篇笔记可以作为k8s storage的运维手册，忘记了细节的时候再拿出来重新过一遍。 从Pe"/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>k8s storage 生命周期全流程</title>
+	<link rel="stylesheet" href="https://cvvz.fun/css/style.min.7a1ec200e9f3394f73c6eda58011808507a3b24318de81e1e343f22a2470caef.css">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp faster">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://cvvz.fun">cvvz&#39;s Blog</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					<a href="https://cvvz.fun/post/">Posts</a>
+					<a href="https://cvvz.fun/read/">Reading</a>
+					<a href="https://cvvz.fun/thinking/">Thoughts</a>
+					<a href="https://cvvz.fun/running/">Running</a>
+					<a href="https://cvvz.fun/aboutme/resume.pdf">About Me</a>
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<button id="toc-btn" class="hdr-btn desktop-only-ib" title="目录"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-list"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3" y2="6"></line><line x1="3" y1="12" x2="3" y2="12"></line><line x1="3" y1="18" x2="3" y2="18"></line></svg></button><span class="hdr-social hide-in-mobile"><a href="https://github.com/cvvz" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="mailto:ftdchenwz@gmail.com" target="_blank" rel="noopener me" title="Email"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a><a href="https://twitter.com/cvvz717" target="_blank" rel="noopener me" title="Twitter"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-twitter"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg></a></span><button id="menu-btn" class="hdr-btn" title="菜单"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://cvvz.fun/post/">Posts</a></li>
+			<li><a href="https://cvvz.fun/read/">Reading</a></li>
+			<li><a href="https://cvvz.fun/thinking/">Thoughts</a></li>
+			<li><a href="https://cvvz.fun/running/">Running</a></li>
+			<li><a href="https://cvvz.fun/aboutme/resume.pdf">About Me</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<h1>k8s storage 生命周期全流程</h1>
+			</header>
+			<div class="content">
+				<blockquote>
+<p>本篇不涉及代码细节，但是全是对应的业务逻辑代码。。这篇笔记可以作为k8s storage的运维手册，忘记了细节的时候再拿出来重新过一遍。</p>
+</blockquote>
+<h2 id="从pending-到containercreating">从Pending 到ContainerCreating<a href="#从pending-到containercreating" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<h3 id="调度">调度<a href="#调度" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>Pod被创建出来后，调度器开始进行调度，调度时需要判断Pod使用的PVC的状态，PVC对应的storage class的<code>VolumeBindingMode</code> 字段，和PVC的<code>VolumeName</code>字段：</p>
+<ol>
+<li>
+<p>如果Pod对应的PVC已经和某个PV bound好了，那么调度时，Node除了需要满足Pod的topo要求，还需要满足bound PV的affinity要求。这种情况后续不再讨论。</p>
+</li>
+<li>
+<p>如果<code>VolumeBindingMode==Immediate</code>，或者PVC的<code>VolumeName</code>已经设置（static provision）那么就必须等待PVC和PV完成双向绑定才能进行Pod的调度。</p>
+</li>
+<li>
+<p>如果为<code>VolumeBindingMode == WaitForFirstConsumer</code> ，且PVC的<code>VolumeName</code>没有设置，那么调度器会为这个Pod完整的走一遍调度流程：</p>
+<ol>
+<li>如果集群里已经有创建好的或者残留的PV满足PVC的要求，调度器会设置满足要求的PV的<code>claimRef</code>字段，相当于完成PV → PVC的绑定</li>
+<li>如果没有，调度器则会找到合适的Node设置pvc annotation<code>&quot;volume.kubernetes.io/selected-node&quot;</code></li>
+</ol>
+<p><strong>注意，此时Pod仍然处于Pending状态，等待PVC和PV完成双向绑定。</strong></p>
+</li>
+</ol>
+<h3 id="双向绑定">双向绑定<a href="#双向绑定" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<p>如果集群里已经有创建好的或者残留的PV满足PVC的要求：</p>
+<ol>
+<li>如果<code>VolumeBindingMode==Immediate</code> ， 或者PVC的VolumeName已经设置，那么persistentvolumecontroller 会找到满足要求的那个PV完成双向绑定，完成后PVC和PV的status均为Bound。调度器则会继续调度，此时调度时会将PV的affinity考虑在内。</li>
+<li>如果为<code>VolumeBindingMode == WaitForFirstConsumer</code> ，且PVC的<code>VolumeName</code>没有设置，在调度阶段，调度器会设置满足要求的PV的<code>claimRef</code>字段，persistentvolumecontroller只可能找到在调度阶段设置了PV <code>claimRef</code>字段且等于PVC的，设置PVC的<code>volumeName</code>字段和<code>pv.kubernetes.io/bind-completed: &quot;yes&quot;</code> annotation。也就是说这种情况下双向绑定是由调度器和persistentvolumecontroller配合完成。</li>
+</ol>
+<p>假如集群里没有任何现成的PV可以满足PVC的要求：</p>
+<ol>
+<li>如果PVC的<code>VolumeName</code>已经设置，persistentvolumecontroller 则什么都不会做。此时PVC会一直<code>Pending</code>，Pod也<code>Pending</code>，无事发生，直到有人手动创建一个和<code>VolumeName</code>同名的PV为止。</li>
+<li>如果<code>VolumeBindingMode==Immediate</code> ，persistentvolumecontroller 会设置PVC的<code>volume.kubernetes.io/storage-provisioner</code> annotation</li>
+<li>如果为<code>VolumeBindingMode == WaitForFirstConsumer</code> ，也会设置PVC的<code>volume.kubernetes.io/storage-provisioner</code> annotation。</li>
+</ol>
+<h3 id="provision">Provision<a href="#provision" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>external-provisioner 发现PVC里有了<code>volume.kubernetes.io/storage-provisioner</code> 这个annotation，并且和自己name一致，才可能开始Provision volume。</p>
+<ol>
+<li>如果<code>VolumeBindingMode==Immediate</code> ，那么可以直接调用csi进行provision</li>
+<li>如果<code>VolumeBindingMode == WaitForFirstConsumer</code> ，那么还需要有<code>&quot;volume.kubernetes.io/selected-node&quot;</code> annotation才能provision，这个是前面调度器设置的。<code>WaitForFirstConsumer</code> 是用来支持volume topology 特性的，这里设置的node的topo信息，后续会作为参数传给csi，csi在创建volume时将会满足这个node的topo要求，避免出现跨az的情况。另外如果创建volume失败，external provisioner还可能删除这个annotation，触发调度器重新调度。</li>
+</ol>
+<p>provision成功（或者有现成的PV可用）并且双向绑定也做完，Pod就正式被调度到节点上，<strong>此时Pod从<code>Pending</code>状态变成了<code>ContainerCreating</code>状态</strong>。</p>
+<p>kubelet watch到pod事件，缓存到pod信息到podmanager，volumemanager根据收到的pod信息构造出DSW，然后开始进行reconcile。</p>
+<h2 id="从containercreating到running">从ContainerCreating到Running<a href="#从containercreating到running" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<h3 id="attach">attach<a href="#attach" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>reconcile流程首先会<code>waitForVolumeAttach</code> 。默认attach/detach操作是由attachdetach controller做的，除非显式的设置kubelet参数<code>enable-controller-attach-detach=false</code> （kubelet启动时会默认设置为true）。当<code>enable-controller-attach-detach=true</code> 时，kubelet会设置一个annotation：</p>
+<p><code>volumes.kubernetes.io/controller-managed-attach-detach: &quot;true&quot;</code> ，attachdetach controller 发现有这个annotation时就知道自己应该负责该node上的volume的attach/detach操作。</p>
+<p>如果volume plugin是attachable的，并且<code>enable-controller-attach-detach=false</code>，那么就是由kubelet进行attach volume：</p>
+<ul>
+<li>首先判断是否支持multi attach（只有access mode是<code>ReadWriteMany</code>或者<code>ReadOnlyMany</code>才支持同时attach到多个节点，否则只允许attach到一个节点上），如果不支持，那么同一时刻只会有一个attach操作。</li>
+<li>对于csi plugin，attach操作就是创建<code>volumeattachment</code>，然后一直卡着等到<code>volumeattachment</code>的status变为<code>attached: true</code>才算attach成功，成功后，才会更新到ASW中。</li>
+</ul>
+<p><strong>值得一提的是，attach/detach还有后面的mount/unmount操作，都是用的operationexecutor框架，实现上是单独起一个goroutine异步处理的，不会卡住任何reconcile流程。</strong></p>
+<p>如果volume plugin不是attachable的或者<code>enable-controller-attach-detach=true</code> ，也就是由attachdetach controller负责attach操作，那么会走到<code>VerifyControllerAttachedVolume</code>流程中。在这个流程里：</p>
+<ul>
+<li>首先如果volume不是attachable的，那么直接更新ASW，相当于直接认为attach成功；</li>
+<li>如果是attachable的，先判断volume是否<code>ReportedInUse</code>，如果不是就直接返回；</li>
+<li>获取节点的<code>status.VolumesAttached</code>字段，如果volume在这个字段中，就说明attachdetach  controller的attach操作已经成功了，就可以更新到ASW中。</li>
+</ul>
+<p>当由attachdetach controller负责attach操作时：</p>
+<ul>
+<li>首先会判断是否已经attach了，因为controller本身有缓存，所以是查看ASW而不是像kubelet那样查看node status；</li>
+<li>接着如果不支持multiattach，会从ASW里查询是否有别的节点attached了这个volume，如果是则不允许再attach，报错返回</li>
+<li>接着执行attach volume，attach volume操作本身和kubelet是使用的同一个package（内部有些接口实现有些不同，但是大部分一样），上面已经有介绍。</li>
+<li>attach/detach成功后controller会更新node status里的<code>VolumesAttached</code>字段，这样volumemanager就可以通过节点上的这个字段来判断某个volume是否已经attach成功。</li>
+</ul>
+<p>创建<code>volumeattachment</code>之后，被external-attacher watch到后会调用csi进行attach，成功后会更新<code>volumeattachment</code>的status为<code>attached: true</code> ，如果失败了也会在status里更新错误原因。</p>
+<p>前面提到的<code>ReportedInUse</code>是这样来的：<strong>kubelet会周期性的调用volume manager的<code>GetVolumesInUse</code> 方法来获取所有attachable的并且应该被attach到这个节点上的volume（只要volume在DSW，就应该attach。必须等到volume既不在DSW也不在ASW就会被从node status里删掉。</strong>），更新到node status的<code>VolumesInUse</code>字段。更新完了之后，又会调用volume manager的<code>MarkVolumesAsReportedInUse</code> 方法，在DSW中进行标注，设置<code>reportedInUse = true</code>，表示volume已经更新到 node status 的<code>VolumesInUse</code>字段里去了。</p>
+<p><code>ReportedInUse</code> 有两个作用：</p>
+<ol>
+<li>volumemanager在执行<code>VerifyControllerAttachedVolume</code>里要先判断是否已经设置了<code>ReportedInUse</code> 才会去决定是否应该设置volume为attached。</li>
+<li>attachdetach controller依赖node status里的 <code>ReportedInUse</code>来判断volume是不是已经被kubelet感知到在进行mount操作了，这决定了controller是否可以安全的detach volume，后续也有提到这一点。</li>
+</ol>
+<h3 id="mount-device-和mount-volume">mount device 和mount volume<a href="#mount-device-和mount-volume" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>kubelet等待attach成功，并将volume信息更新到ASW中后，接着进行mount。先mount device，即global mount point，然后mount volume，即将Pod volume bind mount到global mount point。kubelet等待volume mount成功以后会更新<strong>Pod状态从<code>ContainerCreating</code>到<code>Running</code></strong>。</p>
+<h2 id="从terminating到pod被彻底删除">从Terminating到Pod被彻底删除<a href="#从terminating到pod被彻底删除" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>删除pod时，pod进入<code>Terminating</code>状态，kubelet开始杀掉所有的容器。必须要确保所有容器都已经被杀死，DSWP才会从DSW中删除pod和volume信息，这样就触发reconcile流程进行unmount/unattach。<strong>注意这时Pod仍然处于Terminating状态。</strong></p>
+<h3 id="unmount-volume">unmount volume<a href="#unmount-volume" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>第一步是unmount pod volume，并删除vol.data文件。unmount成功后，pod的volume目录就是空的了，pod就可以彻底的从etcd中删除了，这个时候集群里就查询不到这个pod了。如果pod一直卡在<code>Terminaing</code>状态，要么是容器删除不掉，要么是unmount一直没有成功，很可能是kernel出bug了。</p>
+<p><strong>pod被彻底删除以后，只代表unmount volume成功了。unmount device和detach volume还会在后台继续进行。</strong></p>
+<h2 id="pod被彻底删除以后">Pod被彻底删除以后<a href="#pod被彻底删除以后" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<h3 id="unmount-device">unmount device<a href="#unmount-device" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>unmount device以后，节点上就完全不存在任何mount point了。</p>
+<h3 id="detach-volume">detach volume<a href="#detach-volume" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>如果不需要unmount device，或者unmount device 成功之后，volumemanager开始进行detach volume。</p>
+<p>如果plugin不是attachable的，或者是由controller负责attach/detach，就直接把volume信息从ASW里删掉了。<strong>注意这一步会触发kubelet更新node status中的<code>ReportedInUse</code> ，将volume从<code>ReportedInUse</code> 中删除掉。这意味着从现在开始attachdetach controller可以开始安全的执行detach操作了。</strong></p>
+<p>如果是由kubelet负责attach/detach，kubelet就执行detach volume操作。对于csi，detach就是删除<code>volumeattachment</code>，然后等待<code>volumeattachment</code>被彻底从etcd中删除掉，才算detach成功。由于<code>volumeattachment</code>中定义了finalizer，所以不会直接被删除，需要等到external-attacher调用csi执行detach并成功，才会被彻底从集群中删除，<code>volumeattachment</code>被彻底删除了，才算是detach成功。</p>
+<p>如果是controller负责attach/detach，controller进行detach 的前提有两个：</p>
+<ol>
+<li>是volume在ASW中存在而在DSW中不存在（这里提到的ASW和DSW指的是atachdetach controller的，不是kublet的），只有<strong>当Pod在集群中被彻底删掉了，DSWP才会将volume从DSW中删除，controller才能开始reconcile；</strong></li>
+<li><strong>detach前还需要确保volume已经被从节点unmounted了才能进行</strong>。controller怎么知道volume已经被unmounted成功了呢？当节点上的<code>ReportedInUse</code> 字段被增加或者删除时，controller就会相应的设置ASW中volume的<code>MountedByNode</code>字段，这个字段就代表着controller是否可以安全detach。又如前面描述的，只有当kubelet unmount已经成功，彻底从volumemanager的ASW中删除后，才会触发更新node status，将volume从节点的<code>ReportedInUse</code> 里删除掉。</li>
+</ol>
+<p>detach的流程是：</p>
+<ul>
+<li>首先从ASW中删除该volume；</li>
+<li>然后更新node status 的<code>VolumesAttached</code>，将volume从中去掉；</li>
+<li>然后执行detach volume，csi 的 detach volume实现和上面kubelet是同一个，已经说过了。</li>
+<li>如果detach失败了，会重新把volume加回到ASW中。</li>
+<li>接下来的<code>UpdateNodeStatuese</code> 函数又会把volume也重新加回到node status的<code>VolumesAttached</code> 。</li>
+</ul>
+<p>另外，除了unmount成功后controller会detach volume以外，还有一些情况，即使<code>ReportedInUse</code>仍然存在，也就是说volume没有完成unmount也会进行detach volume（但是仍然要保证Pod已经被彻底删除掉了）：</p>
+<ol>
+<li>节点状态不健康，并且已经等待了一个超时时间<code>maxWaitForUnmountDuration</code>。</li>
+<li>节点被打上了<code>node.kubernetes.io/out-of-service</code>污点（<strong>节点被打上</strong><code>node.kubernetes.io/out-of-service</code><strong>污点后，会force delete掉那个节点上不能容忍该污点的pod</strong>）</li>
+</ol>
+
+			</div>
+			<hr class="post-end">
+			<footer class="post-info">
+				<p>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://cvvz.fun/tags/kubernetes">kubernetes</a></span>
+				</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>6177 字</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-git-commit"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg><a href="https://github.com/cvvz/blog/commit/50a15ad18f21673faf67c2b3cb49faef8f128011" target="_blank" rel="noopener">50a15ad</a> @ 2023-08-17</p>
+			</footer>
+		</article>
+		<aside id="toc" class="show-toc">
+			<div class="toc-title">目录</div>
+			<nav id="TableOfContents">
+  <ul>
+    <li><a href="#从pending-到containercreating">从Pending 到ContainerCreating</a>
+      <ul>
+        <li><a href="#调度">调度</a></li>
+        <li><a href="#双向绑定">双向绑定</a></li>
+        <li><a href="#provision">Provision</a></li>
+      </ul>
+    </li>
+    <li><a href="#从containercreating到running">从ContainerCreating到Running</a>
+      <ul>
+        <li><a href="#attach">attach</a></li>
+        <li><a href="#mount-device-和mount-volume">mount device 和mount volume</a></li>
+      </ul>
+    </li>
+    <li><a href="#从terminating到pod被彻底删除">从Terminating到Pod被彻底删除</a>
+      <ul>
+        <li><a href="#unmount-volume">unmount volume</a></li>
+      </ul>
+    </li>
+    <li><a href="#pod被彻底删除以后">Pod被彻底删除以后</a>
+      <ul>
+        <li><a href="#unmount-device">unmount device</a></li>
+        <li><a href="#detach-volume">detach volume</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+		</aside>
+		<div class="post-nav thin">
+			<a class="prev-post" href="https://cvvz.fun/post/kexueshangwang/">
+				<span class="post-nav-label">旧&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>科学上网--k8s版</span>
+			</a>
+		</div>
+		<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+        <script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+		<div id="gitalk-container" class="thin"></div>     
+		<script type="text/javascript">
+			var gitalk = new Gitalk({
+				clientID: '0f8bdcbe6b4973f9b206',
+				clientSecret: '4939e64d59c93fc5eb7eaf74469a746e4535700d',
+				repo: 'cvvz.github.io',
+				owner: 'cvvz',
+				admin: ['cvvz'],
+				id: location.pathname,      
+				distractionFreeMode: true 
+			});
+  			gitalk.render('gitalk-container');
+		</script>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2023 <a href="https://cvvz.fun">陈维志</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://cvvz.fun/post/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+	<script src="https://cvvz.fun/js/main.min.784417f5847151f848c339cf0acb13a06cbb648b1483435a28ed4556c4ead69b.js"></script>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-M8Q3DKDEVL', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

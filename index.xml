@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Mon, 05 Jun 2023 15:43:20 +0800</lastBuildDate><atom:link href="https://cvvz.fun/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 17 Aug 2023 15:13:22 +0800</lastBuildDate><atom:link href="https://cvvz.fun/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>k8s storage 生命周期全流程</title>
+      <link>https://cvvz.fun/post/volume-lifecycle/</link>
+      <pubDate>Thu, 17 Aug 2023 15:13:22 +0800</pubDate>
+      
+      <guid>https://cvvz.fun/post/volume-lifecycle/</guid>
+      <description>本篇不涉及代码细节，但是全是对应的业务逻辑代码。。这篇笔记可以作为k8s storage的运维手册，忘记了细节的时候再拿出来重新过一遍。 从Pe</description>
+    </item>
+    
     <item>
       <title>我们为什么要睡觉</title>
       <link>https://cvvz.fun/read/why-we-sleep/</link>
@@ -177,15 +186,6 @@
       
       <guid>https://cvvz.fun/read/na-han/</guid>
       <description>看完《沉默的大多数》，再重新看《呐喊》（上一次看是上小学的时候，完全没看懂，也不知道可以问谁）。我有些悲观的觉得，有着5000年悠久历史的中</description>
-    </item>
-    
-    <item>
-      <title>沉默的大多数</title>
-      <link>https://cvvz.fun/read/the-silent-majority/</link>
-      <pubDate>Wed, 13 Apr 2022 08:16:59 +0800</pubDate>
-      
-      <guid>https://cvvz.fun/read/the-silent-majority/</guid>
-      <description>大学的时候看了王小波的《白银时代》，以前从来没有看过这样的小说，感觉很不传统，这让一直接受传统教育的我很喜欢。然后又去看了序言里提到的乔治奥</description>
     </item>
     
   </channel>
