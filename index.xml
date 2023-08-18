@@ -32,11 +32,11 @@
       <pubDate>Fri, 28 Apr 2023 23:14:10 +0800</pubDate>
       
       <guid>https://cvvz.fun/post/kexueshangwang/</guid>
-      <description>昨天折腾了一下，在自建的aks集群上搭好了出国的机场，用cert-manager自动签发和续期证书、域名动态的解析到service public ip，所</description>
+      <description>昨天折腾了一下，在自建的aks集群上搭好了出国的机场，用cert-manager自动签发和续期证书、域名动态的解析到service public ip，即</description>
     </item>
     
     <item>
-      <title>Ginkgo源码</title>
+      <title>Ginkgo源码分析</title>
       <link>https://cvvz.fun/post/ginkgo/</link>
       <pubDate>Wed, 05 Apr 2023 08:56:03 +0800</pubDate>
       
@@ -45,7 +45,7 @@
     </item>
     
     <item>
-      <title>go-daemon 源码</title>
+      <title>go-daemon 原理解析</title>
       <link>https://cvvz.fun/post/go-daemon/</link>
       <pubDate>Sun, 19 Mar 2023 09:38:40 +0800</pubDate>
       
@@ -68,7 +68,7 @@
       <pubDate>Mon, 20 Feb 2023 09:26:59 +0800</pubDate>
       
       <guid>https://cvvz.fun/post/prometheus/</guid>
-      <description>Mental Model Prometheus的配置文件中，scrape_config 部分定义的是job —— 也就是去哪个target instance scrape metrics —— 但是配置文件里不关心</description>
+      <description>Mental Model 很喜欢心智模型这个词，意思是对一个事物建立一个整体的框架性的理解。 Prometheus的配置文件中，scrape_config 部分定义的</description>
     </item>
     
     <item>
@@ -90,7 +90,7 @@
     </item>
     
     <item>
-      <title>通过read-ahead优化NFS性能</title>
+      <title>记一次通过read-ahead优化NFS性能的过程</title>
       <link>https://cvvz.fun/post/nfs-read-ahead/</link>
       <pubDate>Sun, 16 Oct 2022 22:58:42 +0800</pubDate>
       

@@ -131,9 +131,9 @@
 			<pubDate>Fri, 28 Apr 2023 23:14:10 +0800</pubDate>
 			
 			<guid>https://cvvz.fun/post/kexueshangwang/</guid>
-			<description>昨天折腾了一下，在自建的aks集群上搭好了出国的机场，用cert-manager自动签发和续期证书、域名动态的解析到service public ip，所</description>
+			<description>昨天折腾了一下，在自建的aks集群上搭好了出国的机场，用cert-manager自动签发和续期证书、域名动态的解析到service public ip，即</description>
 			<content type="html"><![CDATA[<blockquote>
-<p>昨天折腾了一下，在自建的aks集群上搭好了出国的机场，用cert-manager自动签发和续期证书、域名动态的解析到service public ip，所以不用担心ip被封禁。。公司每个月150刀的羊毛薅的太爽了🤣</p>
+<p>昨天折腾了一下，在自建的aks集群上搭好了出国的机场，用cert-manager自动签发和续期证书、域名动态的解析到service public ip，即使ip被封禁了也无所谓，毕竟云原生🤣。。</p>
 <p>原文地址：<a href="https://github.com/cvvz/k8s-playground/tree/master/gost#%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91-k8s%E7%89%88">https://github.com/cvvz/k8s-playground/tree/master/gost#科学上网-k8s版</a></p>
 </blockquote>
 <h2 id="pre-requisite">pre-requisite</h2>
@@ -271,7 +271,7 @@
 		</item>
 		
 		<item>
-			<title>Ginkgo源码</title>
+			<title>Ginkgo源码分析</title>
 			<link>https://cvvz.fun/post/ginkgo/</link>
 			<pubDate>Wed, 05 Apr 2023 08:56:03 +0800</pubDate>
 			
@@ -447,7 +447,7 @@
 <li>在运行Serial的Node或者cleanup Node时，会先检查一下状态，再决定是否运行。但是可能当时server端已经设置为需要abort了，可是还需要等500ms才能拿到实际状态。这个时候会去运行Node，但是实际上是应该skip的。</li>
 <li>cleanup Node应该直接忽略Abort的channel。</li>
 </ol>
-<p>我在提交了一个PR <a href="https://github.com/onsi/ginkgo/pull/1178">https://github.com/onsi/ginkgo/pull/1178</a> 解决这个问题</p>
+<p>我提交了一个PR <a href="https://github.com/onsi/ginkgo/pull/1178">https://github.com/onsi/ginkgo/pull/1178</a> 解决了这个问题</p>
 </blockquote>
 </li>
 <li>
@@ -469,7 +469,7 @@
 		</item>
 		
 		<item>
-			<title>go-daemon 源码</title>
+			<title>go-daemon 原理解析</title>
 			<link>https://cvvz.fun/post/go-daemon/</link>
 			<pubDate>Sun, 19 Mar 2023 09:38:40 +0800</pubDate>
 			
@@ -602,8 +602,11 @@
 			<pubDate>Mon, 20 Feb 2023 09:26:59 +0800</pubDate>
 			
 			<guid>https://cvvz.fun/post/prometheus/</guid>
-			<description>Mental Model Prometheus的配置文件中，scrape_config 部分定义的是job —— 也就是去哪个target instance scrape metrics —— 但是配置文件里不关心</description>
+			<description>Mental Model 很喜欢心智模型这个词，意思是对一个事物建立一个整体的框架性的理解。 Prometheus的配置文件中，scrape_config 部分定义的</description>
 			<content type="html"><![CDATA[<h2 id="mental-model">Mental Model</h2>
+<blockquote>
+<p>很喜欢心智模型这个词，意思是对一个事物建立一个整体的框架性的理解。</p>
+</blockquote>
 <ol>
 <li>
 <p>Prometheus的<a href="https://prometheus.io/docs/prometheus/latest/configuration/configuration/">配置文件</a>中，<a href="https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config">scrape_config</a> 部分定义的是<a href="https://prometheus.io/docs/concepts/jobs_instances/#jobs-and-instances">job</a> —— 也就是去哪个target <a href="https://prometheus.io/docs/concepts/jobs_instances/#jobs-and-instances">instance</a> scrape metrics —— 但是<strong>配置文件里不关心也没法关心具体抓哪些指标</strong>。</p>
@@ -725,7 +728,7 @@
 		</item>
 		
 		<item>
-			<title>通过read-ahead优化NFS性能</title>
+			<title>记一次通过read-ahead优化NFS性能的过程</title>
 			<link>https://cvvz.fun/post/nfs-read-ahead/</link>
 			<pubDate>Sun, 16 Oct 2022 22:58:42 +0800</pubDate>
 			
@@ -736,7 +739,7 @@
 <h2 id="分析">分析</h2>
 <p>通过NFS协议挂载和直接挂载本地磁盘的区别是下层的文件系统IO变成了网络IO。</p>
 <p>查看sha256sum执行过程中的cpu利用率，发现IO wait偏高，也就是说造成耗时的主要原因是因为执行了过多的网络IO。</p>
-<p>在排除了网络延迟的对这个问题的影响后，优化重点放在能否减少网络IO次数上，这和减少本地文件系统IO的优化思路没什么区别。sha256sum是典型的顺序读场景（通过strace可以看到它在不停的执行系统调用<code>read</code>，每次读取32KB数据进行处理），因此可以通过增加预读的数据量来增加每次IO额外顺序读取的数据并缓存，从而增加系统调用读page cache的次数，并减少IO的次数。</p>
+<p>在排除了网络延迟的对这个问题的影响后，优化重点放在能否减少网络IO次数上，这和减少本地文件系统IO的优化思路没什么区别。sha256sum是典型的顺序读场景（通过strace可以看到它在不停的执行系统调用<code>read</code>，每次读取32KB数据进行处理），因此可以通过增加预读（read-ahead）的数据量来增加每次IO额外顺序读取的数据并缓存，从而增加系统调用读page cache的次数，并减少磁盘IO的次数。</p>
 <p>执行 <code>echo 16384 &gt; /sys/class/bdi/$(mountpoint -d  $MOUNT_POINT)/read_ahead_kb</code>设置预读参数为16384（默认为128）后，sha256sum的执行时间提高到3分钟。</p>
 <p>下面对比一下优化前和优化后的各项指标。</p>
 <h3 id="cpu利用率">cpu利用率</h3>
@@ -777,7 +780,7 @@
 </figure>
 
 <p>耗时长（需要进行IO）的vfs_read次数减少了，耗时短（读缓存）的vfs_read次数增加了</p>
-<h2 id="blobfuse">blobfuse</h2>
+<h2 id="在blobfuse上的发现">在blobfuse上的发现</h2>
 <p>实验时还发现使用<a href="https://github.com/Azure/azure-storage-fuse">blobfuse</a>挂载时，即使不设置<code>read-ahead</code>参数，性能也不错，sha256sum的执行时间大约在5分钟左右。</p>
 <p>通过strace观察sha256sum系统调用执行情况，发现在执行<code>openat</code>时花了很长时间，这期间blobfuse cpu利用率很高（主要时间花在用户态、系统态和处理软中断），io wait也很高，<strong>可以推测sha256sum在执行<code>openat</code>的时候，blobfuse就已经在读取数据了</strong>。</p>
 <figure>
