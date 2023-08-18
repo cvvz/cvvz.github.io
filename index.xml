@@ -54,12 +54,12 @@
     </item>
     
     <item>
-      <title>Blobfuse2实现background mount</title>
+      <title>记一次background fuse mount问题的解决过程</title>
       <link>https://cvvz.fun/post/blobfuse2/</link>
       <pubDate>Sat, 18 Mar 2023 14:27:04 +0800</pubDate>
       
       <guid>https://cvvz.fun/post/blobfuse2/</guid>
-      <description>Blobfuse2 is an open source project developed to provide a virtual filesystem backed by the Azure Storage. It uses the libfuse open source library (fuse3) to communicate with the Linux FUSE kernel module, and implements the filesystem operations using the Azure Storage REST APIs. This is the next generation blobfuse blob csi driver 最近从blobfuse v1切换到 v</description>
+      <description>blobfuse2 是微软开源的使用 golang + libfuse 实现的fuse 文件系统。blob csi driver 是其对应的csi driver实现。我们最近碰到了两个background fuse mou</description>
     </item>
     
     <item>
