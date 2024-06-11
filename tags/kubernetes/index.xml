@@ -2,162 +2,162 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>kubernetes on cvvz&#39;s Blog</title>
-    <link>https://cvvz.fun/tags/kubernetes/</link>
+    <link>https://cvvz.me/tags/kubernetes/</link>
     <description>Recent content in kubernetes on cvvz&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Thu, 17 Aug 2023 15:13:22 +0800</lastBuildDate><atom:link href="https://cvvz.fun/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 17 Aug 2023 15:13:22 +0800</lastBuildDate><atom:link href="https://cvvz.me/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>k8s storage 生命周期全流程</title>
-      <link>https://cvvz.fun/post/volume-lifecycle/</link>
+      <link>https://cvvz.me/post/volume-lifecycle/</link>
       <pubDate>Thu, 17 Aug 2023 15:13:22 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/volume-lifecycle/</guid>
+      <guid>https://cvvz.me/post/volume-lifecycle/</guid>
       <description>本篇不涉及代码细节，但是全是对应的业务逻辑代码。。这篇笔记可以作为k8s storage的运维手册，忘记了细节的时候再拿出来重新过一遍。 从Pe</description>
     </item>
     
     <item>
       <title>VolumeBindingMode</title>
-      <link>https://cvvz.fun/post/volumebindingmode/</link>
+      <link>https://cvvz.me/post/volumebindingmode/</link>
       <pubDate>Sun, 16 Oct 2022 21:02:59 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/volumebindingmode/</guid>
+      <guid>https://cvvz.me/post/volumebindingmode/</guid>
       <description>VolumeBindingMode是storageclass的一个字段，这个字段可以设置为两个值：Immediate 或者 WaitForFir</description>
     </item>
     
     <item>
       <title>k8s存储演进过程</title>
-      <link>https://cvvz.fun/post/kubernetes-storage-history/</link>
+      <link>https://cvvz.me/post/kubernetes-storage-history/</link>
       <pubDate>Wed, 15 Jun 2022 13:22:45 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/kubernetes-storage-history/</guid>
+      <guid>https://cvvz.me/post/kubernetes-storage-history/</guid>
       <description>最近在做一些CSI相关的工作，重新看了一下之前的笔记和资料，发现kubernetes从最初简单的Volume到现在复杂的CSI的设计，有一个</description>
     </item>
     
     <item>
       <title>谈谈kubernetes中的etcd</title>
-      <link>https://cvvz.fun/post/etcd-and-kubernetes/</link>
+      <link>https://cvvz.me/post/etcd-and-kubernetes/</link>
       <pubDate>Thu, 10 Feb 2022 08:19:53 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/etcd-and-kubernetes/</guid>
+      <guid>https://cvvz.me/post/etcd-and-kubernetes/</guid>
       <description>revision revision是etcd中资源的全局版本号，可以看作一个全局逻辑时钟。etcd 启动的时候默认revision是 1，对任何一个key的增、</description>
     </item>
     
     <item>
       <title>浅谈开源集群联邦的设计和实现原理</title>
-      <link>https://cvvz.fun/post/kube-federation/</link>
+      <link>https://cvvz.me/post/kube-federation/</link>
       <pubDate>Tue, 11 Jan 2022 19:47:01 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/kube-federation/</guid>
+      <guid>https://cvvz.me/post/kube-federation/</guid>
       <description>集群联邦 集群联邦是为了解决单k8s集群节点数量有限的问题而出现的多集群管理方案。更具体一点，集群联邦要解决三类问题： 多k8s集群管理。这一块</description>
     </item>
     
     <item>
       <title>informer和controller-runtime源码</title>
-      <link>https://cvvz.fun/post/controller-reconcile/</link>
+      <link>https://cvvz.me/post/controller-reconcile/</link>
       <pubDate>Sat, 20 Nov 2021 14:17:23 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/controller-reconcile/</guid>
+      <guid>https://cvvz.me/post/controller-reconcile/</guid>
       <description>问题 最近在写operator时，碰到一个场景需要让controller每隔1分钟做一次reconcile，而不需要借助外部事件触发。 虽然cl</description>
     </item>
     
     <item>
       <title>浅谈云原生数据库</title>
-      <link>https://cvvz.fun/post/the-difficulty-of-distributed-db-on-cloud/</link>
+      <link>https://cvvz.me/post/the-difficulty-of-distributed-db-on-cloud/</link>
       <pubDate>Sun, 25 Jul 2021 08:58:26 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/the-difficulty-of-distributed-db-on-cloud/</guid>
+      <guid>https://cvvz.me/post/the-difficulty-of-distributed-db-on-cloud/</guid>
       <description>云原生数据库、shared-nothing、算存分离&amp;hellip; 这些概念性的东西，网上资料一大把，看完以后感觉懂了，但是尝试用自己的话复</description>
     </item>
     
     <item>
       <title>容器2</title>
-      <link>https://cvvz.fun/post/container2/</link>
+      <link>https://cvvz.me/post/container2/</link>
       <pubDate>Fri, 23 Apr 2021 16:52:20 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/container2/</guid>
+      <guid>https://cvvz.me/post/container2/</guid>
       <description>进程 单进程模型 容器中的1号进程对于宿主机而言就是一个普通的进程，它的父进程是runC，runC的父进程是containerd-shim。这个</description>
     </item>
     
     <item>
       <title>kubernetes网络之service</title>
-      <link>https://cvvz.fun/post/k8s-network-service/</link>
+      <link>https://cvvz.me/post/k8s-network-service/</link>
       <pubDate>Wed, 30 Dec 2020 15:42:01 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/k8s-network-service/</guid>
+      <guid>https://cvvz.me/post/k8s-network-service/</guid>
       <description>在kubernetes中，service其实只是一个保存在etcd里的API对象，并不对应任何具体的实例。service即k8s中的“微服务</description>
     </item>
     
     <item>
       <title>kubernetes网络之CNI与跨节点通信原理</title>
-      <link>https://cvvz.fun/post/k8s-network-cross-host/</link>
+      <link>https://cvvz.me/post/k8s-network-cross-host/</link>
       <pubDate>Wed, 30 Dec 2020 09:51:44 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/k8s-network-cross-host/</guid>
+      <guid>https://cvvz.me/post/k8s-network-cross-host/</guid>
       <description>初始化infra容器网络环境 当kubelet通过调用CRI的RunPodSandbox创建好PodSandbox，即infra容器后，就需要</description>
     </item>
     
     <item>
       <title>kubernetes网络之DNS</title>
-      <link>https://cvvz.fun/post/k8s-network-dns/</link>
+      <link>https://cvvz.me/post/k8s-network-dns/</link>
       <pubDate>Wed, 30 Dec 2020 09:41:51 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/k8s-network-dns/</guid>
+      <guid>https://cvvz.me/post/k8s-network-dns/</guid>
       <description>默认DNS策略 Pod默认的dns策略是 ClusterFirst，意思是先通过kubernetes的权威DNS服务器（如CoreDNS）直接解</description>
     </item>
     
     <item>
       <title>容器</title>
-      <link>https://cvvz.fun/post/container/</link>
+      <link>https://cvvz.me/post/container/</link>
       <pubDate>Thu, 24 Dec 2020 10:33:00 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/container/</guid>
+      <guid>https://cvvz.me/post/container/</guid>
       <description>容器镜像 容器镜像就是容器的rootfs。通过 Dockerfile 制作容器镜像时，就相当于增加 rootfs 层。通过容器镜像运行一个容器时，操作系统内核先将镜像中的每一层联</description>
     </item>
     
     <item>
       <title>为什么删除Pod时webhook收到三次delete请求</title>
-      <link>https://cvvz.fun/post/k8s-3-deletion-webhook/</link>
+      <link>https://cvvz.me/post/k8s-3-deletion-webhook/</link>
       <pubDate>Sun, 13 Dec 2020 19:26:15 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/k8s-3-deletion-webhook/</guid>
+      <guid>https://cvvz.me/post/k8s-3-deletion-webhook/</guid>
       <description>最近在玩admission webhook时，发现一个奇怪的现象：我配置了validatingWebhookConfiguration使其监听</description>
     </item>
     
     <item>
       <title>Kubernetes存储之Volume实现原理</title>
-      <link>https://cvvz.fun/post/k8s-volume/</link>
+      <link>https://cvvz.me/post/k8s-volume/</link>
       <pubDate>Sat, 12 Dec 2020 12:32:33 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/k8s-volume/</guid>
+      <guid>https://cvvz.me/post/k8s-volume/</guid>
       <description>容器运行时挂载卷的过程 如果CRI是通过dockershim实现的话，kubelet通过CRI接口去拉起一个容器，就好比是通过docker-d</description>
     </item>
     
     <item>
       <title>以aggregated apiserver的方式部署admission webhook</title>
-      <link>https://cvvz.fun/post/why-aggregated-api-server-webhook/</link>
+      <link>https://cvvz.me/post/why-aggregated-api-server-webhook/</link>
       <pubDate>Tue, 01 Dec 2020 07:19:06 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/why-aggregated-api-server-webhook/</guid>
+      <guid>https://cvvz.me/post/why-aggregated-api-server-webhook/</guid>
       <description>热身概念：apiserver认证客户端的方式 apiserver为客户端提供三种认证方式： https双向认证（注意是双向认证，例如kubeco</description>
     </item>
     
     <item>
       <title>kubectl patch</title>
-      <link>https://cvvz.fun/post/k8s-kubectl-patch/</link>
+      <link>https://cvvz.me/post/k8s-kubectl-patch/</link>
       <pubDate>Sun, 22 Nov 2020 23:16:44 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/k8s-kubectl-patch/</guid>
+      <guid>https://cvvz.me/post/k8s-kubectl-patch/</guid>
       <description>kubectl patch 用来修改 Kubernetes API 对象的字段。可以通过 --type 参数指定三种不同类型的 patch 方式： strategic：strategic merge patch merge： json merge patch json： json</description>
     </item>
     
     <item>
       <title>浅谈kubernetes监控体系</title>
-      <link>https://cvvz.fun/post/k8s-monitor/</link>
+      <link>https://cvvz.me/post/k8s-monitor/</link>
       <pubDate>Fri, 20 Nov 2020 00:24:35 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/k8s-monitor/</guid>
+      <guid>https://cvvz.me/post/k8s-monitor/</guid>
       <description>监控和指标 理解监控 我们可以把监控系统划分为：采集指标、存储、展示和告警四个部分。 存储使用时序数据库TSDB、前端展示使用grafana、告警</description>
     </item>
     

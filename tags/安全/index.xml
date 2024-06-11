@@ -2,36 +2,36 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>安全 on cvvz&#39;s Blog</title>
-    <link>https://cvvz.fun/tags/%E5%AE%89%E5%85%A8/</link>
+    <link>https://cvvz.me/tags/%E5%AE%89%E5%85%A8/</link>
     <description>Recent content in 安全 on cvvz&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Tue, 01 Dec 2020 07:19:06 +0800</lastBuildDate><atom:link href="https://cvvz.fun/tags/%E5%AE%89%E5%85%A8/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 01 Dec 2020 07:19:06 +0800</lastBuildDate><atom:link href="https://cvvz.me/tags/%E5%AE%89%E5%85%A8/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>以aggregated apiserver的方式部署admission webhook</title>
-      <link>https://cvvz.fun/post/why-aggregated-api-server-webhook/</link>
+      <link>https://cvvz.me/post/why-aggregated-api-server-webhook/</link>
       <pubDate>Tue, 01 Dec 2020 07:19:06 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/why-aggregated-api-server-webhook/</guid>
+      <guid>https://cvvz.me/post/why-aggregated-api-server-webhook/</guid>
       <description>热身概念：apiserver认证客户端的方式 apiserver为客户端提供三种认证方式： https双向认证（注意是双向认证，例如kubeco</description>
     </item>
     
     <item>
       <title>安全知识总结</title>
-      <link>https://cvvz.fun/post/about-computer-security/</link>
+      <link>https://cvvz.me/post/about-computer-security/</link>
       <pubDate>Thu, 22 Aug 2019 12:38:04 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/about-computer-security/</guid>
+      <guid>https://cvvz.me/post/about-computer-security/</guid>
       <description>加解密算法 对称加密： 用同一个秘钥进行加密和解密，代表算法有AES/DES/RC2/RC5等； 非对称加密： 一次产生公钥和私钥两个秘钥，任意一个</description>
     </item>
     
     <item>
       <title>抓包解读smtp和tls协议</title>
-      <link>https://cvvz.fun/post/smtp-with-tls/</link>
+      <link>https://cvvz.me/post/smtp-with-tls/</link>
       <pubDate>Sat, 22 Jun 2019 23:21:54 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/smtp-with-tls/</guid>
+      <guid>https://cvvz.me/post/smtp-with-tls/</guid>
       <description>背景：某进程调用 libcurl 提供的 curl_easy_perform 接口与邮箱服务器进行smtp通信时，服务端返回56(CURLE_RECV_ERROR)错误。由于服务端日志信息不足</description>
     </item>
     

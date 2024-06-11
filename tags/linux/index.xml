@@ -2,108 +2,108 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Linux on cvvz&#39;s Blog</title>
-    <link>https://cvvz.fun/tags/linux/</link>
+    <link>https://cvvz.me/tags/linux/</link>
     <description>Recent content in Linux on cvvz&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Sun, 16 Oct 2022 22:58:42 +0800</lastBuildDate><atom:link href="https://cvvz.fun/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 16 Oct 2022 22:58:42 +0800</lastBuildDate><atom:link href="https://cvvz.me/tags/linux/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>记一次通过read-ahead优化NFS性能的过程</title>
-      <link>https://cvvz.fun/post/nfs-read-ahead/</link>
+      <link>https://cvvz.me/post/nfs-read-ahead/</link>
       <pubDate>Sun, 16 Oct 2022 22:58:42 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/nfs-read-ahead/</guid>
+      <guid>https://cvvz.me/post/nfs-read-ahead/</guid>
       <description>问题 agent node操作系统版本Ubuntu 18.04，客户使用blob csi driver，使用NFS协议进行挂载，对一个25GB的文件执行sha25</description>
     </item>
     
     <item>
       <title>kubernetes网络之service</title>
-      <link>https://cvvz.fun/post/k8s-network-service/</link>
+      <link>https://cvvz.me/post/k8s-network-service/</link>
       <pubDate>Wed, 30 Dec 2020 15:42:01 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/k8s-network-service/</guid>
+      <guid>https://cvvz.me/post/k8s-network-service/</guid>
       <description>在kubernetes中，service其实只是一个保存在etcd里的API对象，并不对应任何具体的实例。service即k8s中的“微服务</description>
     </item>
     
     <item>
       <title>Kubernetes存储之Volume实现原理</title>
-      <link>https://cvvz.fun/post/k8s-volume/</link>
+      <link>https://cvvz.me/post/k8s-volume/</link>
       <pubDate>Sat, 12 Dec 2020 12:32:33 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/k8s-volume/</guid>
+      <guid>https://cvvz.me/post/k8s-volume/</guid>
       <description>容器运行时挂载卷的过程 如果CRI是通过dockershim实现的话，kubelet通过CRI接口去拉起一个容器，就好比是通过docker-d</description>
     </item>
     
     <item>
       <title>kubernetes网络之浅谈单机容器网络</title>
-      <link>https://cvvz.fun/post/container-network/</link>
+      <link>https://cvvz.me/post/container-network/</link>
       <pubDate>Thu, 03 Dec 2020 00:16:18 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/container-network/</guid>
+      <guid>https://cvvz.me/post/container-network/</guid>
       <description>容器网络环境隔离怎么理解？ 容器的网络环境是隔离的，这个隔离就体现在不共用内核网络协议栈，即不共用网络协议栈要用到的数据和设备了： 传输层：端口</description>
     </item>
     
     <item>
       <title>【问题定位】Celery Worker产生僵尸进程</title>
-      <link>https://cvvz.fun/post/celery-worker-zombie/</link>
+      <link>https://cvvz.me/post/celery-worker-zombie/</link>
       <pubDate>Mon, 30 Mar 2020 10:36:36 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/celery-worker-zombie/</guid>
+      <guid>https://cvvz.me/post/celery-worker-zombie/</guid>
       <description>组内有一个基于Flask + rabbitMQ + Celery搭建的web平台，最近在上面开发需求时碰到了一个比较有趣的问题，在这里记录下来。 问题背景 web平台</description>
     </item>
     
     <item>
       <title>用树莓派分析函数调用栈</title>
-      <link>https://cvvz.fun/post/call-stack/</link>
+      <link>https://cvvz.me/post/call-stack/</link>
       <pubDate>Tue, 03 Sep 2019 18:44:12 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/call-stack/</guid>
+      <guid>https://cvvz.me/post/call-stack/</guid>
       <description>理解本篇文章需要具备一些GDB、汇编、寄存器的基础知识。可以在阅读的过程中碰到不理解的地方再针对性的学习。 寄存器 分析函数调用栈涉及到的几个特</description>
     </item>
     
     <item>
       <title>解剖进程虚拟内存空间</title>
-      <link>https://cvvz.fun/post/anatomy-of-a-program-in-memory/</link>
+      <link>https://cvvz.me/post/anatomy-of-a-program-in-memory/</link>
       <pubDate>Fri, 07 Jun 2019 23:14:03 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/anatomy-of-a-program-in-memory/</guid>
+      <guid>https://cvvz.me/post/anatomy-of-a-program-in-memory/</guid>
       <description>对于32位 x86 Linux操作系统，典型的进程地址空间如下图所示： 每一个进程运行在各自独立的虚拟内存空间中，从0x00000000到0xFFFF</description>
     </item>
     
     <item>
       <title>system系统调用探秘</title>
-      <link>https://cvvz.fun/post/system-and-shell/</link>
+      <link>https://cvvz.me/post/system-and-shell/</link>
       <pubDate>Thu, 30 May 2019 00:28:40 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/system-and-shell/</guid>
+      <guid>https://cvvz.me/post/system-and-shell/</guid>
       <description>6月3日更新 新的实验又发现使用/bin/sh和书中行为一致，但使用/bin/bash的行为和本文中的实验一致，看来是不同shell的底层的实</description>
     </item>
     
     <item>
       <title>【问题定位】串口登录失败</title>
-      <link>https://cvvz.fun/post/arm-login-failed/</link>
+      <link>https://cvvz.me/post/arm-login-failed/</link>
       <pubDate>Fri, 24 May 2019 02:45:41 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/arm-login-failed/</guid>
+      <guid>https://cvvz.me/post/arm-login-failed/</guid>
       <description>问题现象 通过串口无法正常登录ARM设备，shell闪退。 问题分析 首先梳理一下SSH登录和串口登录两种方式的流程： 两种登录方式首先都要经过PA</description>
     </item>
     
     <item>
       <title>【问题定位】/bin/bash无权限导致SSH登录失败</title>
-      <link>https://cvvz.fun/post/login-permission-denied/</link>
+      <link>https://cvvz.me/post/login-permission-denied/</link>
       <pubDate>Thu, 23 May 2019 02:21:56 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/login-permission-denied/</guid>
+      <guid>https://cvvz.me/post/login-permission-denied/</guid>
       <description>问题现象 SSH登录主机失败，提示错误：/bin/bash: Permission denied。 分析过程 Linux处理SSH远程登录的流程如下： SSHD进程后台监</description>
     </item>
     
     <item>
       <title>关于进程和线程的一些思考</title>
-      <link>https://cvvz.fun/post/process-and-thread/</link>
+      <link>https://cvvz.me/post/process-and-thread/</link>
       <pubDate>Sat, 23 Jun 2018 20:34:56 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/process-and-thread/</guid>
+      <guid>https://cvvz.me/post/process-and-thread/</guid>
       <description>从“程序”开始 对于UNIX操作系统，程序是存放在磁盘上的ELF文件（可以通过file命令查看文件类型） 对于windows操作系统，程序是存放</description>
     </item>
     

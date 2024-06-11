@@ -2,189 +2,189 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>cvvz&#39;s Blog</title>
-    <link>https://cvvz.fun/</link>
+    <link>https://cvvz.me/</link>
     <description>Recent content on cvvz&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Thu, 17 Aug 2023 15:13:22 +0800</lastBuildDate><atom:link href="https://cvvz.fun/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 17 Aug 2023 15:13:22 +0800</lastBuildDate><atom:link href="https://cvvz.me/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>k8s storage 生命周期全流程</title>
-      <link>https://cvvz.fun/post/volume-lifecycle/</link>
+      <link>https://cvvz.me/post/volume-lifecycle/</link>
       <pubDate>Thu, 17 Aug 2023 15:13:22 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/volume-lifecycle/</guid>
+      <guid>https://cvvz.me/post/volume-lifecycle/</guid>
       <description>本篇不涉及代码细节，但是全是对应的业务逻辑代码。。这篇笔记可以作为k8s storage的运维手册，忘记了细节的时候再拿出来重新过一遍。 从Pe</description>
     </item>
     
     <item>
       <title>我们为什么要睡觉</title>
-      <link>https://cvvz.fun/read/why-we-sleep/</link>
+      <link>https://cvvz.me/read/why-we-sleep/</link>
       <pubDate>Mon, 05 Jun 2023 15:43:20 +0800</pubDate>
       
-      <guid>https://cvvz.fun/read/why-we-sleep/</guid>
+      <guid>https://cvvz.me/read/why-we-sleep/</guid>
       <description></description>
     </item>
     
     <item>
       <title>科学上网--k8s版</title>
-      <link>https://cvvz.fun/post/kexueshangwang/</link>
+      <link>https://cvvz.me/post/kexueshangwang/</link>
       <pubDate>Fri, 28 Apr 2023 23:14:10 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/kexueshangwang/</guid>
+      <guid>https://cvvz.me/post/kexueshangwang/</guid>
       <description>昨天折腾了一下，在自建的aks集群上搭好了出国的机场，用cert-manager自动签发和续期证书、域名动态的解析到service public ip，即</description>
     </item>
     
     <item>
       <title>Ginkgo源码分析</title>
-      <link>https://cvvz.fun/post/ginkgo/</link>
+      <link>https://cvvz.me/post/ginkgo/</link>
       <pubDate>Wed, 05 Apr 2023 08:56:03 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/ginkgo/</guid>
+      <guid>https://cvvz.me/post/ginkgo/</guid>
       <description>ginkgo cmd 执行ginkgo cmd默认运行的是ginkgo run 入口函数 1func (r *SpecRunner) RunSpecs(args []string, additionalArgs []string) { 主要做两件事，编译和运行suite 编译 使用 go test -c -o 得到.test</description>
     </item>
     
     <item>
       <title>go-daemon 原理解析</title>
-      <link>https://cvvz.fun/post/go-daemon/</link>
+      <link>https://cvvz.me/post/go-daemon/</link>
       <pubDate>Sun, 19 Mar 2023 09:38:40 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/go-daemon/</guid>
+      <guid>https://cvvz.me/post/go-daemon/</guid>
       <description>go-daemon是golang的fork问题的一种解决方案，在解决blobfuse2 mount问题时看了一遍go-daemon源码，在这里</description>
     </item>
     
     <item>
       <title>记一次background fuse mount问题的解决过程</title>
-      <link>https://cvvz.fun/post/blobfuse2/</link>
+      <link>https://cvvz.me/post/blobfuse2/</link>
       <pubDate>Sat, 18 Mar 2023 14:27:04 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/blobfuse2/</guid>
+      <guid>https://cvvz.me/post/blobfuse2/</guid>
       <description>blobfuse2 是微软开源的使用 golang + libfuse 实现的fuse 文件系统。blob csi driver 是其对应的csi driver实现。我们最近碰到了两个background fuse mou</description>
     </item>
     
     <item>
       <title>Prometheus试玩</title>
-      <link>https://cvvz.fun/post/prometheus/</link>
+      <link>https://cvvz.me/post/prometheus/</link>
       <pubDate>Mon, 20 Feb 2023 09:26:59 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/prometheus/</guid>
+      <guid>https://cvvz.me/post/prometheus/</guid>
       <description>Mental Model 很喜欢心智模型这个词，意思是对一个事物建立一个整体的框架性的理解。 Prometheus的配置文件中，scrape_config 部分定义的</description>
     </item>
     
     <item>
       <title>少有人走的路</title>
-      <link>https://cvvz.fun/read/the-road-less-traveled/</link>
+      <link>https://cvvz.me/read/the-road-less-traveled/</link>
       <pubDate>Wed, 21 Dec 2022 14:28:19 +0800</pubDate>
       
-      <guid>https://cvvz.fun/read/the-road-less-traveled/</guid>
+      <guid>https://cvvz.me/read/the-road-less-traveled/</guid>
       <description>最近决定重读两本对我人生影响很大的书：《少有人走的路》和《亲密关系》。 《少有人走的路》是在上大学时看的，那时我一直饱受一些心理问题的困扰，比</description>
     </item>
     
     <item>
       <title>技术和知识</title>
-      <link>https://cvvz.fun/thinking/skill-and-knowledge/</link>
+      <link>https://cvvz.me/thinking/skill-and-knowledge/</link>
       <pubDate>Sun, 16 Oct 2022 23:07:37 +0800</pubDate>
       
-      <guid>https://cvvz.fun/thinking/skill-and-knowledge/</guid>
+      <guid>https://cvvz.me/thinking/skill-and-knowledge/</guid>
       <description>最近看了一部很有意思的小短片，一位工程师创造了一辆自行车，和普通自行车唯一的区别是把手的转向和车轮的转向是相反的：当你向左（右）转，车轮会向</description>
     </item>
     
     <item>
       <title>记一次通过read-ahead优化NFS性能的过程</title>
-      <link>https://cvvz.fun/post/nfs-read-ahead/</link>
+      <link>https://cvvz.me/post/nfs-read-ahead/</link>
       <pubDate>Sun, 16 Oct 2022 22:58:42 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/nfs-read-ahead/</guid>
+      <guid>https://cvvz.me/post/nfs-read-ahead/</guid>
       <description>问题 agent node操作系统版本Ubuntu 18.04，客户使用blob csi driver，使用NFS协议进行挂载，对一个25GB的文件执行sha25</description>
     </item>
     
     <item>
       <title>VolumeBindingMode</title>
-      <link>https://cvvz.fun/post/volumebindingmode/</link>
+      <link>https://cvvz.me/post/volumebindingmode/</link>
       <pubDate>Sun, 16 Oct 2022 21:02:59 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/volumebindingmode/</guid>
+      <guid>https://cvvz.me/post/volumebindingmode/</guid>
       <description>VolumeBindingMode是storageclass的一个字段，这个字段可以设置为两个值：Immediate 或者 WaitForFir</description>
     </item>
     
     <item>
       <title>刻意练习</title>
-      <link>https://cvvz.fun/read/ke-yi-lian-xi/</link>
+      <link>https://cvvz.me/read/ke-yi-lian-xi/</link>
       <pubDate>Wed, 12 Oct 2022 10:43:51 +0800</pubDate>
       
-      <guid>https://cvvz.fun/read/ke-yi-lian-xi/</guid>
+      <guid>https://cvvz.me/read/ke-yi-lian-xi/</guid>
       <description></description>
     </item>
     
     <item>
       <title>终身成长</title>
-      <link>https://cvvz.fun/read/growth-mindset/</link>
+      <link>https://cvvz.me/read/growth-mindset/</link>
       <pubDate>Thu, 01 Sep 2022 17:46:14 +0800</pubDate>
       
-      <guid>https://cvvz.fun/read/growth-mindset/</guid>
+      <guid>https://cvvz.me/read/growth-mindset/</guid>
       <description>永远不要定性：不要定性自己，不要定性别人，不要放大定性的声音。把一切都看轻一点，重要的只是你是放弃还是继续。 人生的两种闭环：可以通过自我封闭</description>
     </item>
     
     <item>
       <title>在WSL中使用VPN碰到的网络问题</title>
-      <link>https://cvvz.fun/post/wsl-vpn-issue/</link>
+      <link>https://cvvz.me/post/wsl-vpn-issue/</link>
       <pubDate>Mon, 22 Aug 2022 09:23:12 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/wsl-vpn-issue/</guid>
+      <guid>https://cvvz.me/post/wsl-vpn-issue/</guid>
       <description>最近由于工作原因，不得不将工作机切换到Windows系统，准备装个WSL作为overlay的工作环境。安装、配置都没什么问题，但是发现主机接</description>
     </item>
     
     <item>
       <title>富爸爸穷爸爸</title>
-      <link>https://cvvz.fun/read/rich-dad/</link>
+      <link>https://cvvz.me/read/rich-dad/</link>
       <pubDate>Tue, 05 Jul 2022 22:03:58 +0800</pubDate>
       
-      <guid>https://cvvz.fun/read/rich-dad/</guid>
+      <guid>https://cvvz.me/read/rich-dad/</guid>
       <description>从很多渠道都听过这本书，很多人推荐这本书作为投资理财类的入门书籍。本书目的在于影响和改变世界观（金钱观），而不讲方法论。我把这本书的主要内容</description>
     </item>
     
     <item>
       <title>弱传播</title>
-      <link>https://cvvz.fun/read/weak-communication/</link>
+      <link>https://cvvz.me/read/weak-communication/</link>
       <pubDate>Tue, 28 Jun 2022 08:47:07 +0800</pubDate>
       
-      <guid>https://cvvz.fun/read/weak-communication/</guid>
+      <guid>https://cvvz.me/read/weak-communication/</guid>
       <description>一本关于舆论和传播的书。没有读完，看完了80%的内容，认真看了的部分可能只有50%。理论和泛泛而谈的东西太多了，自创了很多概念、定理，八股文</description>
     </item>
     
     <item>
       <title>k8s存储演进过程</title>
-      <link>https://cvvz.fun/post/kubernetes-storage-history/</link>
+      <link>https://cvvz.me/post/kubernetes-storage-history/</link>
       <pubDate>Wed, 15 Jun 2022 13:22:45 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/kubernetes-storage-history/</guid>
+      <guid>https://cvvz.me/post/kubernetes-storage-history/</guid>
       <description>最近在做一些CSI相关的工作，重新看了一下之前的笔记和资料，发现kubernetes从最初简单的Volume到现在复杂的CSI的设计，有一个</description>
     </item>
     
     <item>
       <title>黑天鹅</title>
-      <link>https://cvvz.fun/read/black-swan/</link>
+      <link>https://cvvz.me/read/black-swan/</link>
       <pubDate>Sun, 05 Jun 2022 22:47:51 +0800</pubDate>
       
-      <guid>https://cvvz.fun/read/black-swan/</guid>
+      <guid>https://cvvz.me/read/black-swan/</guid>
       <description>这也是一本很经典的书。kindle给我推荐这本书可能是因为我读了《思考，快与慢》，这两本书的作者都很赞同对方的理论和观点，在各自的书里也都引</description>
     </item>
     
     <item>
       <title>思考，快与慢</title>
-      <link>https://cvvz.fun/read/thinking-fast-and-slow/</link>
+      <link>https://cvvz.me/read/thinking-fast-and-slow/</link>
       <pubDate>Wed, 04 May 2022 17:57:56 +0800</pubDate>
       
-      <guid>https://cvvz.fun/read/thinking-fast-and-slow/</guid>
+      <guid>https://cvvz.me/read/thinking-fast-and-slow/</guid>
       <description>心理学的经典著作。这本书前前后后花了大半年时间才看完，一是内容太多，二是有些概念要花些时间才能理解，三是中文翻译实在很生硬，很多地方和机翻差</description>
     </item>
     
     <item>
       <title>呐喊</title>
-      <link>https://cvvz.fun/read/na-han/</link>
+      <link>https://cvvz.me/read/na-han/</link>
       <pubDate>Fri, 15 Apr 2022 19:24:10 +0800</pubDate>
       
-      <guid>https://cvvz.fun/read/na-han/</guid>
+      <guid>https://cvvz.me/read/na-han/</guid>
       <description>看完《沉默的大多数》，再重新看《呐喊》（上一次看是上小学的时候，完全没看懂，也不知道可以问谁）。我有些悲观的觉得，有着5000年悠久历史的中</description>
     </item>
     

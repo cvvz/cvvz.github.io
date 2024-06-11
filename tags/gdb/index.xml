@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>gdb on cvvz&#39;s Blog</title>
-    <link>https://cvvz.fun/tags/gdb/</link>
+    <link>https://cvvz.me/tags/gdb/</link>
     <description>Recent content in gdb on cvvz&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Mon, 10 Jun 2019 11:44:52 +0800</lastBuildDate><atom:link href="https://cvvz.fun/tags/gdb/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 10 Jun 2019 11:44:52 +0800</lastBuildDate><atom:link href="https://cvvz.me/tags/gdb/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>gdb中的多线程和信号处理</title>
-      <link>https://cvvz.fun/post/gdb-muti-process-and-signal-handle/</link>
+      <link>https://cvvz.me/post/gdb-muti-process-and-signal-handle/</link>
       <pubDate>Mon, 10 Jun 2019 11:44:52 +0800</pubDate>
       
-      <guid>https://cvvz.fun/post/gdb-muti-process-and-signal-handle/</guid>
+      <guid>https://cvvz.me/post/gdb-muti-process-and-signal-handle/</guid>
       <description>多线程调试 使用GDB调试多线程时，控制程序的执行模式主要分两种：all-stop 模式和 non-stop 模式。 All-Stop 任何一个线程在断点处hang住时，所有其他线</description>
     </item>
     
