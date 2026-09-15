@@ -144,15 +144,6 @@
     </item>
     
     <item>
-      <title>弱传播</title>
-      <link>https://cvvz.me/read/weak-communication/</link>
-      <pubDate>Tue, 28 Jun 2022 08:47:07 +0800</pubDate>
-      
-      <guid>https://cvvz.me/read/weak-communication/</guid>
-      <description>一本关于舆论和传播的书。没有读完，看完了80%的内容，认真看了的部分可能只有50%。理论和泛泛而谈的东西太多了，自创了很多概念、定理，八股文</description>
-    </item>
-    
-    <item>
       <title>k8s存储演进过程</title>
       <link>https://cvvz.me/post/kubernetes-storage-history/</link>
       <pubDate>Wed, 15 Jun 2022 13:22:45 +0800</pubDate>
@@ -188,5 +179,13 @@
       <description>看完《沉默的大多数》，再重新看《呐喊》（上一次看是上小学的时候，完全没看懂，也不知道可以问谁）。我有些悲观的觉得，有着5000年悠久历史的中</description>
     </item>
     
+    <item>
+      <title>沉默的大多数</title>
+      <link>https://cvvz.me/read/the-silent-majority/</link>
+      <pubDate>Wed, 13 Apr 2022 08:16:59 +0800</pubDate>
+
+      <guid>https://cvvz.me/read/the-silent-majority/</guid>
+      <description>大学的时候看了王小波的《白银时代》，以前从来没有看过这样的小说，感觉很不传统，这让一直接受传统教育的我很喜欢。然后又去看了序言里提到的乔治奥</description>
+    </item>
   </channel>
 </rss>
