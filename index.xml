@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Thu, 17 Aug 2023 15:13:22 +0800</lastBuildDate><atom:link href="https://cvvz.me/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 19 Sep 2026 10:07:20 +0800</lastBuildDate><atom:link href="https://cvvz.me/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>AI时代程序员的乐趣</title>
+      <link>https://cvvz.me/post/ai-learning-and-joy/</link>
+      <pubDate>Sat, 19 Sep 2026 10:07:20 +0800</pubDate>
+      
+      <guid>https://cvvz.me/post/ai-learning-and-joy/</guid>
+      <description>AI 时代，写作和表达能力非常重要。因为很多时候，不是 AI 不会，而是你没说清楚。 以前程序员的硬核技能，比如编码、设计算法，相对重要性反而在减弱；软</description>
+    </item>
+    
     <item>
       <title>k8s storage 生命周期全流程</title>
       <link>https://cvvz.me/post/volume-lifecycle/</link>
@@ -19,10 +28,10 @@
     
     <item>
       <title>我们为什么要睡觉</title>
-      <link>https://cvvz.me/read/why-we-sleep/</link>
+      <link>https://cvvz.me/post/why-we-sleep/</link>
       <pubDate>Mon, 05 Jun 2023 15:43:20 +0800</pubDate>
       
-      <guid>https://cvvz.me/read/why-we-sleep/</guid>
+      <guid>https://cvvz.me/post/why-we-sleep/</guid>
       <description></description>
     </item>
     
@@ -73,19 +82,19 @@
     
     <item>
       <title>少有人走的路</title>
-      <link>https://cvvz.me/read/the-road-less-traveled/</link>
+      <link>https://cvvz.me/post/the-road-less-traveled/</link>
       <pubDate>Wed, 21 Dec 2022 14:28:19 +0800</pubDate>
       
-      <guid>https://cvvz.me/read/the-road-less-traveled/</guid>
+      <guid>https://cvvz.me/post/the-road-less-traveled/</guid>
       <description>最近决定重读两本对我人生影响很大的书：《少有人走的路》和《亲密关系》。 《少有人走的路》是在上大学时看的，那时我一直饱受一些心理问题的困扰，比</description>
     </item>
     
     <item>
       <title>技术和知识</title>
-      <link>https://cvvz.me/read/skill-and-knowledge/</link>
+      <link>https://cvvz.me/post/skill-and-knowledge/</link>
       <pubDate>Sun, 16 Oct 2022 23:07:37 +0800</pubDate>
       
-      <guid>https://cvvz.me/read/skill-and-knowledge/</guid>
+      <guid>https://cvvz.me/post/skill-and-knowledge/</guid>
       <description>最近看了一部很有意思的小短片，一位工程师创造了一辆自行车，和普通自行车唯一的区别是把手的转向和车轮的转向是相反的：当你向左（右）转，车轮会向</description>
     </item>
     
@@ -109,19 +118,19 @@
     
     <item>
       <title>刻意练习</title>
-      <link>https://cvvz.me/read/ke-yi-lian-xi/</link>
+      <link>https://cvvz.me/post/ke-yi-lian-xi/</link>
       <pubDate>Wed, 12 Oct 2022 10:43:51 +0800</pubDate>
       
-      <guid>https://cvvz.me/read/ke-yi-lian-xi/</guid>
+      <guid>https://cvvz.me/post/ke-yi-lian-xi/</guid>
       <description></description>
     </item>
     
     <item>
       <title>终身成长</title>
-      <link>https://cvvz.me/read/growth-mindset/</link>
+      <link>https://cvvz.me/post/growth-mindset/</link>
       <pubDate>Thu, 01 Sep 2022 17:46:14 +0800</pubDate>
       
-      <guid>https://cvvz.me/read/growth-mindset/</guid>
+      <guid>https://cvvz.me/post/growth-mindset/</guid>
       <description>永远不要定性：不要定性自己，不要定性别人，不要放大定性的声音。把一切都看轻一点，重要的只是你是放弃还是继续。 人生的两种闭环：可以通过自我封闭</description>
     </item>
     
@@ -136,10 +145,10 @@
     
     <item>
       <title>富爸爸穷爸爸</title>
-      <link>https://cvvz.me/read/rich-dad/</link>
+      <link>https://cvvz.me/post/rich-dad/</link>
       <pubDate>Tue, 05 Jul 2022 22:03:58 +0800</pubDate>
       
-      <guid>https://cvvz.me/read/rich-dad/</guid>
+      <guid>https://cvvz.me/post/rich-dad/</guid>
       <description>从很多渠道都听过这本书，很多人推荐这本书作为投资理财类的入门书籍。本书目的在于影响和改变世界观（金钱观），而不讲方法论。我把这本书的主要内容</description>
     </item>
     
@@ -154,38 +163,30 @@
     
     <item>
       <title>黑天鹅</title>
-      <link>https://cvvz.me/read/black-swan/</link>
+      <link>https://cvvz.me/post/black-swan/</link>
       <pubDate>Sun, 05 Jun 2022 22:47:51 +0800</pubDate>
       
-      <guid>https://cvvz.me/read/black-swan/</guid>
+      <guid>https://cvvz.me/post/black-swan/</guid>
       <description>这也是一本很经典的书。kindle给我推荐这本书可能是因为我读了《思考，快与慢》，这两本书的作者都很赞同对方的理论和观点，在各自的书里也都引</description>
     </item>
     
     <item>
       <title>思考，快与慢</title>
-      <link>https://cvvz.me/read/thinking-fast-and-slow/</link>
+      <link>https://cvvz.me/post/thinking-fast-and-slow/</link>
       <pubDate>Wed, 04 May 2022 17:57:56 +0800</pubDate>
       
-      <guid>https://cvvz.me/read/thinking-fast-and-slow/</guid>
+      <guid>https://cvvz.me/post/thinking-fast-and-slow/</guid>
       <description>心理学的经典著作。这本书前前后后花了大半年时间才看完，一是内容太多，二是有些概念要花些时间才能理解，三是中文翻译实在很生硬，很多地方和机翻差</description>
     </item>
     
     <item>
       <title>呐喊</title>
-      <link>https://cvvz.me/read/na-han/</link>
+      <link>https://cvvz.me/post/na-han/</link>
       <pubDate>Fri, 15 Apr 2022 19:24:10 +0800</pubDate>
       
-      <guid>https://cvvz.me/read/na-han/</guid>
+      <guid>https://cvvz.me/post/na-han/</guid>
       <description>看完《沉默的大多数》，再重新看《呐喊》（上一次看是上小学的时候，完全没看懂，也不知道可以问谁）。我有些悲观的觉得，有着5000年悠久历史的中</description>
     </item>
     
-    <item>
-      <title>沉默的大多数</title>
-      <link>https://cvvz.me/read/the-silent-majority/</link>
-      <pubDate>Wed, 13 Apr 2022 08:16:59 +0800</pubDate>
-
-      <guid>https://cvvz.me/read/the-silent-majority/</guid>
-      <description>大学的时候看了王小波的《白银时代》，以前从来没有看过这样的小说，感觉很不传统，这让一直接受传统教育的我很喜欢。然后又去看了序言里提到的乔治奥</description>
-    </item>
   </channel>
 </rss>

@@ -47,7 +47,6 @@
 				</div>
 				<nav class="site-nav hide-in-mobile">
 					<a href="https://cvvz.me/post/">文章</a>
-					<a href="https://cvvz.me/read/">读书和想法</a>
 					<a href="https://cvvz.me/running/">跑步</a>
 					<a href="https://cvvz.me/aboutme/resume.pdf">简历</a>
 				</nav>
@@ -60,7 +59,6 @@
 	<div id="mobile-menu" class="animated fast">
 		<ul>
 			<li><a href="https://cvvz.me/post/">文章</a></li>
-			<li><a href="https://cvvz.me/read/">读书和想法</a></li>
 			<li><a href="https://cvvz.me/running/">跑步</a></li>
 			<li><a href="https://cvvz.me/aboutme/resume.pdf">简历</a></li>
 		</ul>
@@ -163,32 +161,25 @@
 </nav>
 		</aside>
 		<div class="post-nav thin">
-			<a class="next-post" href="https://cvvz.me/post/kubernetes-storage-history/">
-				<span class="post-nav-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>&nbsp;新</span><br><span>k8s存储演进过程</span>
+			<a class="next-post" href="https://cvvz.me/post/the-underlying-logic/">
+				<span class="post-nav-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>&nbsp;新</span><br><span>底层逻辑</span>
 			</a>
-			<a class="prev-post" href="https://cvvz.me/post/kube-federation/">
-				<span class="post-nav-label">旧&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>浅谈开源集群联邦的设计和实现原理</span>
+			<a class="prev-post" href="https://cvvz.me/post/effectively-health-management/">
+				<span class="post-nav-label">旧&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>有效管理你的健康</span>
 			</a>
 		</div>
-		<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
-        <script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
-		<div id="gitalk-container" class="thin"></div>     
-		<script type="text/javascript">
-			var gitalk = new Gitalk({
-				clientID: '0f8bdcbe6b4973f9b206',
-				clientSecret: '4939e64d59c93fc5eb7eaf74469a746e4535700d',
-				repo: 'cvvz.github.io',
-				owner: 'cvvz',
-				admin: ['cvvz'],
-				id: location.pathname,      
-				distractionFreeMode: true 
-			});
-  			gitalk.render('gitalk-container');
-		</script>
+		<div id="comments" class="thin">
+			<p>
+	<a href="https://github.com/cvvz/cvvz.github.io/issues?q=is%3Aissue&#43;label%3AGitalk&#43;label%3A%22%2Fpost%2Fetcd-and-kubernetes%2F%22" target="_blank" rel="noopener">在 GitHub 查看／参与评论</a>
+	&#183;
+	<a href="https://github.com/cvvz/cvvz.github.io/issues/new?title=%E8%B0%88%E8%B0%88kubernetes%E4%B8%AD%E7%9A%84etcd&amp;body=https%3A%2F%2Fcvvz.me%2Fpost%2Fetcd-and-kubernetes%2F&amp;labels=Gitalk%2C%2Fpost%2Fetcd-and-kubernetes%2F" target="_blank" rel="noopener">发起评论</a>
+</p>
+
+		</div>
 	</main>
 
 	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
-		<p>&copy; 2024 <a href="https://cvvz.me">陈维志</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
+		<p>&copy; 2026 <a href="https://cvvz.me">陈维志</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
 		<p>
 			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://cvvz.me/post/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
 		</p>
